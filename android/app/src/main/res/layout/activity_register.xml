@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:fillViewport="true" android:scrollbars="none">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
+        android:gravity="center" android:orientation="vertical" android:padding="24dp">
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:background="@drawable/bg_glass_card" android:orientation="vertical" android:padding="24dp">
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="🌿 FarmConnect" android:textColor="#CFE8B5" android:textSize="14sp"
+                android:fontFamily="serif" android:textStyle="bold" />
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginTop="12dp" android:text="Create account" android:textColor="#FFFFFF"
+                android:textSize="32sp" android:textStyle="bold" android:fontFamily="serif" />
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginTop="4dp" android:text="Join the farm-to-market community"
+                android:textColor="#E6FFFFFF" android:textSize="13sp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="14dp" android:hint="Full name"
+                android:textColorHint="#E6FFFFFF"
+                app:hintTextColor="#FFFFFF"
+                app:boxBackgroundColor="#26FFFFFF"
+                app:boxStrokeColor="@color/box_stroke"
+                app:boxCornerRadiusTopStart="16dp" app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp" app:boxCornerRadiusBottomEnd="16dp"
+                app:endIconMode="custom" app:endIconDrawable="@drawable/ic_person" app:endIconTint="#FFFFFF" app:endIconCheckable="false">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etName" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:inputType="textPersonName" android:textColor="#FFFFFF" android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="14dp" android:hint="Email"
+                android:textColorHint="#E6FFFFFF"
+                app:hintTextColor="#FFFFFF"
+                app:boxBackgroundColor="#26FFFFFF"
+                app:boxStrokeColor="@color/box_stroke"
+                app:boxCornerRadiusTopStart="16dp" app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp" app:boxCornerRadiusBottomEnd="16dp"
+                app:endIconMode="custom" app:endIconDrawable="@drawable/ic_mail" app:endIconTint="#FFFFFF" app:endIconCheckable="false">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etEmail" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress" android:textColor="#FFFFFF" android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="14dp" android:hint="Phone"
+                android:textColorHint="#E6FFFFFF"
+                app:hintTextColor="#FFFFFF"
+                app:boxBackgroundColor="#26FFFFFF"
+                app:boxStrokeColor="@color/box_stroke"
+                app:boxCornerRadiusTopStart="16dp" app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp" app:boxCornerRadiusBottomEnd="16dp"
+                app:endIconMode="custom" app:endIconDrawable="@drawable/ic_phone" app:endIconTint="#FFFFFF" app:endIconCheckable="false">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPhone" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:inputType="phone" android:textColor="#FFFFFF" android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="14dp" android:hint="Password (min 6)"
+                android:textColorHint="#E6FFFFFF"
+                app:hintTextColor="#FFFFFF"
+                app:boxBackgroundColor="#26FFFFFF"
+                app:boxStrokeColor="@color/box_stroke"
+                app:boxCornerRadiusTopStart="16dp" app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp" app:boxCornerRadiusBottomEnd="16dp"
+                app:endIconMode="password_toggle" app:endIconTint="#FFFFFF">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPassword" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:inputType="textPassword" android:textColor="#FFFFFF" android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginTop="18dp" android:text="I want to join as"
+                android:textColor="#E6FFFFFF" android:textSize="13sp" />
+
+            <RadioGroup android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <RadioButton android:id="@+id/rbBuyer" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:checked="true" android:text="Buyer"
+                    android:textColor="#FFFFFF" android:buttonTint="#FFFFFF" />
+                <RadioButton android:id="@+id/rbFarmer" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:layout_marginStart="24dp" android:text="Farmer"
+                    android:textColor="#FFFFFF" android:buttonTint="#FFFFFF" />
+            </RadioGroup>
+
+            <ProgressBar android:id="@+id/progress" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:layout_gravity="center_horizontal"
+                android:layout_marginTop="12dp" android:indeterminateTint="#FFFFFF" android:visibility="gone" />
+
+            <androidx.appcompat.widget.AppCompatButton android:id="@+id/btnRegister"
+                android:layout_width="match_parent" android:layout_height="56dp"
+                android:layout_marginTop="20dp" android:background="@drawable/bg_btn_primary"
+                android:text="Create account" android:textAllCaps="false" android:textColor="#FFFFFF"
+                android:textSize="18sp" android:textStyle="bold" android:fontFamily="serif" />
+
+            <TextView android:id="@+id/tvLogin" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:layout_gravity="center_horizontal"
+                android:padding="16dp" android:text="Already have an account? Log in"
+                android:textColor="#FFFFFF" android:textSize="13sp" android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

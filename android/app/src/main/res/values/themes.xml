@@ -1,0 +1,18 @@
+<resources>
+    <style name="Theme.FarmConnect" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <item name="colorPrimary">#2E7D32</item>
+        <item name="colorPrimaryVariant">#1B5E20</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">#F9A825</item>
+    </style>
+
+    <!-- Login + Register: no action bar, farm background behind the status bar -->
+    <style name="Theme.FarmConnect.Auth" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">#2E7D32</item>
+        <item name="colorPrimaryVariant">#1B5E20</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">#F9A825</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowBackground">@drawable/bg_auth</item>
+    </style>
+</resources>

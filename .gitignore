@@ -1,3 +1,25 @@
 
 data/
 target/
+# Spring Boot / Maven
+target/
+*.class
+
+# H2 database
+data/
+
+# Environment / secrets
+.env
+
+# Android
+android/.gradle/
+android/build/
+android/*/build/
+android/local.properties
+android/.idea/
+
+# Android generated files
+*.iml
+
+# IDE
+.idea/
