@@ -4,6 +4,7 @@ import com.farmconnect.dto.Dtos.*;
 import com.farmconnect.dto.Mapper;
 import com.farmconnect.model.*;
 import com.farmconnect.repository.FarmRepository;
+import com.farmconnect.security.Visibility;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -21,15 +22,18 @@ import java.util.List;
 public class FarmController {
     private final FarmRepository farms;
 
+    /** Public: only farms of VERIFIED farmers (owners and reviewers also see their own / all). */
     @GetMapping
-    public List<FarmResponse> all() {
-        return farms.findAll().stream().map(Mapper::farm).toList();
+    public List<FarmResponse> all(@AuthenticationPrincipal User viewer) {
+        return farms.findAll().stream().filter(f -> Visibility.canSee(viewer, f)).map(Mapper::farm).toList();
     }
 
     @GetMapping("/{id}")
-    public FarmResponse one(@PathVariable Long id) {
-        return Mapper.farm(farms.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Farm not found")));
+    public FarmResponse one(@PathVariable Long id, @AuthenticationPrincipal User viewer) {
+        Farm f = farms.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Farm not found"));
+        if (!Visibility.canSee(viewer, f)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Farm not found");
+        return Mapper.farm(f);
     }
 
     @GetMapping("/mine")

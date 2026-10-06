@@ -12,9 +12,13 @@ public final class Mapper {
     }
 
     public static ProductResponse product(Product p) {
-        return new ProductResponse(p.getId(), p.getName(), p.getDescription(), p.getCategory(), p.getPrice(),
-                p.getQuantity(), p.getUnit(), p.getImageUrl(), p.getFarm().getId(), p.getFarm().getName(),
-                p.getFarm().getOwner().isVerified());
+        java.util.List<String> urls = new java.util.ArrayList<>();
+        for (String path : p.getImages()) urls.add("/api/files/products/" + path);
+        if (urls.isEmpty() && p.getImageUrl() != null && !p.getImageUrl().isBlank()) urls.add(p.getImageUrl());
+        String cover = urls.isEmpty() ? null : urls.get(0);
+        return new ProductResponse(p.getId(), p.getName(), p.getSummary(), p.getDescription(), p.getCategory(),
+                p.getPrice(), p.getQuantity(), p.getUnit(), cover, urls, p.getFarm().getId(), p.getFarm().getName(),
+                p.getFarm().getLocation(), p.getFarm().getOwner().isVerified());
     }
 
     public static CartItemResponse cartItem(CartItem c) {

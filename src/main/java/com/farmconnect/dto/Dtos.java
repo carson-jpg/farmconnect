@@ -20,11 +20,14 @@ public final class Dtos {
     public record FarmResponse(Long id, String name, String location, String description, Long ownerId,
                                boolean ownerVerified) {}
 
-    public record ProductRequest(@NotBlank String name, String description, String category,
+    public record ProductRequest(@NotBlank String name, @Size(max = 200) String summary,
+                                 @Size(max = 5000) String description, String category,
                                  @NotNull @DecimalMin("0.0") BigDecimal price, @Min(0) int quantity,
                                  String unit, String imageUrl, @NotNull Long farmId) {}
-    public record ProductResponse(Long id, String name, String description, String category, BigDecimal price,
-                                  int quantity, String unit, String imageUrl, Long farmId, String farmName,
+    /** imageUrl = cover photo (kept for older app versions); imageUrls = every photo, cover first. */
+    public record ProductResponse(Long id, String name, String summary, String description, String category,
+                                  BigDecimal price, int quantity, String unit, String imageUrl,
+                                  List<String> imageUrls, Long farmId, String farmName, String farmLocation,
                                   boolean farmerVerified) {}
 
     public record CartRequest(@NotNull Long productId, @Min(1) int quantity) {}

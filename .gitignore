@@ -1,12 +1,12 @@
-
-data/
-target/
-# Spring Boot / Maven
-target/
+# Build output
+/target/
 *.class
 
-# H2 database
-data/
+# H2 database (root only - NOT the android "data" package)
+/data/
+
+# Uploaded files (private verification photos + product images) - never commit
+/uploads/
 
 # Environment / secrets
 .env
@@ -17,8 +17,6 @@ android/build/
 android/*/build/
 android/local.properties
 android/.idea/
-
-# Android generated files
 *.iml
 
 # IDE

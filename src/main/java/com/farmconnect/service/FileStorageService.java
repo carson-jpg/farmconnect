@@ -39,6 +39,28 @@ public class FileStorageService {
         }
     }
 
+    /** Product photos are public (served from /api/files/products/**). Returns "productId/name.jpg". */
+    public String saveProductImage(Long productId, MultipartFile f) {
+        if (f == null || f.isEmpty()) throw bad("Empty file");
+        if (f.getSize() > 6L * 1024 * 1024) throw bad("File too large (max 6 MB)");
+        try {
+            byte[] data = f.getBytes();
+            String ext = ext(data);
+            if (ext == null) throw bad("Only JPG or PNG images are allowed");
+            Path dir = root.resolve("products").resolve(String.valueOf(productId));
+            Files.createDirectories(dir);
+            String name = UUID.randomUUID() + ext;
+            Files.write(dir.resolve(name), data);
+            return productId + "/" + name;
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not store file");
+        }
+    }
+
+    public byte[] readProductImage(String relative) { return read("products/" + relative); }
+
+    public void deleteProductImage(String relative) { if (relative != null) delete("products/" + relative); }
+
     public byte[] read(String relative) {
         try {
             Path p = root.resolve(relative).normalize();
