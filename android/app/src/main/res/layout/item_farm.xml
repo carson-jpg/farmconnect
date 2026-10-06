@@ -1,12 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent" android:layout_height="wrap_content"
-    android:layout_margin="8dp">
+    android:layout_margin="8dp" app:cardBackgroundColor="@color/fc_card"
+    app:cardCornerRadius="18dp" app:cardElevation="2dp" app:strokeWidth="0dp">
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:orientation="vertical" android:padding="12dp">
-        <TextView android:id="@+id/tvName" android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:textSize="18sp" android:textStyle="bold" />
-        <TextView android:id="@+id/tvLocation" android:layout_width="match_parent" android:layout_height="wrap_content" />
-        <TextView android:id="@+id/tvDesc" android:layout_width="match_parent" android:layout_height="wrap_content" />
+        android:orientation="vertical" android:padding="16dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:gravity="center_vertical" android:orientation="horizontal">
+            <ImageView android:layout_width="44dp" android:layout_height="44dp"
+                android:background="@drawable/bg_icon_circle" android:padding="10dp"
+                android:src="@drawable/ic_eco" android:tint="@color/fc_primary" android:contentDescription="Farm" />
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
+                <TextView android:id="@+id/tvName" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:textColor="@color/fc_text" android:textSize="18sp" android:textStyle="bold"
+                    android:fontFamily="serif" />
+                <TextView android:id="@+id/tvLocation" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:textColor="@color/fc_muted" android:textSize="13sp" />
+            </LinearLayout>
+        </LinearLayout>
+        <TextView android:id="@+id/tvDesc" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="8dp" android:textColor="@color/fc_text" android:textSize="14sp" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="8dp" android:orientation="horizontal">
+            <Button android:id="@+id/btnEdit" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Edit" android:textAllCaps="false" />
+            <Button android:id="@+id/btnDelete" style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginStart="8dp" android:text="Delete" android:textAllCaps="false"
+                android:textColor="@color/fc_danger" />
+        </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

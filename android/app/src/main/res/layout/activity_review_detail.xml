@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/fc_bg" android:fillViewport="true">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:padding="16dp">
+
+        <ProgressBar android:id="@+id/progress" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal" android:visibility="gone" />
+
+        <com.google.android.material.card.MaterialCardView android:layout_width="match_parent"
+            android:layout_height="wrap_content" app:cardBackgroundColor="@color/fc_card"
+            app:cardCornerRadius="18dp" app:cardElevation="2dp" app:strokeWidth="0dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:padding="16dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:gravity="center_vertical" android:orientation="horizontal">
+                    <TextView android:id="@+id/tvFullName" android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:textColor="@color/fc_text" android:textSize="20sp"
+                        android:textStyle="bold" android:fontFamily="serif" />
+                    <TextView android:id="@+id/tvStatus" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:paddingStart="10dp" android:paddingEnd="10dp" android:paddingTop="4dp" android:paddingBottom="4dp"
+                        android:textColor="#FFFFFF" android:textSize="11sp" android:textStyle="bold" />
+                </LinearLayout>
+                <TextView android:id="@+id/tvNationalId" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp" android:textColor="@color/fc_text" android:textSize="14sp" />
+                <TextView android:id="@+id/tvPhone" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp" android:textColor="@color/fc_text" android:textSize="14sp" />
+                <TextView android:id="@+id/tvAccount" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp" android:textColor="@color/fc_text" android:textSize="14sp" />
+                <TextView android:id="@+id/tvLocation" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp" android:textColor="@color/fc_text" android:textSize="14sp" />
+                <TextView android:id="@+id/tvGps" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp" android:textColor="@color/fc_text" android:textSize="14sp" />
+                <Button android:id="@+id/btnMap" style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Open farm location in Maps" android:textAllCaps="false" />
+                <TextView android:id="@+id/tvFarm" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp" android:textColor="@color/fc_text" android:textSize="14sp" />
+                <TextView android:id="@+id/tvReviewed" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp" android:textColor="@color/fc_text" android:textSize="14sp" />
+                <TextView android:id="@+id/tvReason" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp" android:textColor="@color/fc_text" android:textSize="14sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:layout_marginTop="12dp"
+            app:cardBackgroundColor="@color/fc_card" app:cardCornerRadius="18dp" app:cardElevation="2dp" app:strokeWidth="0dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:padding="16dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Documents (confirm the name and ID number match)" android:textColor="@color/fc_text"
+                    android:textSize="15sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp" android:text="National ID - front" android:textColor="@color/fc_muted" android:textSize="12sp" />
+                <ImageView android:id="@+id/ivIdFront" android:layout_width="match_parent" android:layout_height="220dp"
+                    android:layout_marginTop="4dp" android:background="#EEF2EC" android:contentDescription="National ID - front"
+                    android:scaleType="fitCenter" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp" android:text="National ID - back" android:textColor="@color/fc_muted" android:textSize="12sp" />
+                <ImageView android:id="@+id/ivIdBack" android:layout_width="match_parent" android:layout_height="220dp"
+                    android:layout_marginTop="4dp" android:background="#EEF2EC" android:contentDescription="National ID - back"
+                    android:scaleType="fitCenter" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp" android:text="Selfie" android:textColor="@color/fc_muted" android:textSize="12sp" />
+                <ImageView android:id="@+id/ivSelfie" android:layout_width="match_parent" android:layout_height="220dp"
+                    android:layout_marginTop="4dp" android:background="#EEF2EC" android:contentDescription="Selfie"
+                    android:scaleType="fitCenter" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp" android:text="Proof of farming activity" android:textColor="@color/fc_muted" android:textSize="12sp" />
+                <ImageView android:id="@+id/ivProof" android:layout_width="match_parent" android:layout_height="220dp"
+                    android:layout_marginTop="4dp" android:background="#EEF2EC" android:contentDescription="Proof of farming activity"
+                    android:scaleType="fitCenter" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="16dp" android:layout_marginBottom="24dp" android:orientation="vertical">
+            <Button android:id="@+id/btnStart" android:layout_width="match_parent" android:layout_height="56dp"
+                android:text="Start review" android:textAllCaps="false" android:visibility="gone" />
+            <Button android:id="@+id/btnApprove" android:layout_width="match_parent" android:layout_height="56dp"
+                android:text="Approve - mark as Verified Farmer" android:textAllCaps="false" android:visibility="gone" />
+            <Button android:id="@+id/btnReject" style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp"
+                android:text="Reject" android:textAllCaps="false" android:textColor="@color/fc_danger" android:visibility="gone" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

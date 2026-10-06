@@ -9,7 +9,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FarmAdapter extends RecyclerView.Adapter<FarmAdapter.VH> {
+    public interface Listener {
+        void onEdit(Farm f);
+        void onDelete(Farm f);
+    }
+
+    private final Listener listener;
     private List<Farm> items = new ArrayList<>();
+
+    public FarmAdapter(Listener l) { listener = l; }
 
     public void set(List<Farm> list) { items = list == null ? new ArrayList<>() : list; notifyDataSetChanged(); }
 
@@ -25,8 +33,10 @@ public class FarmAdapter extends RecyclerView.Adapter<FarmAdapter.VH> {
     @Override public void onBindViewHolder(VH h, int pos) {
         Farm f = items.get(pos);
         h.b.tvName.setText(f.name);
-        h.b.tvLocation.setText(f.location == null ? "" : f.location);
+        h.b.tvLocation.setText(f.location == null || f.location.isEmpty() ? "No location set" : "📍 " + f.location);
         h.b.tvDesc.setText(f.description == null ? "" : f.description);
+        h.b.btnEdit.setOnClickListener(v -> listener.onEdit(f));
+        h.b.btnDelete.setOnClickListener(v -> listener.onDelete(f));
     }
 
     @Override public int getItemCount() { return items.size(); }

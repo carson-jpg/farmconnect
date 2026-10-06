@@ -38,9 +38,12 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
     @Override public void onBindViewHolder(VH h, int pos) {
         Product p = items.get(pos);
         h.b.tvName.setText(p.name);
-        h.b.tvInfo.setText(p.farmName + (p.category != null && !p.category.isEmpty() ? " · " + p.category : ""));
+        String info = p.farmName + (p.farmerVerified ? " ✓ Verified Farmer" : "");
+        if (p.category != null && !p.category.isEmpty()) info += " · " + p.category;
+        h.b.tvInfo.setText(info);
         h.b.tvPrice.setText(Ui.kes(p.price) + (p.unit != null && !p.unit.isEmpty() ? " / " + p.unit : ""));
         h.b.tvStock.setText(p.quantity > 0 ? p.quantity + " in stock" : "Out of stock");
+        h.b.tvStock.setTextColor(mode == Mode.FARMER && p.quantity <= 5 ? 0xFFC62828 : 0xFF6B7A6E);
         h.b.btnSecondary.setVisibility(View.VISIBLE);
         h.b.btnPrimary.setEnabled(true);
         switch (mode) {
@@ -55,8 +58,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
                 h.b.btnSecondary.setText("Remove");
                 break;
             case FARMER:
-                h.b.btnPrimary.setText("Delete");
-                h.b.btnSecondary.setVisibility(View.GONE);
+                h.b.btnPrimary.setText("Edit");
+                h.b.btnSecondary.setText("Delete");
+                h.b.btnSecondary.setTextColor(0xFFC62828);
                 break;
         }
         h.b.btnPrimary.setOnClickListener(v -> listener.onPrimary(p));

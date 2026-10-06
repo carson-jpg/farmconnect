@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <application
         android:name=".FarmApp"
         android:allowBackup="true"
@@ -18,8 +20,13 @@
         <activity android:name=".ui.BuyerHomeActivity" />
         <activity android:name=".ui.CartActivity" />
         <activity android:name=".ui.WishlistActivity" />
-        <activity android:name=".ui.OrdersActivity" />
-        <activity android:name=".ui.FarmerHomeActivity" />
-        <activity android:name=".ui.FarmerProductsActivity" />
+        <activity android:name=".ui.OrdersActivity" android:theme="@style/Theme.FarmConnect.Farmer" />
+        <activity android:name=".ui.FarmerHomeActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.FarmerProductsActivity" android:theme="@style/Theme.FarmConnect.Farmer" />
+        <activity android:name=".ui.FarmsActivity" android:theme="@style/Theme.FarmConnect.Farmer" />
+        <activity android:name=".ui.VerificationActivity" android:theme="@style/Theme.FarmConnect.Farmer"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ui.ReviewerHomeActivity" android:theme="@style/Theme.FarmConnect.Farmer" />
+        <activity android:name=".ui.ReviewDetailActivity" android:theme="@style/Theme.FarmConnect.Farmer" />
     </application>
 </manifest>

@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/fc_bg" android:fillViewport="true" android:scrollbars="none">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Header -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:background="@drawable/bg_dash_header" android:orientation="vertical"
+            android:paddingBottom="76dp" android:paddingStart="20dp" android:paddingEnd="20dp"
+            android:paddingTop="20dp">
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:gravity="center_vertical" android:orientation="horizontal">
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="🌿 Welcome back," android:textColor="#CFE8B5" android:textSize="14sp" />
+                    <TextView android:id="@+id/tvGreeting" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:text="Farmer" android:textColor="#FFFFFF"
+                        android:textSize="28sp" android:textStyle="bold" android:fontFamily="serif" />
+                    <TextView android:id="@+id/tvBadge" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp" android:background="@drawable/bg_chip"
+                        android:backgroundTint="#66BB6A" android:paddingStart="10dp" android:paddingEnd="10dp"
+                        android:paddingTop="4dp" android:paddingBottom="4dp" android:text="✓ Verified Farmer"
+                        android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold"
+                        android:visibility="gone" />
+                </LinearLayout>
+                <ImageButton android:id="@+id/btnLogout" android:layout_width="44dp" android:layout_height="44dp"
+                    android:background="@drawable/bg_icon_glass" android:contentDescription="Log out"
+                    android:padding="11dp" android:src="@drawable/ic_logout" android:tint="#FFFFFF" />
+            </LinearLayout>
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" android:text="Here is how your farm business is doing."
+                android:textColor="#E6FFFFFF" android:textSize="13sp" />
+
+            <ProgressBar android:id="@+id/progress" style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent" android:layout_height="4dp" android:layout_marginTop="12dp"
+                android:indeterminate="true" android:indeterminateTint="#FFFFFF" android:visibility="invisible" />
+        </LinearLayout>
+
+        <!-- Stats (overlap the header) -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="-52dp" android:orientation="vertical"
+            android:paddingStart="12dp" android:paddingEnd="12dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                    android:layout_margin="6dp" app:cardBackgroundColor="@color/fc_card"
+                    app:cardCornerRadius="20dp" app:cardElevation="3dp" app:strokeWidth="0dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="vertical" android:padding="16dp">
+                        <ImageView android:layout_width="40dp" android:layout_height="40dp"
+                            android:background="@drawable/bg_icon_circle" android:padding="9dp"
+                            android:src="@drawable/ic_eco" android:tint="@color/fc_primary" android:contentDescription="Farms" />
+                        <TextView android:id="@+id/tvFarms" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp" android:text="0" android:textColor="@color/fc_text"
+                            android:textSize="24sp" android:textStyle="bold" android:fontFamily="serif" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Farms" android:textColor="@color/fc_muted" android:textSize="13sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                    android:layout_margin="6dp" app:cardBackgroundColor="@color/fc_card"
+                    app:cardCornerRadius="20dp" app:cardElevation="3dp" app:strokeWidth="0dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="vertical" android:padding="16dp">
+                        <ImageView android:layout_width="40dp" android:layout_height="40dp"
+                            android:background="@drawable/bg_icon_circle" android:padding="9dp"
+                            android:src="@drawable/ic_inventory" android:tint="@color/fc_primary" android:contentDescription="Products" />
+                        <TextView android:id="@+id/tvProducts" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp" android:text="0" android:textColor="@color/fc_text"
+                            android:textSize="24sp" android:textStyle="bold" android:fontFamily="serif" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Products" android:textColor="@color/fc_muted" android:textSize="13sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                    android:layout_margin="6dp" app:cardBackgroundColor="@color/fc_card"
+                    app:cardCornerRadius="20dp" app:cardElevation="3dp" app:strokeWidth="0dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="vertical" android:padding="16dp">
+                        <ImageView android:layout_width="40dp" android:layout_height="40dp"
+                            android:background="@drawable/bg_icon_circle" android:padding="9dp"
+                            android:src="@drawable/ic_clock" android:tint="@color/fc_primary" android:contentDescription="Pending orders" />
+                        <TextView android:id="@+id/tvPending" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp" android:text="0" android:textColor="@color/fc_text"
+                            android:textSize="24sp" android:textStyle="bold" android:fontFamily="serif" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Pending orders" android:textColor="@color/fc_muted" android:textSize="13sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                    android:layout_margin="6dp" app:cardBackgroundColor="@color/fc_card"
+                    app:cardCornerRadius="20dp" app:cardElevation="3dp" app:strokeWidth="0dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="vertical" android:padding="16dp">
+                        <ImageView android:layout_width="40dp" android:layout_height="40dp"
+                            android:background="@drawable/bg_icon_circle" android:padding="9dp"
+                            android:src="@drawable/ic_money" android:tint="@color/fc_primary" android:contentDescription="Sales" />
+                        <TextView android:id="@+id/tvSales" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp" android:text="0" android:textColor="@color/fc_text"
+                            android:textSize="24sp" android:textStyle="bold" android:fontFamily="serif" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Sales" android:textColor="@color/fc_muted" android:textSize="13sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Verification status -->
+        <com.google.android.material.card.MaterialCardView android:id="@+id/cardVerify"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="16dp" android:layout_marginEnd="16dp" android:layout_marginTop="12dp"
+            android:clickable="true" android:focusable="true"
+            app:cardBackgroundColor="#FFF4D6" app:cardCornerRadius="16dp" app:cardElevation="0dp" app:strokeWidth="0dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:gravity="center_vertical" android:orientation="horizontal" android:padding="14dp">
+                <ImageView android:layout_width="36dp" android:layout_height="36dp"
+                    android:src="@drawable/ic_verified" android:tint="@color/fc_primary" android:contentDescription="Verification" />
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
+                    <TextView android:id="@+id/tvVerifyTitle" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:text="Get verified" android:textColor="@color/fc_text"
+                        android:textSize="16sp" android:textStyle="bold" />
+                    <TextView android:id="@+id/tvVerifyMsg" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:text="Verify your identity and farm to earn the Verified Farmer badge."
+                        android:textColor="@color/fc_text" android:textSize="13sp" />
+                </LinearLayout>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="›" android:textColor="@color/fc_text" android:textSize="26sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Low stock banner -->
+        <com.google.android.material.card.MaterialCardView android:id="@+id/cardLowStock"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_margin="16dp" android:visibility="gone"
+            app:cardBackgroundColor="@color/fc_warn_bg" app:cardCornerRadius="16dp"
+            app:cardElevation="0dp" app:strokeColor="#F9A825" app:strokeWidth="1dp">
+            <TextView android:id="@+id/tvLowStock" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:padding="14dp"
+                android:text="" android:textColor="#7A5600" android:textSize="13sp" android:textStyle="bold" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Quick actions -->
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_marginStart="20dp" android:layout_marginTop="16dp" android:text="Quick actions"
+            android:textColor="@color/fc_text" android:textSize="18sp" android:textStyle="bold"
+            android:fontFamily="serif" />
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="8dp" android:orientation="horizontal"
+            android:paddingStart="12dp" android:paddingEnd="12dp">
+            <LinearLayout android:id="@+id/actAddProduct" android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true" android:focusable="true" android:gravity="center_horizontal"
+                android:orientation="vertical" android:padding="8dp">
+                <ImageView android:layout_width="56dp" android:layout_height="56dp"
+                    android:background="@drawable/bg_icon_circle" android:padding="15dp"
+                    android:src="@drawable/ic_add" android:tint="@color/fc_primary" android:contentDescription="Add product" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp" android:text="Add product" android:textColor="@color/fc_text"
+                    android:textSize="12sp" android:textStyle="bold" />
+            </LinearLayout>
+            <LinearLayout android:id="@+id/actFarms" android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true" android:focusable="true" android:gravity="center_horizontal"
+                android:orientation="vertical" android:padding="8dp">
+                <ImageView android:layout_width="56dp" android:layout_height="56dp"
+                    android:background="@drawable/bg_icon_circle" android:padding="15dp"
+                    android:src="@drawable/ic_eco" android:tint="@color/fc_primary" android:contentDescription="My farms" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp" android:text="My farms" android:textColor="@color/fc_text"
+                    android:textSize="12sp" android:textStyle="bold" />
+            </LinearLayout>
+            <LinearLayout android:id="@+id/actProducts" android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true" android:focusable="true" android:gravity="center_horizontal"
+                android:orientation="vertical" android:padding="8dp">
+                <ImageView android:layout_width="56dp" android:layout_height="56dp"
+                    android:background="@drawable/bg_icon_circle" android:padding="15dp"
+                    android:src="@drawable/ic_inventory" android:tint="@color/fc_primary" android:contentDescription="Products" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp" android:text="Products" android:textColor="@color/fc_text"
+                    android:textSize="12sp" android:textStyle="bold" />
+            </LinearLayout>
+            <LinearLayout android:id="@+id/actOrders" android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true" android:focusable="true" android:gravity="center_horizontal"
+                android:orientation="vertical" android:padding="8dp">
+                <ImageView android:layout_width="56dp" android:layout_height="56dp"
+                    android:background="@drawable/bg_icon_circle" android:padding="15dp"
+                    android:src="@drawable/ic_receipt" android:tint="@color/fc_primary" android:contentDescription="Orders" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp" android:text="Orders" android:textColor="@color/fc_text"
+                    android:textSize="12sp" android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Recent orders -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="16dp" android:gravity="center_vertical"
+            android:orientation="horizontal" android:paddingStart="20dp" android:paddingEnd="20dp">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                android:text="Recent orders" android:textColor="@color/fc_text" android:textSize="18sp"
+                android:textStyle="bold" android:fontFamily="serif" />
+            <TextView android:id="@+id/tvSeeAll" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:padding="8dp" android:text="See all"
+                android:textColor="@color/fc_primary" android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView android:id="@+id/tvNoOrders" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:padding="24dp" android:gravity="center"
+            android:text="No orders yet. New orders will show up here." android:textColor="@color/fc_muted" />
+
+        <LinearLayout android:id="@+id/ordersContainer" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:orientation="vertical"
+            android:paddingStart="10dp" android:paddingEnd="10dp" android:paddingBottom="32dp" />
+    </LinearLayout>
+</ScrollView>

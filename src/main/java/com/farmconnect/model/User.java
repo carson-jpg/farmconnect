@@ -17,4 +17,7 @@ public class User {
     private String password;
     @Enumerated(EnumType.STRING) @Column(nullable = false)
     private Role role;
+    /** True once an admin/officer approved the farmer's verification. Safe to show publicly. */
+    @Column(columnDefinition = "boolean default false not null")
+    private boolean verified;
 }

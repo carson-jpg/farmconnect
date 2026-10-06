@@ -1,6 +1,7 @@
 package com.farmconnect.controller;
 
 import com.farmconnect.dto.Dtos.*;
+import com.farmconnect.model.Role;
 import com.farmconnect.model.User;
 import com.farmconnect.repository.UserRepository;
 import com.farmconnect.security.JwtService;
@@ -23,6 +24,9 @@ public class AuthController {
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public AuthResponse register(@Valid @RequestBody RegisterRequest r) {
+        // Only farmers and buyers can self-register. ADMIN is seeded, OFFICER is created by an admin.
+        if (r.role() != Role.FARMER && r.role() != Role.BUYER)
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This role cannot be self-registered");
         if (users.existsByEmail(r.email()))
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already registered");
         User u = new User();

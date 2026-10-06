@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/fc_bg" android:orientation="vertical">
+
+    <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:scrollbars="none">
+        <com.google.android.material.chip.ChipGroup android:id="@+id/chipGroup"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:paddingStart="12dp" android:paddingEnd="12dp" android:paddingTop="8dp"
+            app:selectionRequired="true" app:singleLine="true" app:singleSelection="true">
+            <com.google.android.material.chip.Chip android:id="@+id/chipPending"
+                style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:checked="true" android:tag="PENDING" android:text="Pending" />
+            <com.google.android.material.chip.Chip android:id="@+id/chipReview"
+                style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:tag="UNDER_REVIEW" android:text="Under review" />
+            <com.google.android.material.chip.Chip android:id="@+id/chipVerified"
+                style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:tag="VERIFIED" android:text="Verified" />
+            <com.google.android.material.chip.Chip android:id="@+id/chipRejected"
+                style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:tag="REJECTED" android:text="Rejected" />
+        </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
+
+    <ProgressBar android:id="@+id/progress" android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal" android:visibility="gone" />
+    <TextView android:id="@+id/tvEmpty" android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal" android:padding="32dp" android:text="Nothing here"
+        android:textColor="@color/fc_muted" android:visibility="gone" />
+    <androidx.recyclerview.widget.RecyclerView android:id="@+id/rv" android:layout_width="match_parent"
+        android:layout_height="0dp" android:layout_weight="1" android:clipToPadding="false"
+        android:paddingBottom="24dp" android:paddingStart="6dp" android:paddingEnd="6dp" />
+</LinearLayout>

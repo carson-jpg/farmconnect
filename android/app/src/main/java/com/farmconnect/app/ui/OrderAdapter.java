@@ -42,16 +42,30 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.VH> {
 
     @Override public void onBindViewHolder(VH h, int pos) {
         Order o = items.get(pos);
-        h.b.tvHeader.setText("Order #" + o.id + " · " + o.status);
+        h.b.tvHeader.setText("Order #" + o.id);
+        Ui.styleStatus(h.b.tvStatus, o.status);
+        h.b.tvDate.setText(Ui.dateTime(o.createdAt));
+
+        if (farmer) {
+            String who = o.buyerName == null || o.buyerName.isEmpty() ? "Customer" : o.buyerName;
+            if (o.buyerPhone != null && !o.buyerPhone.isEmpty()) who += " · " + o.buyerPhone;
+            h.b.tvBuyer.setText("👤 " + who);
+            h.b.tvBuyer.setVisibility(View.VISIBLE);
+        } else {
+            h.b.tvBuyer.setVisibility(View.GONE);
+        }
+
         StringBuilder sb = new StringBuilder();
         for (OrderItem i : o.items) sb.append(i.quantity).append(" x ").append(i.productName).append("\n");
         h.b.tvItems.setText(sb.toString().trim());
+        h.b.tvAddress.setText("📍 " + o.deliveryAddress);
         h.b.tvTotal.setText("Total: " + Ui.kes(o.total));
-        h.b.tvAddress.setText("Deliver to: " + o.deliveryAddress);
+
         if (farmer) {
             String n = next(o.status);
-            h.b.btnAction.setVisibility(n == null || "CANCELLED".equals(o.status) ? View.GONE : View.VISIBLE);
-            h.b.btnAction.setText("Mark as " + n);
+            boolean show = n != null && !"CANCELLED".equals(o.status);
+            h.b.btnAction.setVisibility(show ? View.VISIBLE : View.GONE);
+            if (show) h.b.btnAction.setText("Mark as " + n.charAt(0) + n.substring(1).toLowerCase());
         } else {
             h.b.btnAction.setVisibility("PENDING".equals(o.status) ? View.VISIBLE : View.GONE);
             h.b.btnAction.setText("Cancel order");

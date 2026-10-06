@@ -3,16 +3,23 @@ package com.farmconnect.app.util;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
+import com.farmconnect.app.R;
 import com.farmconnect.app.data.Resource;
 import com.farmconnect.app.data.Session;
 import com.farmconnect.app.ui.BuyerHomeActivity;
 import com.farmconnect.app.ui.FarmerHomeActivity;
 import com.farmconnect.app.ui.LoginActivity;
+import com.farmconnect.app.ui.ReviewerHomeActivity;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.function.Consumer;
 
 public class Ui {
@@ -20,8 +27,71 @@ public class Ui {
 
     public static String kes(double v) { return String.format(Locale.US, "KES %,.0f", v); }
 
+    /** "2026-10-02T06:12:33.123Z" -> "02 Oct 2026, 09:12" in the phone's time zone. */
+    public static String dateTime(String iso) {
+        if (iso == null || iso.length() < 19) return iso == null ? "" : iso;
+        try {
+            SimpleDateFormat in = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+            in.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date d = in.parse(iso.substring(0, 19));
+            return new SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault()).format(d);
+        } catch (Exception e) {
+            return iso;
+        }
+    }
+
+    /** Colored order-status pill. */
+    public static void styleStatus(TextView tv, String status) {
+        String s = status == null ? "" : status;
+        tv.setText(s.isEmpty() ? "" : s.charAt(0) + s.substring(1).toLowerCase(Locale.US));
+        int c;
+        switch (s) {
+            case "PENDING": c = 0xFFF9A825; break;
+            case "CONFIRMED": c = 0xFF1E88E5; break;
+            case "SHIPPED": c = 0xFF8E24AA; break;
+            case "DELIVERED": c = 0xFF2E7D32; break;
+            case "CANCELLED": c = 0xFFC62828; break;
+            default: c = 0xFF757575;
+        }
+        tv.setBackgroundResource(R.drawable.bg_chip);
+        tv.setBackgroundTintList(ColorStateList.valueOf(c));
+    }
+
+    public static String verificationLabel(String status) {
+        if (status == null) return "";
+        switch (status) {
+            case "PENDING": return "Pending verification";
+            case "UNDER_REVIEW": return "Under review";
+            case "VERIFIED": return "✓ Verified";
+            case "REJECTED": return "Rejected";
+            default: return "Not submitted";
+        }
+    }
+
+    public static int verificationColor(String status) {
+        if (status == null) return 0xFF757575;
+        switch (status) {
+            case "PENDING": return 0xFFF9A825;
+            case "UNDER_REVIEW": return 0xFF8E24AA;
+            case "VERIFIED": return 0xFF2E7D32;
+            case "REJECTED": return 0xFFC62828;
+            default: return 0xFF757575;
+        }
+    }
+
+    /** Colored verification-status pill. */
+    public static void styleVerification(TextView tv, String status) {
+        tv.setText(verificationLabel(status));
+        tv.setBackgroundResource(R.drawable.bg_chip);
+        tv.setBackgroundTintList(ColorStateList.valueOf(verificationColor(status)));
+    }
+
     public static void home(Activity a) {
-        Class<?> target = "FARMER".equals(Session.role()) ? FarmerHomeActivity.class : BuyerHomeActivity.class;
+        String role = Session.role();
+        Class<?> target;
+        if ("FARMER".equals(role)) target = FarmerHomeActivity.class;
+        else if ("ADMIN".equals(role) || "OFFICER".equals(role)) target = ReviewerHomeActivity.class;
+        else target = BuyerHomeActivity.class;
         Intent i = new Intent(a, target);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         a.startActivity(i);

@@ -1,0 +1,11 @@
+<resources>
+    <color name="fc_bg">#F3F7F0</color>
+    <color name="fc_dark">#1B3A1F</color>
+    <color name="fc_primary">#2E7D32</color>
+    <color name="fc_primary_light">#E3F1E0</color>
+    <color name="fc_text">#1C2B1E</color>
+    <color name="fc_muted">#6B7A6E</color>
+    <color name="fc_card">#FFFFFF</color>
+    <color name="fc_warn_bg">#FFF4D6</color>
+    <color name="fc_danger">#C62828</color>
+</resources>
