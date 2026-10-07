@@ -1,0 +1,117 @@
+package com.farmconnect.app.ui;
+
+import android.content.Intent;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import androidx.appcompat.app.AlertDialog;
+import com.farmconnect.app.data.Models.Group;
+import com.farmconnect.app.data.Models.GroupDetail;
+import com.farmconnect.app.data.Models.Member;
+import com.farmconnect.app.data.Session;
+import com.farmconnect.app.util.Ui;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
+import java.util.ArrayList;
+import java.util.List;
+
+/** One group: details, members, join / leave, notices to members, message the leader. */
+public class GroupDetailActivity extends BaseListActivity {
+    private long groupId;
+
+    @Override protected String screenTitle() { return "Group"; }
+    @Override protected String emptyText() { return "No members yet"; }
+
+    @Override protected void load() {
+        groupId = getIntent().getLongExtra("id", -1);
+        if (groupId < 0) { finish(); return; }
+        Ui.watch(this, vm.group(groupId), b.progress, this::render);
+    }
+
+    private MaterialButton button(String text, boolean outlined, View.OnClickListener l) {
+        MaterialButton btn = new MaterialButton(this, null,
+                outlined ? com.google.android.material.R.attr.materialButtonOutlinedStyle : com.google.android.material.R.attr.materialButtonStyle);
+        btn.setText(text);
+        btn.setAllCaps(false);
+        btn.setCornerRadius(dp(14));
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(50));
+        lp.topMargin = dp(8);
+        btn.setLayoutParams(lp);
+        btn.setOnClickListener(l);
+        return btn;
+    }
+
+    private void render(GroupDetail d) {
+        Group g = d.group;
+        boolean staff = Labels.isStaff();
+        boolean manager = staff || g.leader;
+        long me = Session.id();
+        b.tvTitle.setText(g.name);
+
+        LinearLayout top = b.topArea;
+        top.removeAllViews();
+        top.setPadding(dp(14), dp(10), dp(14), 0);
+        MaterialCardView card = Cards.card(this, top, 0);
+        LinearLayout in = Cards.inner(card);
+        in.addView(Cards.text(this, Labels.groupIcon(g.type) + "  " + Labels.name(Labels.GROUP_TYPES, Labels.GROUP_NAMES, g.type), 13, 0xFF2E7D32, true));
+        if (g.description != null && !g.description.isEmpty()) {
+            TextView t = Cards.text(this, g.description, 14, 0xFF1C2B1E, false);
+            t.setPadding(0, dp(8), 0, 0);
+            in.addView(t);
+        }
+        StringBuilder info = new StringBuilder("👥 " + g.members + (g.members == 1 ? " member" : " members"));
+        if (g.leaderName != null) info.append("\n⭐ Led by ").append(g.leaderName);
+        if (g.location != null && !g.location.isEmpty()) info.append("\n📍 ").append(g.location);
+        if (g.subCounty != null && !g.subCounty.isEmpty()) info.append(", ").append(g.subCounty);
+        if (g.contactPhone != null && !g.contactPhone.isEmpty()) info.append("\n📞 ").append(g.contactPhone);
+        TextView it = Cards.text(this, info.toString(), 13, 0xFF5E7061, false);
+        it.setPadding(0, dp(10), 0, 0);
+        in.addView(it);
+
+        if ("FARMER".equals(Session.role())) {
+            if (!g.member) in.addView(button("Join this group", false, v ->
+                    Ui.watch(this, vm.joinGroup(g.id), b.progress, x -> { Ui.toast(this, "Welcome to " + g.name); load(); })));
+            else if (!g.leader) in.addView(button("Leave group", true, v -> new AlertDialog.Builder(this)
+                    .setTitle("Leave " + g.name + "?")
+                    .setPositiveButton("Leave", (x, y) -> Ui.watch(this, vm.leaveGroup(g.id), b.progress, r -> { load(); }))
+                    .setNegativeButton("Stay", null).show()));
+        }
+        if (g.leaderId != me && g.leaderId > 0) in.addView(button("💬 Message the leader", true, v ->
+                startActivity(new Intent(this, ChatActivity.class).putExtra("userId", g.leaderId).putExtra("name", g.leaderName))));
+        if (manager) {
+            in.addView(button("📣 Send a notice to all members", true, v -> {
+                List<Forms.Field> f = new ArrayList<>();
+                f.add(Forms.text("title", "Title", true));
+                f.add(Forms.multi("body", "Message", true));
+                Forms.show(this, "Notice to members", "Send", f, val ->
+                        Ui.watch(this, vm.announceToGroup(g.id, val.get("title"), val.get("body")), b.progress,
+                                r -> Ui.toast(this, "Sent to " + (g.members - 1) + " members")));
+            }));
+            in.addView(button("🗑 Delete group", true, v -> new AlertDialog.Builder(this)
+                    .setTitle("Delete " + g.name + "?")
+                    .setMessage("All memberships are removed. This cannot be undone.")
+                    .setPositiveButton("Delete", (x, y) -> Ui.watch(this, vm.deleteGroup(g.id), b.progress, r -> {
+                        Ui.toast(this, "Group deleted");
+                        finish();
+                    }))
+                    .setNegativeButton("Cancel", null).show()));
+        }
+
+        List<Row> rows = new ArrayList<>();
+        for (Member m : d.members) {
+            Row r = Row.of(m.leader ? "⭐" : "🧑‍🌾", m.name + (m.verified ? "  ✓" : ""))
+                    .sub(m.phone)
+                    .meta("Joined " + Ui.dateOnly(m.joinedAt));
+            if (m.leader) r.badge("Leader", 0xFFB26A00);
+            if (m.userId != me) r.click(() -> startActivity(new Intent(this, ChatActivity.class)
+                    .putExtra("userId", m.userId).putExtra("name", m.name)));
+            if (manager && !m.leader && m.userId != me)
+                r.action("Remove", () -> new AlertDialog.Builder(this)
+                        .setTitle("Remove " + m.name + "?")
+                        .setPositiveButton("Remove", (x, y) -> Ui.watch(this, vm.removeGroupMember(g.id, m.userId), b.progress, z -> load()))
+                        .setNegativeButton("Cancel", null).show());
+            rows.add(r);
+        }
+        show(rows, g.members + (g.members == 1 ? " member" : " members"));
+    }
+}

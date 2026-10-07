@@ -17,6 +17,7 @@ import com.google.android.material.chip.Chip;
 
 /** Home screen for ADMIN and County Agricultural Officer accounts. */
 public class ReviewerHomeActivity extends AppCompatActivity implements ReviewAdapter.Listener {
+    private Hub hub;
     private ActivityReviewListBinding b;
     private ReviewViewModel vm;
     private ReviewAdapter adapter;
@@ -26,6 +27,7 @@ public class ReviewerHomeActivity extends AppCompatActivity implements ReviewAda
         super.onCreate(s);
         b = ActivityReviewListBinding.inflate(getLayoutInflater());
         setContentView(b.getRoot());
+        hub = Hub.attach(this, b.hubContainer);
         vm = new ViewModelProvider(this).get(ReviewViewModel.class);
         b.btnLogout.setOnClickListener(v -> Ui.logout(this));
         adapter = new ReviewAdapter(this);
@@ -41,6 +43,7 @@ public class ReviewerHomeActivity extends AppCompatActivity implements ReviewAda
 
     @Override protected void onResume() {
         super.onResume();
+        if (hub != null) hub.refresh();
         load();
     }
 

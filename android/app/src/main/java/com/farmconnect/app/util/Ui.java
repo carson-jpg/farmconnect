@@ -58,6 +58,17 @@ public class Ui {
         tv.setBackgroundTintList(ColorStateList.valueOf(c));
     }
 
+    /** "2026-11-05T12:00:00Z" -> "05 Nov 2026" (date only, no time-zone shifting). */
+    public static String dateOnly(String iso) {
+        if (iso == null || iso.length() < 10) return iso == null ? "" : iso;
+        try {
+            Date d = new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(iso.substring(0, 10));
+            return new SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(d);
+        } catch (Exception e) {
+            return iso.substring(0, 10);
+        }
+    }
+
     public static String paymentLabel(String m) {
         if ("MPESA_ON_DELIVERY".equals(m)) return "M-Pesa on delivery";
         return "Cash on delivery";

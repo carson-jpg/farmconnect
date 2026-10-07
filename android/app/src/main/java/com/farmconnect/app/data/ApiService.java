@@ -52,6 +52,41 @@ public interface ApiService {
     Call<VerificationResponse> uploadDoc(@Part("type") RequestBody type, @Part MultipartBody.Part file);
     @POST("api/verification/me/submit") Call<VerificationResponse> submitVerification();
 
+    // community
+    @GET("api/posts") Call<List<Post>> posts(@Query("type") String type, @Query("q") String q);
+    @GET("api/posts/{id}") Call<Post> post(@Path("id") long id);
+    @POST("api/posts") Call<Post> createPost(@Body PostRequest r);
+    @DELETE("api/posts/{id}") Call<Void> deletePost(@Path("id") long id);
+    @POST("api/posts/{id}/register") Call<Post> togglePostRegistration(@Path("id") long id);
+    @GET("api/messages/conversations") Call<List<Conversation>> conversations();
+    @GET("api/messages/with/{id}") Call<List<ChatMessage>> thread(@Path("id") long id);
+    @POST("api/messages") Call<ChatMessage> sendMessage(@Body ChatRequest r);
+    @GET("api/messages/contacts") Call<List<Contact>> contacts(@Query("q") String q);
+    @GET("api/notifications") Call<List<AppNotification>> notifications();
+    @GET("api/notifications/counts") Call<Counts> counts();
+    @POST("api/notifications/read-all") Call<Counts> readAllNotifications();
+    @POST("api/notifications/{id}/read") Call<Counts> readNotification(@Path("id") long id);
+    @GET("api/weather") Call<Weather> weather();
+    @GET("api/records") Call<List<FarmRecord>> records(@Query("type") String type);
+    @POST("api/records") Call<FarmRecord> createRecord(@Body RecordRequest r);
+    @PUT("api/records/{id}") Call<FarmRecord> updateRecord(@Path("id") long id, @Body RecordRequest r);
+    @DELETE("api/records/{id}") Call<Void> deleteRecord(@Path("id") long id);
+    @GET("api/records/summary") Call<RecordSummary> recordSummary();
+    @GET("api/services") Call<List<ServiceProvider>> services(@Query("category") String category, @Query("q") String q);
+    @POST("api/services") Call<ServiceProvider> createService(@Body ServiceRequest r);
+    @DELETE("api/services/{id}") Call<Void> deleteService(@Path("id") long id);
+    @GET("api/groups") Call<List<Group>> groups(@Query("mine") Boolean mine, @Query("type") String type, @Query("q") String q);
+    @GET("api/groups/{id}") Call<GroupDetail> group(@Path("id") long id);
+    @POST("api/groups") Call<Group> createGroup(@Body GroupRequest r);
+    @DELETE("api/groups/{id}") Call<Void> deleteGroup(@Path("id") long id);
+    @POST("api/groups/{id}/join") Call<Group> joinGroup(@Path("id") long id);
+    @POST("api/groups/{id}/leave") Call<Group> leaveGroup(@Path("id") long id);
+    @DELETE("api/groups/{id}/members/{userId}") Call<Void> removeGroupMember(@Path("id") long id, @Path("userId") long userId);
+    @POST("api/groups/{id}/announce") Call<Void> announceToGroup(@Path("id") long id, @Body AnnounceRequest r);
+    @POST("api/feedback") Call<Void> sendFeedback(@Body FeedbackRequest r);
+    @GET("api/analytics") Call<Analytics> analytics();
+    @GET("api/analytics/report.csv") Call<okhttp3.ResponseBody> analyticsCsv();
+
     // admin
     @GET("api/admin/stats") Call<AdminStats> adminStats();
     @GET("api/admin/users") Call<List<UserSummary>> adminUsers(@Query("role") String role, @Query("q") String q);

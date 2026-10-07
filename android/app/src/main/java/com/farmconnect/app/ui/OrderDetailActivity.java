@@ -111,6 +111,13 @@ public class OrderDetailActivity extends AppCompatActivity {
         boolean hasNote = o.deliveryNote != null && !o.deliveryNote.trim().isEmpty();
         b.tvNote.setVisibility(hasNote ? View.VISIBLE : View.GONE);
         if (hasNote) b.tvNote.setText("“" + o.deliveryNote + "”");
+        long otherId = mode == OrderAdapter.Mode.BUYER ? (o.items.isEmpty() ? -1 : o.items.get(0).farmerId) : o.buyerId;
+        String otherName = mode == OrderAdapter.Mode.BUYER ? (o.items.isEmpty() || o.items.get(0).farmName == null ? "Seller" : o.items.get(0).farmName)
+                : (o.buyerName == null ? "Customer" : o.buyerName);
+        b.btnMessage.setVisibility(otherId > 0 && mode != OrderAdapter.Mode.ADMIN ? View.VISIBLE : View.GONE);
+        b.btnMessage.setText(mode == OrderAdapter.Mode.BUYER ? "💬 Message the seller" : "💬 Message the buyer");
+        b.btnMessage.setOnClickListener(v -> startActivity(new android.content.Intent(this, ChatActivity.class)
+                .putExtra("userId", otherId).putExtra("name", otherName)));
         b.tvPayment.setText("💳 " + Ui.paymentLabel(o.paymentMethod));
 
         // ---- actions by role

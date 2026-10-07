@@ -33,7 +33,7 @@ public class FarmAdapter extends RecyclerView.Adapter<FarmAdapter.VH> {
     @Override public void onBindViewHolder(VH h, int pos) {
         Farm f = items.get(pos);
         h.b.tvName.setText(f.name);
-        h.b.tvLocation.setText(f.location == null || f.location.isEmpty() ? "No location set" : "📍 " + f.location);
+        h.b.tvLocation.setText(f.location == null || f.location.isEmpty() ? "No location set" : "📍 " + f.location + (f.subCounty == null || f.subCounty.isEmpty() ? "" : " · " + f.subCounty));
         h.b.tvDesc.setText(f.description == null ? "" : f.description);
         h.b.btnEdit.setOnClickListener(v -> listener.onEdit(f));
         h.b.btnDelete.setOnClickListener(v -> listener.onDelete(f));

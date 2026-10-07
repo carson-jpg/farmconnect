@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/fc_bg"
+    android:orientation="vertical">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:background="@drawable/bg_dash_header" android:gravity="center_vertical" android:orientation="horizontal"
+        android:paddingBottom="26dp" android:paddingEnd="16dp" android:paddingStart="16dp" android:paddingTop="20dp">
+        <ImageButton android:id="@+id/btnBack" android:layout_width="42dp" android:layout_height="42dp"
+            android:layout_marginEnd="12dp" android:background="@drawable/bg_icon_glass" android:contentDescription="Back"
+            android:padding="10dp" android:src="@drawable/ic_back" android:tint="#FFFFFF" />
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView android:id="@+id/tvTitle" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:fontFamily="serif" android:text="" android:textColor="#FFFFFF" android:textSize="22sp"
+                android:textStyle="bold" />
+            <TextView android:id="@+id/tvSubtitle" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="" android:textColor="#CFE8B5" android:textSize="13sp" />
+        </LinearLayout>
+        <TextView android:id="@+id/btnHeaderAction" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/bg_icon_glass" android:paddingBottom="9dp" android:paddingEnd="14dp" android:paddingStart="14dp" android:paddingTop="9dp" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" android:visibility="gone" />
+    </LinearLayout>
+    <ProgressBar android:id="@+id/progress" style="?android:attr/progressBarStyleHorizontal" android:layout_width="match_parent"
+        android:layout_height="3dp" android:indeterminate="true" android:visibility="invisible" />
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
+        android:scrollbars="none">
+        <LinearLayout android:id="@+id/content" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:padding="14dp" />
+    </ScrollView>
+</LinearLayout>

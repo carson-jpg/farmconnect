@@ -27,6 +27,7 @@ public class AdminController {
     private final ProductRepository products;
     private final OrderRepository orders;
     private final FarmerVerificationRepository verifications;
+    private final com.farmconnect.service.NotificationService notifier;
 
     @GetMapping("/stats")
     @Transactional(readOnly = true)
@@ -105,7 +106,10 @@ public class AdminController {
         }
         o.setStatus(r.status());
         o.setUpdatedAt(Instant.now());
-        return Mapper.order(orders.save(o));
+        CustomerOrder saved = orders.save(o);
+        notifier.notifyAndSms(saved.getBuyer(), "ORDER", "Order #" + saved.getId() + " " + OrderController.statusText(r.status()),
+                "Your order is now " + r.status().name().toLowerCase() + ".", saved.getId());
+        return Mapper.order(saved);
     }
 
     // ---------------- products (moderation) ----------------

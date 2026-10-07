@@ -49,7 +49,10 @@ public class FarmsActivity extends AppCompatActivity implements FarmAdapter.List
             d.etName.setText(ex.name);
             d.etLocation.setText(ex.location);
             d.etDesc.setText(ex.description);
+            d.etSubCounty.setText(ex.subCounty);
         }
+        d.etSubCounty.setOnClickListener(v -> new AlertDialog.Builder(this).setTitle("Sub-county")
+                .setItems(Labels.SUB_COUNTIES, (dlg, i) -> d.etSubCounty.setText(Labels.SUB_COUNTIES[i])).show());
         new AlertDialog.Builder(this)
                 .setTitle(ex == null ? "New farm" : "Edit farm")
                 .setView(d.getRoot())
@@ -57,7 +60,7 @@ public class FarmsActivity extends AppCompatActivity implements FarmAdapter.List
                     String name = d.etName.getText().toString().trim();
                     if (name.isEmpty()) { Ui.toast(this, "Farm name required"); return; }
                     FarmRequest r = new FarmRequest(name, d.etLocation.getText().toString().trim(),
-                            d.etDesc.getText().toString().trim());
+                            d.etDesc.getText().toString().trim(), d.etSubCounty.getText().toString().trim());
                     if (ex == null) Ui.watch(this, vm.createFarm(r), b.progress, f -> load());
                     else Ui.watch(this, vm.updateFarm(ex.id, r), b.progress, f -> load());
                 })

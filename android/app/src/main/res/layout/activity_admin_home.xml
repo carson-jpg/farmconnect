@@ -112,6 +112,14 @@
                 </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
 
+
+    <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:clipToPadding="false" android:paddingEnd="12dp" android:paddingStart="12dp" android:paddingTop="12dp"
+        android:scrollbars="none">
+        <LinearLayout android:id="@+id/hubContainer" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
+
         <!-- Quick actions -->
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="20dp"
             android:layout_marginTop="14dp" android:fontFamily="serif" android:text="Manage" android:textColor="@color/fc_text"

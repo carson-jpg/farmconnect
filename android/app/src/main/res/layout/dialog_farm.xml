@@ -6,6 +6,8 @@
         android:hint="Farm name" android:inputType="text" />
     <EditText android:id="@+id/etLocation" android:layout_width="match_parent" android:layout_height="wrap_content"
         android:hint="Location (e.g. Nakuru)" android:inputType="text" />
+    <EditText android:id="@+id/etSubCounty" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:clickable="true" android:focusable="false" android:hint="Sub-county (tap to choose)" android:inputType="none" />
     <EditText android:id="@+id/etDesc" android:layout_width="match_parent" android:layout_height="wrap_content"
         android:hint="Description" android:inputType="textMultiLine" />
 </LinearLayout>

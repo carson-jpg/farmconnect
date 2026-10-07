@@ -31,6 +31,7 @@ import java.util.Set;
 
 /** Farmer dashboard: verification status, stats, quick actions, recent orders. */
 public class FarmerHomeActivity extends AppCompatActivity {
+    private Hub hub;
     private ActivityFarmerDashboardBinding b;
     private FarmerViewModel vm;
     private VerificationViewModel verifyVm;
@@ -39,6 +40,7 @@ public class FarmerHomeActivity extends AppCompatActivity {
         super.onCreate(s);
         b = ActivityFarmerDashboardBinding.inflate(getLayoutInflater());
         setContentView(b.getRoot());
+        hub = Hub.attach(this, b.hubContainer);
         vm = new ViewModelProvider(this).get(FarmerViewModel.class);
         verifyVm = new ViewModelProvider(this).get(VerificationViewModel.class);
 
@@ -60,6 +62,7 @@ public class FarmerHomeActivity extends AppCompatActivity {
 
     @Override protected void onResume() {
         super.onResume();
+        if (hub != null) hub.refresh();
         Ui.watch(this, verifyVm.mine(), null, this::showVerification);
         load();
     }

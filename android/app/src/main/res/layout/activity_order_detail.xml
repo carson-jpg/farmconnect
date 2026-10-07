@@ -79,6 +79,10 @@
                         android:layout_marginTop="4dp" android:textColor="@color/fc_text" android:textSize="14sp" />
                     <TextView android:id="@+id/tvPhone" android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:layout_marginTop="4dp" android:textColor="@color/fc_muted" android:textSize="13sp" />
+                    <TextView android:id="@+id/btnMessage" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp" android:background="@drawable/bg_chip" android:backgroundTint="@color/fc_primary_light"
+                        android:paddingBottom="7dp" android:paddingEnd="14dp" android:paddingStart="14dp" android:paddingTop="7dp"
+                        android:textColor="@color/fc_primary" android:textSize="13sp" android:textStyle="bold" android:visibility="gone" />
                     <TextView android:id="@+id/tvNote" android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:layout_marginTop="8dp" android:background="@drawable/bg_chip" android:backgroundTint="@color/fc_bg"
                         android:padding="10dp" android:textColor="@color/fc_muted" android:textSize="13sp"

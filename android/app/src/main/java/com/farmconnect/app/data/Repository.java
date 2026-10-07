@@ -77,6 +77,42 @@ public class Repository {
         return run(api().uploadDoc(t, part));
     }
 
+    // community
+    public LiveData<Resource<List<Post>>> posts(String type, String q) { return run(api().posts(emptyToNull(type), emptyToNull(q))); }
+    public LiveData<Resource<Post>> post(long id) { return run(api().post(id)); }
+    public LiveData<Resource<Post>> createPost(PostRequest r) { return run(api().createPost(r)); }
+    public LiveData<Resource<Void>> deletePost(long id) { return run(api().deletePost(id)); }
+    public LiveData<Resource<Post>> togglePostRegistration(long id) { return run(api().togglePostRegistration(id)); }
+    public LiveData<Resource<List<Conversation>>> conversations() { return run(api().conversations()); }
+    public LiveData<Resource<List<ChatMessage>>> thread(long userId) { return run(api().thread(userId)); }
+    public LiveData<Resource<ChatMessage>> sendMessage(long to, String body) { return run(api().sendMessage(new ChatRequest(to, body))); }
+    public LiveData<Resource<List<Contact>>> contacts(String q) { return run(api().contacts(emptyToNull(q))); }
+    public LiveData<Resource<List<AppNotification>>> notifications() { return run(api().notifications()); }
+    public LiveData<Resource<Counts>> counts() { return run(api().counts()); }
+    public LiveData<Resource<Counts>> readAllNotifications() { return run(api().readAllNotifications()); }
+    public LiveData<Resource<Counts>> readNotification(long id) { return run(api().readNotification(id)); }
+    public LiveData<Resource<Weather>> weather() { return run(api().weather()); }
+    public LiveData<Resource<List<FarmRecord>>> records(String type) { return run(api().records(emptyToNull(type))); }
+    public LiveData<Resource<FarmRecord>> createRecord(RecordRequest r) { return run(api().createRecord(r)); }
+    public LiveData<Resource<FarmRecord>> updateRecord(long id, RecordRequest r) { return run(api().updateRecord(id, r)); }
+    public LiveData<Resource<Void>> deleteRecord(long id) { return run(api().deleteRecord(id)); }
+    public LiveData<Resource<RecordSummary>> recordSummary() { return run(api().recordSummary()); }
+    public LiveData<Resource<List<ServiceProvider>>> services(String category, String q) { return run(api().services(emptyToNull(category), emptyToNull(q))); }
+    public LiveData<Resource<ServiceProvider>> createService(ServiceRequest r) { return run(api().createService(r)); }
+    public LiveData<Resource<Void>> deleteService(long id) { return run(api().deleteService(id)); }
+    public LiveData<Resource<List<Group>>> groups(boolean mine, String type, String q) { return run(api().groups(mine ? Boolean.TRUE : null, emptyToNull(type), emptyToNull(q))); }
+    public LiveData<Resource<GroupDetail>> group(long id) { return run(api().group(id)); }
+    public LiveData<Resource<Group>> createGroup(GroupRequest r) { return run(api().createGroup(r)); }
+    public LiveData<Resource<Void>> deleteGroup(long id) { return run(api().deleteGroup(id)); }
+    public LiveData<Resource<Group>> joinGroup(long id) { return run(api().joinGroup(id)); }
+    public LiveData<Resource<Group>> leaveGroup(long id) { return run(api().leaveGroup(id)); }
+    public LiveData<Resource<Void>> removeGroupMember(long id, long userId) { return run(api().removeGroupMember(id, userId)); }
+    public LiveData<Resource<Void>> announceToGroup(long id, String title, String body) { return run(api().announceToGroup(id, new AnnounceRequest(title, body))); }
+    public LiveData<Resource<Void>> sendFeedback(int rating, String comment) { return run(api().sendFeedback(new FeedbackRequest(rating, comment))); }
+    public LiveData<Resource<Analytics>> analytics() { return run(api().analytics()); }
+
+    private static String emptyToNull(String s) { return s == null || s.trim().isEmpty() ? null : s.trim(); }
+
     // admin
     public LiveData<Resource<AdminStats>> adminStats() { return run(api().adminStats()); }
     public LiveData<Resource<List<UserSummary>>> adminUsers(String role, String q) {

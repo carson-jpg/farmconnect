@@ -16,9 +16,9 @@ public final class Dtos {
     public record LoginRequest(@NotBlank String email, @NotBlank String password) {}
     public record AuthResponse(String token, Long id, String name, String email, Role role) {}
 
-    public record FarmRequest(@NotBlank String name, String location, String description) {}
+    public record FarmRequest(@NotBlank String name, String location, String description, String subCounty) {}
     public record FarmResponse(Long id, String name, String location, String description, Long ownerId,
-                               boolean ownerVerified) {}
+                               boolean ownerVerified, String subCounty) {}
 
     public record ProductRequest(@NotBlank String name, @Size(max = 200) String summary,
                                  @Size(max = 5000) String description, String category,
@@ -28,7 +28,7 @@ public final class Dtos {
     public record ProductResponse(Long id, String name, String summary, String description, String category,
                                   BigDecimal price, int quantity, String unit, String imageUrl,
                                   List<String> imageUrls, Long farmId, String farmName, String farmLocation,
-                                  boolean farmerVerified, boolean active) {}
+                                  boolean farmerVerified, boolean active, Long farmerId) {}
 
     public record CartRequest(@NotNull Long productId, @Min(1) int quantity) {}
     public record QuantityRequest(@Min(1) int quantity) {}
@@ -38,11 +38,11 @@ public final class Dtos {
                                @Size(max = 500) String deliveryNote, String paymentMethod) {}
     public record StatusRequest(@NotNull OrderStatus status) {}
     public record OrderItemResponse(Long productId, String productName, int quantity, BigDecimal price,
-                                    String imageUrl, String farmName, String unit) {}
+                                    String imageUrl, String farmName, String unit, Long farmerId) {}
     public record OrderResponse(Long id, OrderStatus status, BigDecimal total, String deliveryAddress,
                                 Instant createdAt, String buyerName, String buyerPhone,
                                 List<OrderItemResponse> items, String deliveryPhone, String deliveryNote,
-                                String paymentMethod, Instant updatedAt) {}
+                                String paymentMethod, Instant updatedAt, Long buyerId) {}
 
     // ---- admin ----
     public record ActiveRequest(boolean active) {}

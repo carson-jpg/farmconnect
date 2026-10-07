@@ -18,6 +18,7 @@ import java.util.List;
 
 /** Marketplace home for buyers. The server only returns products of VERIFIED farmers. */
 public class BuyerHomeActivity extends AppCompatActivity implements ProductAdapter.Listener {
+    private Hub hub;
     private ActivityBuyerHomeBinding b;
     private BuyerViewModel vm;
     private ProductAdapter adapter;
@@ -28,6 +29,7 @@ public class BuyerHomeActivity extends AppCompatActivity implements ProductAdapt
         super.onCreate(s);
         b = ActivityBuyerHomeBinding.inflate(getLayoutInflater());
         setContentView(b.getRoot());
+        hub = Hub.attach(this, b.hubContainer);
         vm = new ViewModelProvider(this).get(BuyerViewModel.class);
 
         String name = Session.name();
@@ -48,6 +50,7 @@ public class BuyerHomeActivity extends AppCompatActivity implements ProductAdapt
 
     @Override protected void onResume() {
         super.onResume();
+        if (hub != null) hub.refresh();
         load();
     }
 

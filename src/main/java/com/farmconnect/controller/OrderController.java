@@ -23,6 +23,7 @@ import java.util.List;
 public class OrderController {
     private final OrderRepository orders;
     private final CartItemRepository cart;
+    private final com.farmconnect.service.NotificationService notifier;
 
     /** Buyer: place an order from the current cart. */
     @PostMapping
@@ -65,6 +66,9 @@ public class OrderController {
         o.setTotal(total);
         orders.save(o);
         cart.deleteByUserId(u.getId());
+        notifyFarmers(o, "New order #" + o.getId(),
+                u.getName() + " ordered " + o.getItems().size() + (o.getItems().size() == 1 ? " product" : " products")
+                        + " (KES " + total.toBigInteger() + "). Open Orders to confirm.");
         return Mapper.order(o);
     }
 
@@ -88,7 +92,9 @@ public class OrderController {
         o.getItems().forEach(i -> i.getProduct().setQuantity(i.getProduct().getQuantity() + i.getQuantity()));
         o.setStatus(OrderStatus.CANCELLED);
         o.setUpdatedAt(Instant.now());
-        return Mapper.order(orders.save(o));
+        CustomerOrder saved = orders.save(o);
+        notifyFarmers(saved, "Order #" + saved.getId() + " cancelled", saved.getBuyer().getName() + " cancelled this order. The stock was returned.");
+        return Mapper.order(saved);
     }
 
     /** Farmer: orders containing products from my farms. */
@@ -111,10 +117,32 @@ public class OrderController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Use buyer cancel endpoint");
         o.setStatus(r.status());
         o.setUpdatedAt(Instant.now());
-        return Mapper.order(orders.save(o));
+        CustomerOrder saved = orders.save(o);
+        notifier.notifyAndSms(saved.getBuyer(), "ORDER", "Order #" + saved.getId() + " " + statusText(r.status()),
+                "Your order is now " + r.status().name().toLowerCase() + ".", saved.getId());
+        return Mapper.order(saved);
     }
 
     private CustomerOrder find(Long id) {
         return orders.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
+    }
+
+    private void notifyFarmers(CustomerOrder o, String title, String body) {
+        java.util.Map<Long, User> owners = new java.util.LinkedHashMap<>();
+        for (OrderItem i : o.getItems()) {
+            User f = i.getProduct().getFarm().getOwner();
+            owners.putIfAbsent(f.getId(), f);
+        }
+        owners.values().forEach(f -> notifier.notifyAndSms(f, "ORDER", title, body, o.getId()));
+    }
+
+    static String statusText(OrderStatus s) {
+        return switch (s) {
+            case CONFIRMED -> "confirmed by the seller";
+            case SHIPPED -> "is on the way";
+            case DELIVERED -> "delivered";
+            case CANCELLED -> "cancelled";
+            default -> "updated";
+        };
     }
 }

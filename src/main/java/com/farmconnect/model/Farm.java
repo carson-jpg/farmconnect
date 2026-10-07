@@ -12,6 +12,8 @@ public class Farm {
     @Column(nullable = false)
     private String name;
     private String location;
+    /** Kwanza, Endebess, Saboti, Kiminini or Cherangany - used for county analytics. */
+    private String subCounty;
     @Column(length = 1000)
     private String description;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

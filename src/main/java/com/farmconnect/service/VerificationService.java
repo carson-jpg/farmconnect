@@ -33,6 +33,7 @@ public class VerificationService {
     private final UserRepository users;
     private final FileStorageService files;
     private final SmsService sms;
+    private final NotificationService notifier;
     private final PasswordEncoder encoder;
 
     // ---------------- farmer side ----------------
@@ -208,6 +209,8 @@ public class VerificationService {
         User farmer = v.getFarmer();
         farmer.setVerified(true);
         users.save(farmer);
+        notifier.notifyAndSms(farmer, "VERIFICATION", "You are verified!",
+                "Your identity and farm were approved. Your farm and products are now visible to buyers.", v.getId());
         return repo.save(v);
     }
 
@@ -222,6 +225,7 @@ public class VerificationService {
         User farmer = v.getFarmer();
         farmer.setVerified(false);
         users.save(farmer);
+        notifier.notifyAndSms(farmer, "VERIFICATION", "Verification needs changes", reason.trim(), v.getId());
         return repo.save(v);
     }
 

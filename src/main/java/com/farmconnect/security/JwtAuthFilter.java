@@ -34,6 +34,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     var auth = new UsernamePasswordAuthenticationToken(user, null,
                             List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name())));
                     SecurityContextHolder.getContext().setAuthentication(auth);
+                    java.time.Instant now = java.time.Instant.now();
+                    if (user.getLastActiveAt() == null || user.getLastActiveAt().isBefore(now.minusSeconds(3600))) {
+                        user.setLastActiveAt(now);
+                        users.save(user);
+                    }
                 }
             } catch (Exception ignored) {
                 // invalid or expired token: request continues unauthenticated

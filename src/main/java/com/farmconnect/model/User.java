@@ -25,4 +25,6 @@ public class User {
     @Column(columnDefinition = "boolean default true not null")
     private boolean enabled = true;
     private Instant createdAt = Instant.now();
+    /** Last time this account used the API (updated at most once an hour). Used for "active users". */
+    private Instant lastActiveAt;
 }

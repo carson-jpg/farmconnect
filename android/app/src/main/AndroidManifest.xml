@@ -26,6 +26,17 @@
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".ui.OrderSuccessActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.OrderDetailActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.InfoHubActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.PostDetailActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.WeatherActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.MessagesActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.ChatActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.NotificationsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.RecordsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.ServicesActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.GroupsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.GroupDetailActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.AnalyticsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.AdminHomeActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.AdminUsersActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.AdminProductsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />

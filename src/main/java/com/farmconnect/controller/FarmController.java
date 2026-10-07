@@ -75,6 +75,7 @@ public class FarmController {
         f.setName(r.name());
         f.setLocation(r.location());
         f.setDescription(r.description());
+        f.setSubCounty(r.subCounty());
     }
 
     private Farm owned(Long id, User u) {

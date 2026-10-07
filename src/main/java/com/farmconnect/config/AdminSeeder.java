@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 /** Creates the first ADMIN account from application.properties (only if it does not exist yet). */
 @Component
+@org.springframework.core.annotation.Order(1)
 public class AdminSeeder implements CommandLineRunner {
     private final UserRepository users;
     private final PasswordEncoder encoder;

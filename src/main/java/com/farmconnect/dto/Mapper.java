@@ -8,7 +8,7 @@ public final class Mapper {
 
     public static FarmResponse farm(Farm f) {
         return new FarmResponse(f.getId(), f.getName(), f.getLocation(), f.getDescription(), f.getOwner().getId(),
-                f.getOwner().isVerified());
+                f.getOwner().isVerified(), f.getSubCounty());
     }
 
     public static ProductResponse product(Product p) {
@@ -18,7 +18,7 @@ public final class Mapper {
         String cover = urls.isEmpty() ? null : urls.get(0);
         return new ProductResponse(p.getId(), p.getName(), p.getSummary(), p.getDescription(), p.getCategory(),
                 p.getPrice(), p.getQuantity(), p.getUnit(), cover, urls, p.getFarm().getId(), p.getFarm().getName(),
-                p.getFarm().getLocation(), p.getFarm().getOwner().isVerified(), p.isActive());
+                p.getFarm().getLocation(), p.getFarm().getOwner().isVerified(), p.isActive(), p.getFarm().getOwner().getId());
     }
 
     public static CartItemResponse cartItem(CartItem c) {
@@ -31,10 +31,10 @@ public final class Mapper {
                 o.getItems().stream().map(i -> {
                     ProductResponse p = product(i.getProduct());
                     return new OrderItemResponse(i.getProduct().getId(), i.getProduct().getName(), i.getQuantity(),
-                            i.getPrice(), p.imageUrl(), p.farmName(), p.unit());
+                            i.getPrice(), p.imageUrl(), p.farmName(), p.unit(), p.farmerId());
                 }).toList(),
                 o.getDeliveryPhone(), o.getDeliveryNote(), o.getPaymentMethod(),
-                o.getUpdatedAt() == null ? o.getCreatedAt() : o.getUpdatedAt());
+                o.getUpdatedAt() == null ? o.getCreatedAt() : o.getUpdatedAt(), o.getBuyer().getId());
     }
 
     public static UserSummary user(User u) {

@@ -92,6 +92,12 @@
                                 android:textSize="16sp" android:textStyle="bold" />
                             <TextView android:id="@+id/tvFarmLoc" android:layout_width="wrap_content"
                                 android:layout_height="wrap_content" android:textColor="@color/fc_muted" android:textSize="13sp" />
+                            <TextView android:id="@+id/btnMessageSeller" android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" android:layout_marginTop="6dp"
+                                android:background="@drawable/bg_chip" android:backgroundTint="@color/fc_primary_light"
+                                android:paddingBottom="6dp" android:paddingEnd="12dp" android:paddingStart="12dp"
+                                android:paddingTop="6dp" android:text="💬 Message seller" android:textColor="@color/fc_primary"
+                                android:textSize="12sp" android:textStyle="bold" android:visibility="gone" />
                         </LinearLayout>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>

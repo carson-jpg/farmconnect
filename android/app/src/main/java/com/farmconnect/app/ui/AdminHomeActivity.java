@@ -20,6 +20,7 @@ import java.util.List;
 
 /** Administrator console: platform numbers, things that need attention, and shortcuts to every admin tool. */
 public class AdminHomeActivity extends AppCompatActivity {
+    private Hub hub;
     private ActivityAdminHomeBinding b;
     private AdminViewModel vm;
 
@@ -27,6 +28,7 @@ public class AdminHomeActivity extends AppCompatActivity {
         super.onCreate(s);
         b = ActivityAdminHomeBinding.inflate(getLayoutInflater());
         setContentView(b.getRoot());
+        hub = Hub.attach(this, b.hubContainer);
         vm = new ViewModelProvider(this).get(AdminViewModel.class);
 
         String name = Session.name();
@@ -45,6 +47,7 @@ public class AdminHomeActivity extends AppCompatActivity {
 
     @Override protected void onResume() {
         super.onResume();
+        if (hub != null) hub.refresh();
         Ui.watch(this, vm.stats(), b.progress, this::showStats);
         Ui.watch(this, vm.orders(), null, this::showRecent);
     }

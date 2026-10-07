@@ -77,6 +77,10 @@ public class ProductDetailActivity extends AppCompatActivity {
         b.tvCategory.setVisibility(hasCat ? View.VISIBLE : View.GONE);
         if (hasCat) b.tvCategory.setText(p.category);
 
+        boolean buyer = "BUYER".equals(Session.role());
+        b.btnMessageSeller.setVisibility(buyer && p.farmerId > 0 ? View.VISIBLE : View.GONE);
+        b.btnMessageSeller.setOnClickListener(v -> startActivity(new android.content.Intent(this, ChatActivity.class)
+                .putExtra("userId", p.farmerId).putExtra("name", p.farmName == null ? "Seller" : p.farmName)));
         b.tvFarm.setText(p.farmName == null ? "" : p.farmName + (p.farmerVerified ? "  ✓" : ""));
         b.tvFarmLoc.setText(p.farmLocation == null || p.farmLocation.isEmpty() ? "Trans Nzoia County" : p.farmLocation);
 
