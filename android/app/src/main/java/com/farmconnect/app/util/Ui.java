@@ -12,6 +12,7 @@ import androidx.lifecycle.LiveData;
 import com.farmconnect.app.R;
 import com.farmconnect.app.data.Resource;
 import com.farmconnect.app.data.Session;
+import com.farmconnect.app.ui.AdminHomeActivity;
 import com.farmconnect.app.ui.BuyerHomeActivity;
 import com.farmconnect.app.ui.FarmerHomeActivity;
 import com.farmconnect.app.ui.LoginActivity;
@@ -57,6 +58,16 @@ public class Ui {
         tv.setBackgroundTintList(ColorStateList.valueOf(c));
     }
 
+    public static String paymentLabel(String m) {
+        if ("MPESA_ON_DELIVERY".equals(m)) return "M-Pesa on delivery";
+        return "Cash on delivery";
+    }
+
+    /** First letter of a name, for avatar circles. */
+    public static String initial(String name) {
+        return name == null || name.trim().isEmpty() ? "?" : name.trim().substring(0, 1).toUpperCase(Locale.US);
+    }
+
     public static String verificationLabel(String status) {
         if (status == null) return "";
         switch (status) {
@@ -90,7 +101,8 @@ public class Ui {
         String role = Session.role();
         Class<?> target;
         if ("FARMER".equals(role)) target = FarmerHomeActivity.class;
-        else if ("ADMIN".equals(role) || "OFFICER".equals(role)) target = ReviewerHomeActivity.class;
+        else if ("ADMIN".equals(role)) target = AdminHomeActivity.class;
+        else if ("OFFICER".equals(role)) target = ReviewerHomeActivity.class;
         else target = BuyerHomeActivity.class;
         Intent i = new Intent(a, target);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

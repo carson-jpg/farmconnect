@@ -17,16 +17,26 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.RegisterActivity" android:theme="@style/Theme.FarmConnect.Auth" />
-        <activity android:name=".ui.BuyerHomeActivity" />
-        <activity android:name=".ui.CartActivity" />
+        <activity android:name=".ui.BuyerHomeActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.ProductDetailActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.ProductEditActivity" android:theme="@style/Theme.FarmConnect.Farmer"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ui.CartActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.CheckoutActivity" android:theme="@style/Theme.FarmConnect.FarmerDash"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ui.OrderSuccessActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.OrderDetailActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.AdminHomeActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.AdminUsersActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.AdminProductsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.WishlistActivity" />
-        <activity android:name=".ui.OrdersActivity" android:theme="@style/Theme.FarmConnect.Farmer" />
+        <activity android:name=".ui.OrdersActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.FarmerHomeActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.FarmerProductsActivity" android:theme="@style/Theme.FarmConnect.Farmer" />
         <activity android:name=".ui.FarmsActivity" android:theme="@style/Theme.FarmConnect.Farmer" />
         <activity android:name=".ui.VerificationActivity" android:theme="@style/Theme.FarmConnect.Farmer"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".ui.ReviewerHomeActivity" android:theme="@style/Theme.FarmConnect.Farmer" />
+        <activity android:name=".ui.ReviewerHomeActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.ReviewDetailActivity" android:theme="@style/Theme.FarmConnect.Farmer" />
     </application>
 </manifest>

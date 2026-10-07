@@ -40,7 +40,7 @@ public class ProductController {
                                       @RequestParam(required = false) Long farmId,
                                       @AuthenticationPrincipal User viewer) {
         return products.findAll().stream()
-                .filter(p -> Visibility.canSee(viewer, p.getFarm()))
+                .filter(p -> Visibility.canSee(viewer, p))
                 .filter(p -> q == null || q.isBlank() || p.getName().toLowerCase().contains(q.toLowerCase()))
                 .filter(p -> category == null || category.isBlank() || category.equalsIgnoreCase(p.getCategory()))
                 .filter(p -> farmId == null || p.getFarm().getId().equals(farmId))
@@ -61,7 +61,7 @@ public class ProductController {
     @Transactional(readOnly = true)
     public ProductResponse one(@PathVariable Long id, @AuthenticationPrincipal User viewer) {
         Product p = find(id);
-        if (!Visibility.canSee(viewer, p.getFarm()))
+        if (!Visibility.canSee(viewer, p))
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
         return Mapper.product(p);
     }

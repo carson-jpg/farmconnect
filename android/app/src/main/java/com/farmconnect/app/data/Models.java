@@ -25,11 +25,12 @@ public class Models {
         }
     }
     public static class Product {
-        public long id, farmId; public String name, description, category, unit, imageUrl, farmName;
-        public double price; public int quantity; public boolean farmerVerified;
+        public long id, farmId; public String name, summary, description, category, unit, imageUrl, farmName, farmLocation;
+        public List<String> imageUrls;
+        public double price; public int quantity; public boolean farmerVerified; public boolean active = true;
     }
     public static class ProductRequest {
-        public String name, description, category, unit, imageUrl; public double price; public int quantity; public long farmId;
+        public String name, summary, description, category, unit, imageUrl; public double price; public int quantity; public long farmId;
         public ProductRequest(String name, String category, double price, int quantity, String unit, long farmId) {
             this.name = name; this.category = category; this.price = price; this.quantity = quantity;
             this.unit = unit; this.farmId = farmId;
@@ -45,17 +46,40 @@ public class Models {
     }
     public static class CartItem { public long id; public Product product; public int quantity; }
     public static class OrderRequest {
-        public String deliveryAddress;
+        public String deliveryAddress, deliveryPhone, deliveryNote, paymentMethod;
         public OrderRequest(String deliveryAddress) { this.deliveryAddress = deliveryAddress; }
+        public OrderRequest(String address, String phone, String note, String paymentMethod) {
+            this.deliveryAddress = address; this.deliveryPhone = phone; this.deliveryNote = note; this.paymentMethod = paymentMethod;
+        }
     }
     public static class StatusRequest {
         public String status;
         public StatusRequest(String status) { this.status = status; }
     }
-    public static class OrderItem { public long productId; public String productName; public int quantity; public double price; }
+    public static class OrderItem { public long productId; public String productName, imageUrl, farmName, unit; public int quantity; public double price; }
     public static class Order {
-        public long id; public String status, deliveryAddress, createdAt, buyerName, buyerPhone;
+        public long id; public String status, deliveryAddress, createdAt, buyerName, buyerPhone, deliveryPhone, deliveryNote, paymentMethod, updatedAt;
         public double total; public List<OrderItem> items;
+    }
+
+    // ---- admin ----
+    public static class ActiveRequest {
+        public boolean active;
+        public ActiveRequest(boolean active) { this.active = active; }
+    }
+    public static class OfficerRequest {
+        public String name, email, phone, password;
+        public OfficerRequest(String name, String email, String phone, String password) {
+            this.name = name; this.email = email; this.phone = phone; this.password = password;
+        }
+    }
+    public static class UserSummary {
+        public long id; public String name, email, phone, role, createdAt; public boolean verified, enabled;
+    }
+    public static class AdminStats {
+        public long users, farmers, verifiedFarmers, buyers, officers, pendingVerifications, underReview,
+                rejectedVerifications, products, activeProducts, orders, pendingOrders, deliveredOrders, cancelledOrders;
+        public double revenue;
     }
 
     // ---- verification ----

@@ -18,7 +18,7 @@ public final class Mapper {
         String cover = urls.isEmpty() ? null : urls.get(0);
         return new ProductResponse(p.getId(), p.getName(), p.getSummary(), p.getDescription(), p.getCategory(),
                 p.getPrice(), p.getQuantity(), p.getUnit(), cover, urls, p.getFarm().getId(), p.getFarm().getName(),
-                p.getFarm().getLocation(), p.getFarm().getOwner().isVerified());
+                p.getFarm().getLocation(), p.getFarm().getOwner().isVerified(), p.isActive());
     }
 
     public static CartItemResponse cartItem(CartItem c) {
@@ -28,9 +28,18 @@ public final class Mapper {
     public static OrderResponse order(CustomerOrder o) {
         return new OrderResponse(o.getId(), o.getStatus(), o.getTotal(), o.getDeliveryAddress(), o.getCreatedAt(),
                 o.getBuyer().getName(), o.getBuyer().getPhone(),
-                o.getItems().stream()
-                        .map(i -> new OrderItemResponse(i.getProduct().getId(), i.getProduct().getName(), i.getQuantity(), i.getPrice()))
-                        .toList());
+                o.getItems().stream().map(i -> {
+                    ProductResponse p = product(i.getProduct());
+                    return new OrderItemResponse(i.getProduct().getId(), i.getProduct().getName(), i.getQuantity(),
+                            i.getPrice(), p.imageUrl(), p.farmName(), p.unit());
+                }).toList(),
+                o.getDeliveryPhone(), o.getDeliveryNote(), o.getPaymentMethod(),
+                o.getUpdatedAt() == null ? o.getCreatedAt() : o.getUpdatedAt());
+    }
+
+    public static UserSummary user(User u) {
+        return new UserSummary(u.getId(), u.getName(), u.getEmail(), u.getPhone(), u.getRole(), u.isVerified(),
+                u.isEnabled(), u.getCreatedAt());
     }
 
     public static VerificationResponse verification(FarmerVerification v) {

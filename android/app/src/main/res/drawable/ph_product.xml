@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <gradient android:angle="315" android:startColor="#E3F1E0" android:endColor="#C8E3C0" />
+        </shape>
+    </item>
+    <item android:drawable="@drawable/ic_photo" android:gravity="center" android:width="40dp" android:height="40dp" />
+</layer-list>

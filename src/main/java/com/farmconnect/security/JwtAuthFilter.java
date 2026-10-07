@@ -30,7 +30,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             try {
                 String email = jwtService.extractEmail(header.substring(7));
                 User user = users.findByEmail(email).orElse(null);
-                if (user != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                if (user != null && user.isEnabled() && SecurityContextHolder.getContext().getAuthentication() == null) {
                     var auth = new UsernamePasswordAuthenticationToken(user, null,
                             List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name())));
                     SecurityContextHolder.getContext().setAuthentication(auth);

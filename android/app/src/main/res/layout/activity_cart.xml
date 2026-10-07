@@ -1,21 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent" android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <ProgressBar android:id="@+id/progress" android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal" android:visibility="gone" />
-
-    <androidx.recyclerview.widget.RecyclerView android:id="@+id/rv"
-        android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
+    android:background="@color/fc_bg" android:orientation="vertical">
 
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:orientation="vertical" android:padding="16dp">
-        <TextView android:id="@+id/tvTotal" android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="Total: KES 0" android:textSize="18sp" android:textStyle="bold" />
-        <EditText android:id="@+id/etAddress" android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:hint="Delivery address" android:inputType="textPostalAddress" />
-        <Button android:id="@+id/btnOrder" android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:text="Place order" />
+        android:background="@drawable/bg_dash_header" android:gravity="center_vertical" android:orientation="horizontal"
+        android:paddingBottom="24dp" android:paddingEnd="16dp" android:paddingStart="16dp" android:paddingTop="20dp">
+        <ImageButton android:id="@+id/btnBack" android:layout_width="42dp" android:layout_height="42dp"
+            android:layout_marginEnd="12dp" android:background="@drawable/bg_icon_glass" android:contentDescription="Back"
+            android:padding="10dp" android:src="@drawable/ic_back" android:tint="#FFFFFF" />
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView android:id="@+id/tvTitle" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:fontFamily="serif" android:text="My cart" android:textColor="#FFFFFF" android:textSize="22sp"
+                android:textStyle="bold" />
+            <TextView android:id="@+id/tvSubtitle" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="" android:textColor="#CFE8B5" android:textSize="13sp" />
+        </LinearLayout>
+        
+    </LinearLayout>
+    <ProgressBar android:id="@+id/progress" style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent" android:layout_height="3dp" android:indeterminate="true"
+        android:visibility="invisible" />
+
+    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <androidx.recyclerview.widget.RecyclerView android:id="@+id/rv" android:layout_width="match_parent"
+            android:layout_height="match_parent" android:clipToPadding="false" android:paddingBottom="12dp"
+            android:paddingTop="6dp" />
+        <LinearLayout android:id="@+id/emptyState" android:layout_width="match_parent"
+            android:layout_height="match_parent" android:gravity="center" android:orientation="vertical"
+            android:padding="32dp" android:visibility="gone">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🛒"
+                android:textSize="64sp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" android:fontFamily="serif" android:text="Your cart is empty"
+                android:textColor="@color/fc_text" android:textSize="20sp" android:textStyle="bold" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginTop="6dp" android:gravity="center"
+                android:text="Browse fresh produce from verified farmers and add what you need."
+                android:textColor="@color/fc_muted" android:textSize="14sp" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/btnShop"
+                android:layout_width="wrap_content" android:layout_height="52dp" android:layout_marginTop="20dp"
+                android:text="Browse the market" android:textAllCaps="false" app:cornerRadius="14dp" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <LinearLayout android:id="@+id/summaryBar" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:background="@drawable/bg_bottom_bar" android:elevation="12dp" android:orientation="vertical"
+        android:padding="18dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                android:text="Subtotal" android:textColor="@color/fc_muted" android:textSize="14sp" />
+            <TextView android:id="@+id/tvSubtotal" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textColor="@color/fc_text" android:textSize="14sp" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="4dp" android:orientation="horizontal">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                android:text="Delivery" android:textColor="@color/fc_muted" android:textSize="14sp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Agreed with the seller" android:textColor="@color/fc_muted" android:textSize="14sp" />
+        </LinearLayout>
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp" android:background="#E3EBE0" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                android:fontFamily="serif" android:text="Total" android:textColor="@color/fc_text"
+                android:textSize="18sp" android:textStyle="bold" />
+            <TextView android:id="@+id/tvTotal" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textColor="@color/fc_primary" android:textSize="20sp" android:textStyle="bold" />
+        </LinearLayout>
+        <com.google.android.material.button.MaterialButton android:id="@+id/btnCheckout"
+            android:layout_width="match_parent" android:layout_height="54dp" android:layout_marginTop="14dp"
+            android:insetBottom="0dp" android:insetTop="0dp" android:text="Proceed to checkout"
+            android:textAllCaps="false" android:textSize="16sp" android:textStyle="bold" app:cornerRadius="14dp" />
     </LinearLayout>
 </LinearLayout>

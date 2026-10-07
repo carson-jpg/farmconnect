@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/fc_bg"
+    android:orientation="vertical">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:background="@drawable/bg_dash_header" android:gravity="center_vertical" android:orientation="horizontal"
+        android:paddingBottom="36dp" android:paddingEnd="16dp" android:paddingStart="16dp" android:paddingTop="20dp">
+        <ImageButton android:id="@+id/btnBack" android:layout_width="42dp" android:layout_height="42dp"
+            android:layout_marginEnd="12dp" android:background="@drawable/bg_icon_glass" android:contentDescription="Back"
+            android:padding="10dp" android:src="@drawable/ic_back" android:tint="#FFFFFF" />
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView android:id="@+id/tvTitle" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:fontFamily="serif" android:text="Product moderation" android:textColor="#FFFFFF" android:textSize="22sp"
+                android:textStyle="bold" />
+            <TextView android:id="@+id/tvSubtitle" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="" android:textColor="#CFE8B5" android:textSize="13sp" />
+        </LinearLayout>
+        
+    </LinearLayout>
+    <com.google.android.material.card.MaterialCardView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginEnd="14dp" android:layout_marginStart="14dp" android:layout_marginTop="-22dp"
+        app:cardBackgroundColor="@color/fc_card" app:cardCornerRadius="16dp" app:cardElevation="5dp" app:strokeWidth="0dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical"
+            android:orientation="horizontal" android:paddingEnd="8dp" android:paddingStart="16dp">
+            <ImageView android:layout_width="22dp" android:layout_height="22dp" android:contentDescription="Search"
+                android:src="@drawable/ic_search" android:tint="@color/fc_muted" />
+            <EditText android:id="@+id/etSearch" android:layout_width="0dp" android:layout_height="50dp" android:layout_weight="1"
+                android:background="@null" android:hint="Search products" android:imeOptions="actionSearch" android:inputType="text"
+                android:maxLines="1" android:paddingEnd="12dp" android:paddingStart="12dp" android:textSize="15sp" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+    <ProgressBar android:id="@+id/progress" style="?android:attr/progressBarStyleHorizontal" android:layout_width="match_parent"
+        android:layout_height="3dp" android:indeterminate="true" android:layout_marginTop="6dp" android:visibility="invisible" />
+    <TextView android:id="@+id/tvEmpty" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center"
+        android:padding="36dp" android:text="No products found" android:textColor="@color/fc_muted" android:visibility="gone" />
+    <androidx.recyclerview.widget.RecyclerView android:id="@+id/rv" android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:clipToPadding="false" android:paddingBottom="24dp" />
+</LinearLayout>

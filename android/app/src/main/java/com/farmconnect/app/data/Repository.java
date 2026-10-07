@@ -34,6 +34,14 @@ public class Repository {
     public LiveData<Resource<Void>> deleteFarm(long id) { return run(api().deleteFarm(id)); }
     // products
     public LiveData<Resource<List<Product>>> products(String q) { return run(api().products(q == null || q.isEmpty() ? null : q)); }
+    public LiveData<Resource<List<Product>>> myProducts() { return run(api().myProducts()); }
+    public LiveData<Resource<Product>> product(long id) { return run(api().product(id)); }
+    public LiveData<Resource<Product>> addProductImage(long id, byte[] jpeg) {
+        RequestBody body = RequestBody.create(jpeg, MediaType.parse("image/jpeg"));
+        MultipartBody.Part part = MultipartBody.Part.createFormData("file", "photo.jpg", body);
+        return run(api().addProductImage(id, part));
+    }
+    public LiveData<Resource<Product>> deleteProductImage(long id, int index) { return run(api().deleteProductImage(id, index)); }
     public LiveData<Resource<Product>> createProduct(ProductRequest r) { return run(api().createProduct(r)); }
     public LiveData<Resource<Product>> updateProduct(long id, ProductRequest r) { return run(api().updateProduct(id, r)); }
     public LiveData<Resource<Void>> deleteProduct(long id) { return run(api().deleteProduct(id)); }
@@ -48,6 +56,7 @@ public class Repository {
     public LiveData<Resource<Void>> removeWish(long pid) { return run(api().removeWish(pid)); }
     // orders
     public LiveData<Resource<Order>> placeOrder(String address) { return run(api().placeOrder(new OrderRequest(address))); }
+    public LiveData<Resource<Order>> placeOrder(OrderRequest r) { return run(api().placeOrder(r)); }
     public LiveData<Resource<List<Order>>> myOrders() { return run(api().myOrders()); }
     public LiveData<Resource<Order>> cancelOrder(long id) { return run(api().cancelOrder(id)); }
     public LiveData<Resource<List<Order>>> farmerOrders() { return run(api().farmerOrders()); }
@@ -67,6 +76,18 @@ public class Repository {
         MultipartBody.Part part = MultipartBody.Part.createFormData("file", type.toLowerCase() + ".jpg", body);
         return run(api().uploadDoc(t, part));
     }
+
+    // admin
+    public LiveData<Resource<AdminStats>> adminStats() { return run(api().adminStats()); }
+    public LiveData<Resource<List<UserSummary>>> adminUsers(String role, String q) {
+        return run(api().adminUsers(role == null || role.isEmpty() ? null : role, q == null || q.isEmpty() ? null : q));
+    }
+    public LiveData<Resource<UserSummary>> setUserEnabled(long id, boolean enabled) { return run(api().setUserEnabled(id, new ActiveRequest(enabled))); }
+    public LiveData<Resource<List<Order>>> adminOrders() { return run(api().adminOrders()); }
+    public LiveData<Resource<Order>> adminSetOrderStatus(long id, String s) { return run(api().adminSetOrderStatus(id, new StatusRequest(s))); }
+    public LiveData<Resource<List<Product>>> adminProducts(String q) { return run(api().adminProducts(q == null || q.isEmpty() ? null : q)); }
+    public LiveData<Resource<Product>> adminSetProductActive(long id, boolean active) { return run(api().adminSetProductActive(id, new ActiveRequest(active))); }
+    public LiveData<Resource<AuthResponse>> createOfficer(OfficerRequest r) { return run(api().createOfficer(r)); }
 
     // reviewer
     public LiveData<Resource<List<ReviewSummary>>> reviews(String status) { return run(api().reviews(status)); }

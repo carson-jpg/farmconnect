@@ -24,10 +24,10 @@ public class ReviewerHomeActivity extends AppCompatActivity implements ReviewAda
 
     @Override protected void onCreate(Bundle s) {
         super.onCreate(s);
-        setTitle("Farmer verifications");
         b = ActivityReviewListBinding.inflate(getLayoutInflater());
         setContentView(b.getRoot());
         vm = new ViewModelProvider(this).get(ReviewViewModel.class);
+        b.btnLogout.setOnClickListener(v -> Ui.logout(this));
         adapter = new ReviewAdapter(this);
         b.rv.setLayoutManager(new LinearLayoutManager(this));
         b.rv.setAdapter(adapter);

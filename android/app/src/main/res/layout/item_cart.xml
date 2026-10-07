@@ -1,20 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent" android:layout_height="wrap_content"
-    android:layout_margin="8dp">
+    android:layout_marginBottom="6dp" android:layout_marginEnd="14dp" android:layout_marginStart="14dp"
+    android:layout_marginTop="6dp" app:cardBackgroundColor="@color/fc_card" app:cardCornerRadius="18dp"
+    app:cardElevation="2dp" app:strokeWidth="0dp">
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:orientation="vertical" android:padding="12dp">
-        <TextView android:id="@+id/tvName" android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:textSize="18sp" android:textStyle="bold" />
-        <TextView android:id="@+id/tvLine" android:layout_width="match_parent" android:layout_height="wrap_content" />
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:orientation="horizontal" android:gravity="center_vertical">
-            <Button android:id="@+id/btnMinus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="-" />
-            <TextView android:id="@+id/tvQty" android:layout_width="40dp" android:layout_height="wrap_content"
-                android:gravity="center" android:textSize="18sp" />
-            <Button android:id="@+id/btnPlus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="+" />
-            <Button android:id="@+id/btnRemove" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="Remove" android:layout_marginStart="16dp" />
+        android:orientation="horizontal" android:padding="12dp">
+        <com.google.android.material.card.MaterialCardView android:layout_width="92dp" android:layout_height="92dp"
+            app:cardCornerRadius="14dp" app:cardElevation="0dp" app:strokeWidth="0dp">
+            <ImageView android:id="@+id/ivThumb" android:layout_width="match_parent" android:layout_height="match_parent"
+                android:contentDescription="Product" android:scaleType="centerCrop" android:src="@drawable/ph_product" />
+        </com.google.android.material.card.MaterialCardView>
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="12dp"
+            android:layout_weight="1" android:orientation="vertical">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+                <TextView android:id="@+id/tvName" android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:ellipsize="end" android:maxLines="2" android:textColor="@color/fc_text"
+                    android:textSize="16sp" android:textStyle="bold" />
+                <TextView android:id="@+id/btnRemove" android:layout_width="28dp" android:layout_height="28dp"
+                    android:gravity="center" android:text="✕" android:textColor="@color/fc_muted" android:textSize="14sp" />
+            </LinearLayout>
+            <TextView android:id="@+id/tvFarm" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textColor="@color/fc_muted" android:textSize="12sp" />
+            <TextView android:id="@+id/tvUnit" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="2dp" android:textColor="@color/fc_muted" android:textSize="12sp" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" android:gravity="center_vertical" android:orientation="horizontal">
+                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:background="@drawable/bg_chip" android:backgroundTint="@color/fc_primary_light"
+                    android:gravity="center_vertical" android:orientation="horizontal">
+                    <TextView android:id="@+id/btnMinus" android:layout_width="34dp" android:layout_height="34dp"
+                        android:gravity="center" android:text="−" android:textColor="@color/fc_primary"
+                        android:textSize="20sp" android:textStyle="bold" />
+                    <TextView android:id="@+id/tvQty" android:layout_width="26dp" android:layout_height="wrap_content"
+                        android:gravity="center" android:textColor="@color/fc_text" android:textSize="15sp"
+                        android:textStyle="bold" />
+                    <TextView android:id="@+id/btnPlus" android:layout_width="34dp" android:layout_height="34dp"
+                        android:gravity="center" android:text="+" android:textColor="@color/fc_primary"
+                        android:textSize="20sp" android:textStyle="bold" />
+                </LinearLayout>
+                <TextView android:id="@+id/tvLine" android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:gravity="end" android:textColor="@color/fc_primary"
+                    android:textSize="16sp" android:textStyle="bold" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

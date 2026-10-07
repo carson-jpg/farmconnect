@@ -25,7 +25,7 @@
         <item name="android:windowBackground">@color/fc_bg</item>
     </style>
 
-    <!-- Farmer dashboard: custom header, no action bar -->
+    <!-- Buyer marketplace, reviewer desk, product page: custom header, no action bar -->
     <style name="Theme.FarmConnect.FarmerDash" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">#2E7D32</item>
         <item name="colorPrimaryVariant">@color/fc_dark</item>

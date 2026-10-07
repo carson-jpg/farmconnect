@@ -2,6 +2,7 @@ package com.farmconnect.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.time.Instant;
 
 @Entity
 @Table(name = "users")
@@ -20,4 +21,8 @@ public class User {
     /** True once an admin/officer approved the farmer's verification. Safe to show publicly. */
     @Column(columnDefinition = "boolean default false not null")
     private boolean verified;
+    /** False = suspended by an admin: cannot log in or use the API. */
+    @Column(columnDefinition = "boolean default true not null")
+    private boolean enabled = true;
+    private Instant createdAt = Instant.now();
 }

@@ -33,7 +33,7 @@ public class CartController {
     public CartItemResponse add(@Valid @RequestBody CartRequest r, @AuthenticationPrincipal User u) {
         Product p = products.findById(r.productId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
-        if (!p.getFarm().getOwner().isVerified())
+        if (!p.getFarm().getOwner().isVerified() || !p.isActive())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
         CartItem item = cart.findByUserIdAndProductId(u.getId(), p.getId()).orElseGet(() -> {
             CartItem c = new CartItem();

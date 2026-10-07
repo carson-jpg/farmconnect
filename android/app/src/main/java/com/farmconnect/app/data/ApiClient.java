@@ -11,6 +11,14 @@ public class ApiClient {
     private static final String BASE_URL = "http://127.0.0.1:8080/";
     private static ApiService service;
 
+    /** Turns "/api/files/products/1/x.jpg" into a full URL the image loader can fetch. */
+    public static String absolute(String path) {
+        if (path == null || path.isEmpty()) return null;
+        if (path.startsWith("http://") || path.startsWith("https://")) return path;
+        String base = BASE_URL.endsWith("/") ? BASE_URL.substring(0, BASE_URL.length() - 1) : BASE_URL;
+        return base + (path.startsWith("/") ? path : "/" + path);
+    }
+
     public static synchronized ApiService get() {
         if (service == null) {
             HttpLoggingInterceptor log = new HttpLoggingInterceptor();

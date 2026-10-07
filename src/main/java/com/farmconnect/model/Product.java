@@ -26,6 +26,9 @@ public class Product {
     private int quantity;
     private String unit;
     private String imageUrl;
+    /** False = taken down by an admin (hidden from buyers even if the farmer is verified). */
+    @Column(columnDefinition = "boolean default true not null")
+    private boolean active = true;
     /** Uploaded gallery photos (relative paths, first one is the cover). */
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))

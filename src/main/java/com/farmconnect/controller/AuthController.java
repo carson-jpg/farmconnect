@@ -44,6 +44,8 @@ public class AuthController {
         User u = users.findByEmail(r.email())
                 .filter(x -> encoder.matches(r.password(), x.getPassword()))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password"));
+        if (!u.isEnabled())
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This account has been suspended. Please contact FarmConnect support.");
         return toResponse(u);
     }
 

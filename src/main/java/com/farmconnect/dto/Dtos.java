@@ -28,18 +28,30 @@ public final class Dtos {
     public record ProductResponse(Long id, String name, String summary, String description, String category,
                                   BigDecimal price, int quantity, String unit, String imageUrl,
                                   List<String> imageUrls, Long farmId, String farmName, String farmLocation,
-                                  boolean farmerVerified) {}
+                                  boolean farmerVerified, boolean active) {}
 
     public record CartRequest(@NotNull Long productId, @Min(1) int quantity) {}
     public record QuantityRequest(@Min(1) int quantity) {}
     public record CartItemResponse(Long id, ProductResponse product, int quantity) {}
 
-    public record OrderRequest(@NotBlank String deliveryAddress) {}
+    public record OrderRequest(@NotBlank String deliveryAddress, @Size(max = 20) String deliveryPhone,
+                               @Size(max = 500) String deliveryNote, String paymentMethod) {}
     public record StatusRequest(@NotNull OrderStatus status) {}
-    public record OrderItemResponse(Long productId, String productName, int quantity, BigDecimal price) {}
+    public record OrderItemResponse(Long productId, String productName, int quantity, BigDecimal price,
+                                    String imageUrl, String farmName, String unit) {}
     public record OrderResponse(Long id, OrderStatus status, BigDecimal total, String deliveryAddress,
                                 Instant createdAt, String buyerName, String buyerPhone,
-                                List<OrderItemResponse> items) {}
+                                List<OrderItemResponse> items, String deliveryPhone, String deliveryNote,
+                                String paymentMethod, Instant updatedAt) {}
+
+    // ---- admin ----
+    public record ActiveRequest(boolean active) {}
+    public record UserSummary(Long id, String name, String email, String phone, Role role, boolean verified,
+                              boolean enabled, Instant createdAt) {}
+    public record AdminStats(long users, long farmers, long verifiedFarmers, long buyers, long officers,
+                             long pendingVerifications, long underReview, long rejectedVerifications,
+                             long products, long activeProducts, long orders, long pendingOrders,
+                             long deliveredOrders, long cancelledOrders, BigDecimal revenue) {}
 
     // ---- verification ----
     public record DraftRequest(String fullName, String nationalId, String subCounty, String ward, String village,

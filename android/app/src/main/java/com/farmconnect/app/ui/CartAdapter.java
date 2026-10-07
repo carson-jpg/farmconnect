@@ -3,6 +3,9 @@ package com.farmconnect.app.ui;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
+import com.bumptech.glide.Glide;
+import com.farmconnect.app.R;
+import com.farmconnect.app.data.ApiClient;
 import com.farmconnect.app.data.Models.CartItem;
 import com.farmconnect.app.databinding.ItemCartBinding;
 import com.farmconnect.app.util.Ui;
@@ -34,9 +37,20 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.VH> {
 
     @Override public void onBindViewHolder(VH h, int pos) {
         CartItem c = items.get(pos);
+        String cover = c.product.imageUrls != null && !c.product.imageUrls.isEmpty() ? c.product.imageUrls.get(0) : c.product.imageUrl;
+        if (cover != null && !cover.isEmpty()) {
+            Glide.with(h.itemView).load(ApiClient.absolute(cover)).centerCrop()
+                    .placeholder(R.drawable.ph_product).error(R.drawable.ph_product).into(h.b.ivThumb);
+        } else {
+            Glide.with(h.itemView).clear(h.b.ivThumb);
+            h.b.ivThumb.setImageResource(R.drawable.ph_product);
+        }
         h.b.tvName.setText(c.product.name);
-        h.b.tvLine.setText(Ui.kes(c.product.price) + " x " + c.quantity + " = " + Ui.kes(c.product.price * c.quantity));
+        h.b.tvFarm.setText(c.product.farmName == null ? "" : "by " + c.product.farmName);
+        String unit = c.product.unit == null || c.product.unit.isEmpty() ? "" : " / " + c.product.unit;
+        h.b.tvUnit.setText(Ui.kes(c.product.price) + unit);
         h.b.tvQty.setText(String.valueOf(c.quantity));
+        h.b.tvLine.setText(Ui.kes(c.product.price * c.quantity));
         h.b.btnPlus.setOnClickListener(v -> listener.onPlus(c));
         h.b.btnMinus.setOnClickListener(v -> listener.onMinus(c));
         h.b.btnRemove.setOnClickListener(v -> listener.onRemove(c));

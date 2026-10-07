@@ -18,6 +18,12 @@ public interface ApiService {
     @DELETE("api/farms/{id}") Call<Void> deleteFarm(@Path("id") long id);
 
     @GET("api/products") Call<List<Product>> products(@Query("q") String q);
+    @GET("api/products/mine") Call<List<Product>> myProducts();
+    @GET("api/products/{id}") Call<Product> product(@Path("id") long id);
+    @Multipart @POST("api/products/{id}/images")
+    Call<Product> addProductImage(@Path("id") long id, @Part MultipartBody.Part file);
+    @DELETE("api/products/{id}/images/{index}")
+    Call<Product> deleteProductImage(@Path("id") long id, @Path("index") int index);
     @POST("api/products") Call<Product> createProduct(@Body ProductRequest r);
     @PUT("api/products/{id}") Call<Product> updateProduct(@Path("id") long id, @Body ProductRequest r);
     @DELETE("api/products/{id}") Call<Void> deleteProduct(@Path("id") long id);
@@ -45,6 +51,16 @@ public interface ApiService {
     @Multipart @POST("api/verification/me/documents")
     Call<VerificationResponse> uploadDoc(@Part("type") RequestBody type, @Part MultipartBody.Part file);
     @POST("api/verification/me/submit") Call<VerificationResponse> submitVerification();
+
+    // admin
+    @GET("api/admin/stats") Call<AdminStats> adminStats();
+    @GET("api/admin/users") Call<List<UserSummary>> adminUsers(@Query("role") String role, @Query("q") String q);
+    @POST("api/admin/users/{id}/enabled") Call<UserSummary> setUserEnabled(@Path("id") long id, @Body ActiveRequest r);
+    @GET("api/admin/orders") Call<List<Order>> adminOrders();
+    @PATCH("api/admin/orders/{id}/status") Call<Order> adminSetOrderStatus(@Path("id") long id, @Body StatusRequest r);
+    @GET("api/admin/products") Call<List<Product>> adminProducts(@Query("q") String q);
+    @POST("api/admin/products/{id}/active") Call<Product> adminSetProductActive(@Path("id") long id, @Body ActiveRequest r);
+    @POST("api/admin/officers") Call<AuthResponse> createOfficer(@Body OfficerRequest r);
 
     // reviewer (admin / county officer)
     @GET("api/admin/verifications") Call<List<ReviewSummary>> reviews(@Query("status") String status);

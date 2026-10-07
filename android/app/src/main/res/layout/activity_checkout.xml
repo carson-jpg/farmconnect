@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/fc_bg" android:orientation="vertical">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:background="@drawable/bg_dash_header" android:gravity="center_vertical" android:orientation="horizontal"
+        android:paddingBottom="24dp" android:paddingEnd="16dp" android:paddingStart="16dp" android:paddingTop="20dp">
+        <ImageButton android:id="@+id/btnBack" android:layout_width="42dp" android:layout_height="42dp"
+            android:layout_marginEnd="12dp" android:background="@drawable/bg_icon_glass" android:contentDescription="Back"
+            android:padding="10dp" android:src="@drawable/ic_back" android:tint="#FFFFFF" />
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView android:id="@+id/tvTitle" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:fontFamily="serif" android:text="Checkout" android:textColor="#FFFFFF" android:textSize="22sp"
+                android:textStyle="bold" />
+            <TextView android:id="@+id/tvSubtitle" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Review your order and confirm" android:textColor="#CFE8B5" android:textSize="13sp" />
+        </LinearLayout>
+        
+    </LinearLayout>
+    <ProgressBar android:id="@+id/progress" style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent" android:layout_height="3dp" android:indeterminate="true"
+        android:visibility="invisible" />
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
+        android:scrollbars="none">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:padding="14dp">
+
+            <com.google.android.material.card.MaterialCardView android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_marginTop="0dp"
+                app:cardBackgroundColor="@color/fc_card" app:cardCornerRadius="18dp" app:cardElevation="2dp" app:strokeWidth="0dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:padding="16dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:fontFamily="serif" android:text="1 · Delivery details" android:textColor="@color/fc_text"
+                        android:textSize="17sp" android:textStyle="bold" />
+                    <com.google.android.material.textfield.TextInputLayout android:id="@+id/tilPhone"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp" android:hint="Phone number for the delivery">
+                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/etPhone"
+                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:inputType="phone"  />
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputLayout android:id="@+id/tilAddress"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp" android:hint="Delivery address (town, estate, landmark)">
+                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/etAddress"
+                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:inputType="textMultiLine|textCapSentences" android:minLines="2" android:gravity="top|start" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputLayout android:id="@+id/tilNote"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp" android:hint="Note to the seller (optional)">
+                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/etNote"
+                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:inputType="textMultiLine|textCapSentences" android:minLines="2" android:gravity="top|start" android:maxLength="500" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_marginTop="14dp"
+                app:cardBackgroundColor="@color/fc_card" app:cardCornerRadius="18dp" app:cardElevation="2dp" app:strokeWidth="0dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:padding="16dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:fontFamily="serif" android:text="2 · Payment method" android:textColor="@color/fc_text"
+                        android:textSize="17sp" android:textStyle="bold" />
+                    <RadioGroup android:id="@+id/rgPay" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:layout_marginTop="6dp">
+                        <RadioButton android:id="@+id/rbCash" android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:checked="true" android:padding="8dp"
+                            android:text="💵  Cash on delivery" android:textColor="@color/fc_text" android:textSize="15sp" />
+                        <RadioButton android:id="@+id/rbMpesa" android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:padding="8dp"
+                            android:text="📱  M-Pesa on delivery" android:textColor="@color/fc_text" android:textSize="15sp" />
+                    </RadioGroup>
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp" android:background="@drawable/bg_chip"
+                        android:backgroundTint="@color/fc_primary_light" android:padding="12dp"
+                        android:text="You pay the seller when your order arrives. No money is taken inside the app."
+                        android:textColor="#1B5E20" android:textSize="12sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_marginTop="14dp"
+                app:cardBackgroundColor="@color/fc_card" app:cardCornerRadius="18dp" app:cardElevation="2dp" app:strokeWidth="0dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:padding="16dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:fontFamily="serif" android:text="3 · Order summary" android:textColor="@color/fc_text"
+                        android:textSize="17sp" android:textStyle="bold" />
+                    <LinearLayout android:id="@+id/summaryContainer" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:layout_marginTop="8dp" android:orientation="vertical" />
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginBottom="10dp"
+                        android:layout_marginTop="6dp" android:background="#E3EBE0" />
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                            android:fontFamily="serif" android:text="Total" android:textColor="@color/fc_text"
+                            android:textSize="18sp" android:textStyle="bold" />
+                        <TextView android:id="@+id/tvTotal" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:textColor="@color/fc_primary" android:textSize="20sp" android:textStyle="bold" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </ScrollView>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:background="@color/fc_card" android:elevation="12dp" android:padding="14dp">
+        <com.google.android.material.button.MaterialButton android:id="@+id/btnPlace"
+            android:layout_width="match_parent" android:layout_height="56dp" android:insetBottom="0dp"
+            android:insetTop="0dp" android:text="Place order" android:textAllCaps="false" android:textSize="16sp"
+            android:textStyle="bold" app:cornerRadius="14dp" />
+    </LinearLayout>
+</LinearLayout>

@@ -36,12 +36,21 @@ public class OrderController {
         CustomerOrder o = new CustomerOrder();
         o.setBuyer(u);
         o.setStatus(OrderStatus.PENDING);
-        o.setDeliveryAddress(r.deliveryAddress());
+        o.setDeliveryAddress(r.deliveryAddress().trim());
+        o.setDeliveryPhone(r.deliveryPhone() == null ? null : r.deliveryPhone().trim());
+        o.setDeliveryNote(r.deliveryNote() == null || r.deliveryNote().isBlank() ? null : r.deliveryNote().trim());
+        String pay = r.paymentMethod() == null ? "CASH_ON_DELIVERY" : r.paymentMethod().trim().toUpperCase();
+        if (!pay.equals("CASH_ON_DELIVERY") && !pay.equals("MPESA_ON_DELIVERY"))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown payment method");
+        o.setPaymentMethod(pay);
         o.setCreatedAt(Instant.now());
+        o.setUpdatedAt(o.getCreatedAt());
 
         BigDecimal total = BigDecimal.ZERO;
         for (CartItem ci : items) {
             Product p = ci.getProduct();
+            if (!p.isActive() || !p.getFarm().getOwner().isVerified())
+                throw new ResponseStatusException(HttpStatus.CONFLICT, p.getName() + " is no longer available. Remove it from your cart");
             if (p.getQuantity() < ci.getQuantity())
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "Insufficient stock for " + p.getName());
             p.setQuantity(p.getQuantity() - ci.getQuantity());
@@ -78,6 +87,7 @@ public class OrderController {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Only pending orders can be cancelled");
         o.getItems().forEach(i -> i.getProduct().setQuantity(i.getProduct().getQuantity() + i.getQuantity()));
         o.setStatus(OrderStatus.CANCELLED);
+        o.setUpdatedAt(Instant.now());
         return Mapper.order(orders.save(o));
     }
 
@@ -100,6 +110,7 @@ public class OrderController {
         if (r.status() == OrderStatus.CANCELLED)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Use buyer cancel endpoint");
         o.setStatus(r.status());
+        o.setUpdatedAt(Instant.now());
         return Mapper.order(orders.save(o));
     }
 
