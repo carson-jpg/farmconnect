@@ -24,6 +24,10 @@ public class CustomerOrder {
     private String deliveryNote;
     /** CASH_ON_DELIVERY or MPESA_ON_DELIVERY. Recorded only - no online payment is processed yet. */
     private String paymentMethod;
+    /** UNPAID, PENDING, PAID or FAILED. Old orders have null (treated as UNPAID). */
+    private String paymentStatus;
+    private String mpesaCheckoutRequestId;
+    private String mpesaReceipt;
     private Instant updatedAt;
     private Instant createdAt;
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)

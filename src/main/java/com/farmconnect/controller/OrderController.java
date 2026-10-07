@@ -41,9 +41,10 @@ public class OrderController {
         o.setDeliveryPhone(r.deliveryPhone() == null ? null : r.deliveryPhone().trim());
         o.setDeliveryNote(r.deliveryNote() == null || r.deliveryNote().isBlank() ? null : r.deliveryNote().trim());
         String pay = r.paymentMethod() == null ? "CASH_ON_DELIVERY" : r.paymentMethod().trim().toUpperCase();
-        if (!pay.equals("CASH_ON_DELIVERY") && !pay.equals("MPESA_ON_DELIVERY"))
+        if (!pay.equals("CASH_ON_DELIVERY") && !pay.equals("MPESA_ON_DELIVERY") && !pay.equals("MPESA_ONLINE"))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown payment method");
         o.setPaymentMethod(pay);
+        o.setPaymentStatus("UNPAID");
         o.setCreatedAt(Instant.now());
         o.setUpdatedAt(o.getCreatedAt());
 
@@ -89,6 +90,8 @@ public class OrderController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not your order");
         if (o.getStatus() != OrderStatus.PENDING)
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Only pending orders can be cancelled");
+        if ("PAID".equals(o.getPaymentStatus()) || "PENDING".equals(o.getPaymentStatus()))
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "This order has a payment in progress or already paid. Contact support");
         o.getItems().forEach(i -> i.getProduct().setQuantity(i.getProduct().getQuantity() + i.getQuantity()));
         o.setStatus(OrderStatus.CANCELLED);
         o.setUpdatedAt(Instant.now());
@@ -115,6 +118,8 @@ public class OrderController {
         if (!mine) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not your order");
         if (r.status() == OrderStatus.CANCELLED)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Use buyer cancel endpoint");
+        if ("MPESA_ONLINE".equals(o.getPaymentMethod()) && !"PAID".equals(o.getPaymentStatus()))
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Wait for the buyer's M-Pesa payment first");
         o.setStatus(r.status());
         o.setUpdatedAt(Instant.now());
         CustomerOrder saved = orders.save(o);
