@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -45,7 +47,7 @@ public class FarmerHomeActivity extends AppCompatActivity {
         verifyVm = new ViewModelProvider(this).get(VerificationViewModel.class);
 
         String name = Session.name();
-        b.tvGreeting.setText(name == null || name.trim().isEmpty() ? "Farmer" : name.trim().split(" ")[0]);
+        b.tvGreeting.setText(name == null || name.trim().isEmpty() ? I18n.t("Farmer") : name.trim().split(" ")[0]);
 
         b.btnLogout.setOnClickListener(v -> Ui.logout(this));
         b.cardVerify.setOnClickListener(v -> startActivity(new Intent(this, VerificationActivity.class)));
@@ -72,20 +74,20 @@ public class FarmerHomeActivity extends AppCompatActivity {
         int bg;
         switch (v.status == null ? "DRAFT" : v.status) {
             case "PENDING":
-                bg = 0xFFE3F2FD; title = "Pending verification";
-                msg = "We received your details. Your products stay hidden from buyers until you are approved."; break;
+                bg = 0xFFE3F2FD; title = I18n.t("Pending verification");
+                msg = I18n.t("We received your details. Your products stay hidden from buyers until you are approved."); break;
             case "UNDER_REVIEW":
-                bg = 0xFFEDE7F6; title = "Under review";
-                msg = "A reviewer is checking your details now. Your products go public once approved."; break;
+                bg = 0xFFEDE7F6; title = I18n.t("Under review");
+                msg = I18n.t("A reviewer is checking your details now. Your products go public once approved."); break;
             case "VERIFIED":
-                bg = 0xFFE3F1E0; title = "✓ Verified Farmer";
-                msg = "You are live! Buyers can see your farm and products, with your Verified badge."; break;
+                bg = 0xFFE3F1E0; title = I18n.t("✓ Verified Farmer");
+                msg = I18n.t("You are live! Buyers can see your farm and products, with your Verified badge."); break;
             case "REJECTED":
-                bg = 0xFFFDECEA; title = "Verification rejected";
+                bg = 0xFFFDECEA; title = I18n.t("Verification rejected");
                 msg = (v.rejectionReason == null ? "" : v.rejectionReason + " ") + "Tap to fix and submit again. Products stay hidden until approved."; break;
             default:
-                bg = 0xFFFFF4D6; title = "Get verified";
-                msg = "Verify your identity and farm so buyers can see your products. Unverified farmers are not listed.";
+                bg = 0xFFFFF4D6; title = I18n.t("Get verified");
+                msg = I18n.t("Verify your identity and farm so buyers can see your products. Unverified farmers are not listed.");
         }
         b.cardVerify.setCardBackgroundColor(bg);
         b.tvVerifyTitle.setText(title);
@@ -105,8 +107,8 @@ public class FarmerHomeActivity extends AppCompatActivity {
                 }
                 b.tvProducts.setText(String.valueOf(mine.size()));
                 b.cardLowStock.setVisibility(low > 0 ? View.VISIBLE : View.GONE);
-                b.tvLowStock.setText("⚠ " + low + (low == 1 ? " product is" : " products are")
-                        + " running low on stock (5 or fewer). Tap to restock.");
+                b.tvLowStock.setText("⚠ " + low + (low == 1 ? I18n.t(" product is") : I18n.t(" products are"))
+                        + I18n.t(" running low on stock (5 or fewer). Tap to restock."));
                 showProducts(mine);
 
                 Ui.watch(this, vm.orders(), b.progress, orders -> showOrders(orders, myProductIds));
@@ -146,7 +148,7 @@ public class FarmerHomeActivity extends AppCompatActivity {
             }
             if (!p.farmerVerified) {
                 TextView hidden = new TextView(this);
-                hidden.setText("Hidden");
+                hidden.setText(I18n.t("Hidden"));
                 hidden.setTextSize(10);
                 hidden.setTextColor(0xFF7A5600);
                 hidden.setBackgroundResource(R.drawable.bg_chip);
@@ -199,8 +201,8 @@ public class FarmerHomeActivity extends AppCompatActivity {
             Order o = orders.get(i);
             ItemOrderMiniBinding m = ItemOrderMiniBinding.inflate(getLayoutInflater(), b.ordersContainer, false);
             int n = o.items == null ? 0 : o.items.size();
-            m.tvTitle.setText("Order #" + o.id + " · " + n + (n == 1 ? " item" : " items"));
-            String who = o.buyerName == null || o.buyerName.isEmpty() ? "Customer" : o.buyerName;
+            m.tvTitle.setText(I18n.t("Order #") + o.id + " · " + n + (n == 1 ? I18n.t(" item") : I18n.t(" items")));
+            String who = o.buyerName == null || o.buyerName.isEmpty() ? I18n.t("Customer") : o.buyerName;
             m.tvSub.setText(who + " · " + Ui.kes(o.total));
             Ui.styleStatus(m.tvStatus, o.status);
             m.getRoot().setOnClickListener(v ->

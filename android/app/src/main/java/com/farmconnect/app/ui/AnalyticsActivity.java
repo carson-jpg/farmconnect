@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -28,11 +30,11 @@ public class AnalyticsActivity extends AppCompatActivity {
         b = ActivitySimplePageBinding.inflate(getLayoutInflater());
         setContentView(b.getRoot());
         vm = new ViewModelProvider(this).get(CommunityViewModel.class);
-        b.tvTitle.setText("County analytics");
-        b.tvSubtitle.setText("Indicators and trends");
+        b.tvTitle.setText(I18n.t("County analytics"));
+        b.tvSubtitle.setText(I18n.t("Indicators and trends"));
         b.btnBack.setOnClickListener(v -> finish());
         b.btnHeaderAction.setVisibility(View.VISIBLE);
-        b.btnHeaderAction.setText("Share report");
+        b.btnHeaderAction.setText(I18n.t("Share report"));
         b.btnHeaderAction.setOnClickListener(v -> shareCsv());
     }
 
@@ -43,17 +45,17 @@ public class AnalyticsActivity extends AppCompatActivity {
 
     /** Downloads the CSV report from the server and hands it to any app (email, WhatsApp, Drive...). */
     private void shareCsv() {
-        Ui.toast(this, "Preparing the report...");
+        Ui.toast(this, I18n.t("Preparing the report..."));
         new Thread(() -> {
             try {
                 retrofit2.Response<okhttp3.ResponseBody> r = ApiClient.get().analyticsCsv().execute();
-                if (!r.isSuccessful() || r.body() == null) throw new RuntimeException("Server returned " + r.code());
+                if (!r.isSuccessful() || r.body() == null) throw new RuntimeException(I18n.t("Server returned ") + r.code());
                 String csv = r.body().string();
                 runOnUiThread(() -> startActivity(Intent.createChooser(new Intent(Intent.ACTION_SEND)
                         .setType("text/plain").putExtra(Intent.EXTRA_SUBJECT, "FarmConnect county report")
-                        .putExtra(Intent.EXTRA_TEXT, csv), "Share the report")));
+                        .putExtra(Intent.EXTRA_TEXT, csv), I18n.t("Share the report"))));
             } catch (Exception e) {
-                runOnUiThread(() -> Ui.toast(this, "Could not get the report: " + e.getMessage()));
+                runOnUiThread(() -> Ui.toast(this, I18n.t("Could not get the report: ") + e.getMessage()));
             }
         }).start();
     }
@@ -79,33 +81,33 @@ public class AnalyticsActivity extends AppCompatActivity {
     private void render(Analytics a) {
         b.content.removeAllViews();
         Indicators i = a.indicators;
-        TextView h = Cards.text(this, "Programme indicators", 18, 0xFF1C2B1E, true);
+        TextView h = Cards.text(this, I18n.t("Programme indicators"), 18, 0xFF1C2B1E, true);
         h.setTypeface(android.graphics.Typeface.SERIF, android.graphics.Typeface.BOLD);
         b.content.addView(h);
         LinearLayout grid = new LinearLayout(this);
         grid.setOrientation(LinearLayout.VERTICAL);
         b.content.addView(grid);
         tiles(grid, new String[][]{
-                {n(i.registeredFarmers), "Registered farmers"}, {n(i.verifiedFarmers), "Verified farmers"},
-                {n(i.activeUsers30d), "Active users (30 days)"}, {n(i.registeredBuyers), "Registered buyers"},
-                {n(i.groupsOnboarded), "Groups onboarded"}, {n(i.groupMembers), "Group members"},
-                {n(i.informationInteractions), "Information interactions"}, {n(i.opportunitiesAccessed), "Opportunities accessed"},
-                {n(i.marketListings), "Market listings"}, {n(i.farmerBuyerConnections), "Farmer–buyer connections"},
-                {i.officersActive30d + "/" + i.officersTotal, "Officers active (30 days)"}, {n(i.programmesCommunicated), "Programmes communicated"},
-                {n(i.farmersUsingRecords), "Farmers using digital records"}, {n(i.recordsTotal), "Farm records created"},
-                {i.satisfactionResponses == 0 ? "–" : String.format(Locale.US, "%.1f / 5", i.satisfactionAverage), "Farmer satisfaction (" + i.satisfactionResponses + ")"},
-                {n(i.messagesSent), "Messages exchanged"}});
+                {n(i.registeredFarmers), I18n.t("Registered farmers")}, {n(i.verifiedFarmers), I18n.t("Verified farmers")},
+                {n(i.activeUsers30d), I18n.t("Active users (30 days)")}, {n(i.registeredBuyers), I18n.t("Registered buyers")},
+                {n(i.groupsOnboarded), I18n.t("Groups onboarded")}, {n(i.groupMembers), I18n.t("Group members")},
+                {n(i.informationInteractions), I18n.t("Information interactions")}, {n(i.opportunitiesAccessed), I18n.t("Opportunities accessed")},
+                {n(i.marketListings), I18n.t("Market listings")}, {n(i.farmerBuyerConnections), I18n.t("Farmer–buyer connections")},
+                {i.officersActive30d + "/" + i.officersTotal, I18n.t("Officers active (30 days)")}, {n(i.programmesCommunicated), I18n.t("Programmes communicated")},
+                {n(i.farmersUsingRecords), I18n.t("Farmers using digital records")}, {n(i.recordsTotal), I18n.t("Farm records created")},
+                {i.satisfactionResponses == 0 ? "–" : String.format(Locale.US, "%.1f / 5", i.satisfactionAverage), I18n.t("Farmer satisfaction (") + i.satisfactionResponses + ")"},
+                {n(i.messagesSent), I18n.t("Messages exchanged")}});
 
         Map<String, Long> farmers = new LinkedHashMap<>(a.farmersBySubCounty);
-        Cards.bars(this, section("Farmers by sub-county"), farmers, 0xFF2E7D32, null);
-        Cards.bars(this, section("Verified farmers by sub-county"), a.verifiedBySubCounty, 0xFF1B5E20, null);
-        Cards.bars(this, section("Live products by category"), a.productsByCategory, 0xFFF9A825, null);
-        Cards.bars(this, section("Orders per month"), a.ordersByMonth, 0xFF1565C0, null);
-        Cards.bars(this, section("Sales per month (KES)"), a.salesByMonth, 0xFF2E7D32, "KES");
-        Cards.bars(this, section("Recorded harvest by crop (kg)"), a.harvestKgByCrop, 0xFF8D6E63, "kg");
-        Cards.bars(this, section("Groups by type"), a.groupsByType, 0xFF6A1B9A, null);
-        Cards.bars(this, section("Largest groups (members)"), a.membersByGroup, 0xFF00897B, null);
-        Cards.bars(this, section("Information published by type"), a.postsByType, 0xFFC62828, null);
+        Cards.bars(this, section(I18n.t("Farmers by sub-county")), farmers, 0xFF2E7D32, null);
+        Cards.bars(this, section(I18n.t("Verified farmers by sub-county")), a.verifiedBySubCounty, 0xFF1B5E20, null);
+        Cards.bars(this, section(I18n.t("Live products by category")), a.productsByCategory, 0xFFF9A825, null);
+        Cards.bars(this, section(I18n.t("Orders per month")), a.ordersByMonth, 0xFF1565C0, null);
+        Cards.bars(this, section(I18n.t("Sales per month (KES)")), a.salesByMonth, 0xFF2E7D32, "KES");
+        Cards.bars(this, section(I18n.t("Recorded harvest by crop (kg)")), a.harvestKgByCrop, 0xFF8D6E63, "kg");
+        Cards.bars(this, section(I18n.t("Groups by type")), a.groupsByType, 0xFF6A1B9A, null);
+        Cards.bars(this, section(I18n.t("Largest groups (members)")), a.membersByGroup, 0xFF00897B, null);
+        Cards.bars(this, section(I18n.t("Information published by type")), a.postsByType, 0xFFC62828, null);
         b.content.addView(Cards.spacer(this, 20));
     }
 }

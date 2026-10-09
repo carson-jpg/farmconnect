@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.content.Intent;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -19,8 +21,8 @@ import java.util.List;
 public class GroupDetailActivity extends BaseListActivity {
     private long groupId;
 
-    @Override protected String screenTitle() { return "Group"; }
-    @Override protected String emptyText() { return "No members yet"; }
+    @Override protected String screenTitle() { return I18n.t("Group"); }
+    @Override protected String emptyText() { return I18n.t("No members yet"); }
 
     @Override protected void load() {
         groupId = getIntent().getLongExtra("id", -1);
@@ -59,8 +61,8 @@ public class GroupDetailActivity extends BaseListActivity {
             t.setPadding(0, dp(8), 0, 0);
             in.addView(t);
         }
-        StringBuilder info = new StringBuilder("👥 " + g.members + (g.members == 1 ? " member" : " members"));
-        if (g.leaderName != null) info.append("\n⭐ Led by ").append(g.leaderName);
+        StringBuilder info = new StringBuilder("👥 " + g.members + (g.members == 1 ? I18n.t(" member") : I18n.t(" members")));
+        if (g.leaderName != null) info.append(I18n.t("\n⭐ Led by ")).append(g.leaderName);
         if (g.location != null && !g.location.isEmpty()) info.append("\n📍 ").append(g.location);
         if (g.subCounty != null && !g.subCounty.isEmpty()) info.append(", ").append(g.subCounty);
         if (g.contactPhone != null && !g.contactPhone.isEmpty()) info.append("\n📞 ").append(g.contactPhone);
@@ -69,49 +71,49 @@ public class GroupDetailActivity extends BaseListActivity {
         in.addView(it);
 
         if ("FARMER".equals(Session.role())) {
-            if (!g.member) in.addView(button("Join this group", false, v ->
-                    Ui.watch(this, vm.joinGroup(g.id), b.progress, x -> { Ui.toast(this, "Welcome to " + g.name); load(); })));
-            else if (!g.leader) in.addView(button("Leave group", true, v -> new AlertDialog.Builder(this)
-                    .setTitle("Leave " + g.name + "?")
-                    .setPositiveButton("Leave", (x, y) -> Ui.watch(this, vm.leaveGroup(g.id), b.progress, r -> { load(); }))
-                    .setNegativeButton("Stay", null).show()));
+            if (!g.member) in.addView(button(I18n.t("Join this group"), false, v ->
+                    Ui.watch(this, vm.joinGroup(g.id), b.progress, x -> { Ui.toast(this, I18n.t("Welcome to ") + g.name); load(); })));
+            else if (!g.leader) in.addView(button(I18n.t("Leave group"), true, v -> new AlertDialog.Builder(this)
+                    .setTitle(I18n.t("Leave ") + g.name + "?")
+                    .setPositiveButton(I18n.t("Leave"), (x, y) -> Ui.watch(this, vm.leaveGroup(g.id), b.progress, r -> { load(); }))
+                    .setNegativeButton(I18n.t("Stay"), null).show()));
         }
-        if (g.leaderId != me && g.leaderId > 0) in.addView(button("💬 Message the leader", true, v ->
+        if (g.leaderId != me && g.leaderId > 0) in.addView(button(I18n.t("💬 Message the leader"), true, v ->
                 startActivity(new Intent(this, ChatActivity.class).putExtra("userId", g.leaderId).putExtra("name", g.leaderName))));
         if (manager) {
-            in.addView(button("📣 Send a notice to all members", true, v -> {
+            in.addView(button(I18n.t("📣 Send a notice to all members"), true, v -> {
                 List<Forms.Field> f = new ArrayList<>();
-                f.add(Forms.text("title", "Title", true));
-                f.add(Forms.multi("body", "Message", true));
-                Forms.show(this, "Notice to members", "Send", f, val ->
+                f.add(Forms.text("title", I18n.t("Title"), true));
+                f.add(Forms.multi("body", I18n.t("Message"), true));
+                Forms.show(this, I18n.t("Notice to members"), I18n.t("Send"), f, val ->
                         Ui.watch(this, vm.announceToGroup(g.id, val.get("title"), val.get("body")), b.progress,
-                                r -> Ui.toast(this, "Sent to " + (g.members - 1) + " members")));
+                                r -> Ui.toast(this, I18n.t("Sent to ") + (g.members - 1) + I18n.t(" members"))));
             }));
-            in.addView(button("🗑 Delete group", true, v -> new AlertDialog.Builder(this)
-                    .setTitle("Delete " + g.name + "?")
-                    .setMessage("All memberships are removed. This cannot be undone.")
-                    .setPositiveButton("Delete", (x, y) -> Ui.watch(this, vm.deleteGroup(g.id), b.progress, r -> {
-                        Ui.toast(this, "Group deleted");
+            in.addView(button(I18n.t("🗑 Delete group"), true, v -> new AlertDialog.Builder(this)
+                    .setTitle(I18n.t("Delete ") + g.name + "?")
+                    .setMessage(I18n.t("All memberships are removed. This cannot be undone."))
+                    .setPositiveButton(I18n.t("Delete"), (x, y) -> Ui.watch(this, vm.deleteGroup(g.id), b.progress, r -> {
+                        Ui.toast(this, I18n.t("Group deleted"));
                         finish();
                     }))
-                    .setNegativeButton("Cancel", null).show()));
+                    .setNegativeButton(I18n.t("Cancel"), null).show()));
         }
 
         List<Row> rows = new ArrayList<>();
         for (Member m : d.members) {
             Row r = Row.of(m.leader ? "⭐" : "🧑‍🌾", m.name + (m.verified ? "  ✓" : ""))
                     .sub(m.phone)
-                    .meta("Joined " + Ui.dateOnly(m.joinedAt));
-            if (m.leader) r.badge("Leader", 0xFFB26A00);
+                    .meta(I18n.t("Joined ") + Ui.dateOnly(m.joinedAt));
+            if (m.leader) r.badge(I18n.t("Leader"), 0xFFB26A00);
             if (m.userId != me) r.click(() -> startActivity(new Intent(this, ChatActivity.class)
                     .putExtra("userId", m.userId).putExtra("name", m.name)));
             if (manager && !m.leader && m.userId != me)
-                r.action("Remove", () -> new AlertDialog.Builder(this)
-                        .setTitle("Remove " + m.name + "?")
-                        .setPositiveButton("Remove", (x, y) -> Ui.watch(this, vm.removeGroupMember(g.id, m.userId), b.progress, z -> load()))
-                        .setNegativeButton("Cancel", null).show());
+                r.action(I18n.t("Remove"), () -> new AlertDialog.Builder(this)
+                        .setTitle(I18n.t("Remove ") + m.name + "?")
+                        .setPositiveButton(I18n.t("Remove"), (x, y) -> Ui.watch(this, vm.removeGroupMember(g.id, m.userId), b.progress, z -> load()))
+                        .setNegativeButton(I18n.t("Cancel"), null).show());
             rows.add(r);
         }
-        show(rows, g.members + (g.members == 1 ? " member" : " members"));
+        show(rows, g.members + (g.members == 1 ? I18n.t(" member") : I18n.t(" members")));
     }
 }

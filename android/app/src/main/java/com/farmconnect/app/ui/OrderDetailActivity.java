@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -49,8 +51,8 @@ public class OrderDetailActivity extends AppCompatActivity {
 
     private void render() {
         Order o = order;
-        b.tvTitle.setText("Order #" + o.id);
-        b.tvSubtitle.setText("Placed " + Ui.dateTime(o.createdAt));
+        b.tvTitle.setText(I18n.t("Order #") + o.id);
+        b.tvSubtitle.setText(I18n.t("Placed ") + Ui.dateTime(o.createdAt));
         Ui.styleStatus(b.tvStatus, o.status);
         b.tvCancelled.setVisibility("CANCELLED".equals(o.status) ? View.VISIBLE : View.GONE);
 
@@ -60,8 +62,8 @@ public class OrderDetailActivity extends AppCompatActivity {
         if (reached >= 0) {
             for (int i = 0; i < 4; i++) b.timeline.addView(timelineRow(i, reached, o));
         } else {
-            b.timeline.addView(simpleLine("Order placed", Ui.dateTime(o.createdAt)));
-            b.timeline.addView(simpleLine("Cancelled", Ui.dateTime(o.updatedAt)));
+            b.timeline.addView(simpleLine(I18n.t("Order placed"), Ui.dateTime(o.createdAt)));
+            b.timeline.addView(simpleLine(I18n.t("Cancelled"), Ui.dateTime(o.updatedAt)));
         }
 
         // ---- items
@@ -102,7 +104,7 @@ public class OrderDetailActivity extends AppCompatActivity {
             b.tvBuyer.setVisibility(View.GONE);
         } else {
             b.tvBuyer.setVisibility(View.VISIBLE);
-            b.tvBuyer.setText("👤 " + (o.buyerName == null ? "Customer" : o.buyerName));
+            b.tvBuyer.setText("👤 " + (o.buyerName == null ? I18n.t("Customer") : o.buyerName));
         }
         b.tvAddress.setText("📍 " + o.deliveryAddress);
         String phone = o.deliveryPhone != null && !o.deliveryPhone.isEmpty() ? o.deliveryPhone : o.buyerPhone;
@@ -112,12 +114,15 @@ public class OrderDetailActivity extends AppCompatActivity {
         b.tvNote.setVisibility(hasNote ? View.VISIBLE : View.GONE);
         if (hasNote) b.tvNote.setText("“" + o.deliveryNote + "”");
         long otherId = mode == OrderAdapter.Mode.BUYER ? (o.items.isEmpty() ? -1 : o.items.get(0).farmerId) : o.buyerId;
-        String otherName = mode == OrderAdapter.Mode.BUYER ? (o.items.isEmpty() || o.items.get(0).farmName == null ? "Seller" : o.items.get(0).farmName)
-                : (o.buyerName == null ? "Customer" : o.buyerName);
+        String otherName = mode == OrderAdapter.Mode.BUYER ? (o.items.isEmpty() || o.items.get(0).farmName == null ? I18n.t("Seller") : o.items.get(0).farmName)
+                : (o.buyerName == null ? I18n.t("Customer") : o.buyerName);
         b.btnMessage.setVisibility(otherId > 0 && mode != OrderAdapter.Mode.ADMIN ? View.VISIBLE : View.GONE);
-        b.btnMessage.setText(mode == OrderAdapter.Mode.BUYER ? "💬 Message the seller" : "💬 Message the buyer");
+        b.btnMessage.setText(mode == OrderAdapter.Mode.BUYER ? I18n.t("💬 Message the seller") : I18n.t("💬 Message the buyer"));
         b.btnMessage.setOnClickListener(v -> startActivity(new android.content.Intent(this, ChatActivity.class)
                 .putExtra("userId", otherId).putExtra("name", otherName)));
+        boolean canRate = mode == OrderAdapter.Mode.BUYER && "DELIVERED".equals(o.status) && !o.items.isEmpty();
+        b.btnRate.setVisibility(canRate ? View.VISIBLE : View.GONE);
+        b.btnRate.setOnClickListener(v -> rateSellers(o));
         b.tvPayment.setText("💳 " + Ui.paymentLabel(o.paymentMethod));
 
         // ---- actions by role
@@ -125,7 +130,7 @@ public class OrderDetailActivity extends AppCompatActivity {
         String text;
         if (mode == OrderAdapter.Mode.BUYER) {
             showAction = "PENDING".equals(o.status);
-            text = "Cancel order";
+            text = I18n.t("Cancel order");
         } else {
             text = OrderAdapter.actionLabel(o.status);
             showAction = text != null;
@@ -160,10 +165,10 @@ public class OrderDetailActivity extends AppCompatActivity {
 
     private void confirmCancel(Runnable r) {
         new AlertDialog.Builder(this)
-                .setTitle("Cancel this order?")
-                .setMessage("The reserved stock goes back to the seller. This cannot be undone.")
-                .setPositiveButton("Cancel order", (d, w) -> r.run())
-                .setNegativeButton("Keep order", null)
+                .setTitle(I18n.t("Cancel this order?"))
+                .setMessage(I18n.t("The reserved stock goes back to the seller. This cannot be undone."))
+                .setPositiveButton(I18n.t("Cancel order"), (d, w) -> r.run())
+                .setNegativeButton(I18n.t("Keep order"), null)
                 .show();
     }
 
@@ -218,5 +223,32 @@ public class OrderDetailActivity extends AppCompatActivity {
         text.addView(hint);
         row.addView(text, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
         return row;
+    }
+
+    /** One review per seller in the order. If several sellers are in the order the buyer picks one. */
+    private void rateSellers(Order o) {
+        java.util.LinkedHashMap<Long, String> sellers = new java.util.LinkedHashMap<>();
+        for (OrderItem i : o.items) if (i.farmerId > 0) sellers.putIfAbsent(i.farmerId, i.farmName == null ? I18n.t("Seller") : i.farmName);
+        if (sellers.isEmpty()) return;
+        if (sellers.size() == 1) {
+            java.util.Map.Entry<Long, String> e = sellers.entrySet().iterator().next();
+            rateDialog(o.id, e.getKey(), e.getValue());
+            return;
+        }
+        final Long[] ids = sellers.keySet().toArray(new Long[0]);
+        final String[] names = sellers.values().toArray(new String[0]);
+        new AlertDialog.Builder(this).setTitle(I18n.t("Rate which seller?"))
+                .setItems(names, (d, w) -> rateDialog(o.id, ids[w], names[w])).show();
+    }
+
+    private void rateDialog(long orderId, long sellerId, String farmName) {
+        java.util.List<Forms.Field> f = new java.util.ArrayList<>();
+        f.add(Forms.choice("rating", I18n.t("Your rating"), true, Forms.arr("5", "4", "3", "2", "1"),
+                Forms.arr("★★★★★  Excellent", "★★★★☆  Good", "★★★☆☆  Okay", "★★☆☆☆  Poor", "★☆☆☆☆  Bad")).value("5"));
+        f.add(Forms.multi("comment", I18n.t("Tell other buyers about the produce and delivery (optional)"), false));
+        Forms.show(this, I18n.t("Rate ") + farmName, I18n.t("Submit"), f, v ->
+                Ui.watch(this, new ViewModelProvider(this).get(com.farmconnect.app.vm.CommunityViewModel.class)
+                        .createReview(orderId, sellerId, Integer.parseInt(v.get("rating")), v.get("comment")), b.progress,
+                        r -> Ui.toast(this, I18n.t("Thank you! Your review helps other buyers."))));
     }
 }

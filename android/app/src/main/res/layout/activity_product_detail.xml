@@ -16,7 +16,7 @@
                     android:layout_width="match_parent" android:layout_height="match_parent" />
                 <ImageButton android:id="@+id/btnBack" android:layout_width="42dp" android:layout_height="42dp"
                     android:layout_gravity="top|start" android:layout_margin="14dp"
-                    android:background="@drawable/bg_icon_dark" android:contentDescription="Back"
+                    android:background="@drawable/bg_icon_dark" android:contentDescription="@string/t_0557fa92"
                     android:padding="10dp" android:src="@drawable/ic_back" android:tint="#FFFFFF" />
                 <TextView android:id="@+id/tvCount" android:layout_width="wrap_content" android:layout_height="wrap_content"
                     android:layout_gravity="bottom|end" android:layout_margin="30dp" android:background="@drawable/bg_chip"
@@ -35,7 +35,7 @@
                 <TextView android:id="@+id/tvVerified" android:layout_width="wrap_content" android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp" android:background="@drawable/bg_chip" android:backgroundTint="#2E7D32"
                     android:paddingStart="10dp" android:paddingEnd="10dp" android:paddingTop="4dp" android:paddingBottom="4dp"
-                    android:text="✓ Verified farmer" android:textColor="#FFFFFF" android:textSize="12sp"
+                    android:text="@string/t_65401b86" android:textColor="#FFFFFF" android:textSize="12sp"
                     android:textStyle="bold" android:visibility="gone" />
 
                 <TextView android:id="@+id/tvName" android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -61,7 +61,7 @@
                     android:layout_marginBottom="14dp" android:background="#E3EBE0" />
 
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:fontFamily="serif" android:text="About this product" android:textColor="@color/fc_text"
+                    android:fontFamily="serif" android:text="@string/t_4fc57697" android:textColor="@color/fc_text"
                     android:textSize="18sp" android:textStyle="bold" />
                 <TextView android:id="@+id/tvDescription" android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:layout_marginTop="8dp" android:lineSpacingExtra="4dp" android:textColor="@color/fc_text"
@@ -81,12 +81,12 @@
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:gravity="center_vertical" android:orientation="horizontal" android:padding="14dp">
                         <ImageView android:layout_width="44dp" android:layout_height="44dp"
-                            android:background="@drawable/bg_icon_circle" android:contentDescription="Farm"
+                            android:background="@drawable/bg_icon_circle" android:contentDescription="@string/t_a7806cd5"
                             android:padding="11dp" android:src="@drawable/ic_eco" android:tint="@color/fc_primary" />
                         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                             android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="Sold by" android:textColor="@color/fc_muted" android:textSize="12sp" />
+                                android:text="@string/t_c3fc24ef" android:textColor="@color/fc_muted" android:textSize="12sp" />
                             <TextView android:id="@+id/tvFarm" android:layout_width="wrap_content"
                                 android:layout_height="wrap_content" android:textColor="@color/fc_text"
                                 android:textSize="16sp" android:textStyle="bold" />
@@ -96,7 +96,7 @@
                                 android:layout_height="wrap_content" android:layout_marginTop="6dp"
                                 android:background="@drawable/bg_chip" android:backgroundTint="@color/fc_primary_light"
                                 android:paddingBottom="6dp" android:paddingEnd="12dp" android:paddingStart="12dp"
-                                android:paddingTop="6dp" android:text="💬 Message seller" android:textColor="@color/fc_primary"
+                                android:paddingTop="6dp" android:text="@string/t_f59e483d" android:textColor="@color/fc_primary"
                                 android:textSize="12sp" android:textStyle="bold" android:visibility="gone" />
                         </LinearLayout>
                     </LinearLayout>
@@ -128,7 +128,7 @@
             android:text="♡" android:textSize="18sp" app:cornerRadius="14dp" />
         <com.google.android.material.button.MaterialButton android:id="@+id/btnCart"
             android:layout_width="0dp" android:layout_height="52dp" android:layout_marginStart="10dp"
-            android:layout_weight="1" android:insetTop="0dp" android:insetBottom="0dp" android:text="Add to cart"
+            android:layout_weight="1" android:insetTop="0dp" android:insetBottom="0dp" android:text="@string/t_2d0f6b83"
             android:textAllCaps="false" android:textSize="15sp" android:textStyle="bold" app:cornerRadius="14dp" />
     </LinearLayout>
 </LinearLayout>

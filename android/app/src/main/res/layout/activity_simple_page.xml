@@ -8,7 +8,7 @@
         android:background="@drawable/bg_dash_header" android:gravity="center_vertical" android:orientation="horizontal"
         android:paddingBottom="26dp" android:paddingEnd="16dp" android:paddingStart="16dp" android:paddingTop="20dp">
         <ImageButton android:id="@+id/btnBack" android:layout_width="42dp" android:layout_height="42dp"
-            android:layout_marginEnd="12dp" android:background="@drawable/bg_icon_glass" android:contentDescription="Back"
+            android:layout_marginEnd="12dp" android:background="@drawable/bg_icon_glass" android:contentDescription="@string/t_0557fa92"
             android:padding="10dp" android:src="@drawable/ic_back" android:tint="#FFFFFF" />
         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
             android:orientation="vertical">

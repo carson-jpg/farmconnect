@@ -11,21 +11,21 @@
             android:background="@drawable/bg_glass_card" android:orientation="vertical" android:padding="24dp">
 
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="🌿 FarmConnect" android:textColor="#CFE8B5" android:textSize="14sp"
+                android:text="@string/t_f0f91c85" android:textColor="#CFE8B5" android:textSize="14sp"
                 android:fontFamily="serif" android:textStyle="bold" />
 
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:layout_marginTop="12dp" android:text="Login" android:textColor="#FFFFFF"
+                android:layout_marginTop="12dp" android:text="@string/t_99dea780" android:textColor="#FFFFFF"
                 android:textSize="32sp" android:textStyle="bold" android:fontFamily="serif" />
 
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:layout_marginTop="4dp" android:text="Welcome back, please login to your account"
+                android:layout_marginTop="4dp" android:text="@string/t_8013ac67"
                 android:textColor="#E6FFFFFF" android:textSize="13sp" />
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:layout_marginTop="14dp" android:hint="Email"
+                android:layout_marginTop="14dp" android:hint="@string/t_ce8ae9da"
                 android:textColorHint="#E6FFFFFF"
                 app:hintTextColor="#FFFFFF"
                 app:boxBackgroundColor="#26FFFFFF"
@@ -40,7 +40,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:layout_marginTop="14dp" android:hint="Password"
+                android:layout_marginTop="14dp" android:hint="@string/t_dc647eb6"
                 android:textColorHint="#E6FFFFFF"
                 app:hintTextColor="#FFFFFF"
                 app:boxBackgroundColor="#26FFFFFF"
@@ -60,12 +60,15 @@
             <androidx.appcompat.widget.AppCompatButton android:id="@+id/btnLogin"
                 android:layout_width="match_parent" android:layout_height="56dp"
                 android:layout_marginTop="24dp" android:background="@drawable/bg_btn_primary"
-                android:text="Login" android:textAllCaps="false" android:textColor="#FFFFFF"
+                android:text="@string/t_99dea780" android:textAllCaps="false" android:textColor="#FFFFFF"
                 android:textSize="18sp" android:textStyle="bold" android:fontFamily="serif" />
 
+            <TextView android:id="@+id/tvLang" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal" android:padding="10dp" android:text="@string/t_7afda24d"
+                android:textColor="#FFFFFF" android:textSize="13sp" android:textStyle="bold" />
             <TextView android:id="@+id/tvRegister" android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:layout_gravity="center_horizontal"
-                android:padding="16dp" android:text="Don't have an account? Sign up"
+                android:padding="16dp" android:text="@string/t_fbac13ad"
                 android:textColor="#FFFFFF" android:textSize="13sp" android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>

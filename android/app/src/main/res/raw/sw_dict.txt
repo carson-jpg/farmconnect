@@ -1,0 +1,772 @@
+# English<TAB>Kiswahili  (\n = new line). Generated - edit the sources, not this file.
+\nRecent at 	\nBei za hivi karibuni katika 
+\n⭐ Led by 	\n⭐ Kiongozi: 
+  (not verified)	  (haijathibitishwa)
+  ·  No reviews yet	  ·  Bado hakuna maoni
+  ·  Not verified	  ·  Haijathibitishwa
+  ·  was 	  ·  ilikuwa 
+  ·  ★ %.1f (%d reviews)	  ·  ★ %.1f (maoni %d)
+  ·  ⛔ Suspended	  ·  ⛔ Amesimamishwa
+  ·  ✓ Verified	  ·  ✓ Amethibitishwa
+  ·  ✓ Verified seller	  ·  ✓ Muuzaji aliyethibitishwa
+  ·  💚 Lowest in county	  ·  💚 Ya chini zaidi kaunti
+  ·  🔶 Highest in county	  ·  🔶 Ya juu zaidi kaunti
+  ✓ OTP verified	  ✓ OTP imethibitishwa
+ (leave empty to keep)	 (acha wazi kubaki na ya sasa)
+ County · 	 Kaunti · 
+ account	 akaunti
+ accounts	 akaunti
+ acres	 ekari
+ acres planted   	 ekari zimepandwa   
+ conversations	 mazungumzo
+ days old	 siku zilizopita
+ delivered	 imewasilishwa
+ farmer is	 mkulima
+ farmers are	 wakulima
+ group	 kikundi
+ groups	 vikundi
+ in stock	 zilizopo
+ item	 bidhaa
+ items	 bidhaa
+ km/h     🌧 Rain now 	 km/h     🌧 Mvua sasa 
+ listings · 	 matangazo · 
+ member	 mwanachama
+ members	 wanachama
+ mm	 mm
+ new	 mpya
+ of 	 kati ya 
+ order	 oda
+ ordered	 zimeagizwa
+ orders	 oda
+ orders · 	 oda · 
+ per 	 kwa 
+ photos	 picha
+ photos. The first one is the cover buyers see in the list.	 picha. Ya kwanza ndiyo ya jalada wanayoiona wanunuzi kwenye orodha.
+ price	 bei
+ prices	 bei
+ prices change	 bei zitakapobadilika
+ product	 bidhaa
+ product is	 bidhaa
+ products	 bidhaa
+ products are	 bidhaa
+ provider	 mtoa huduma
+ providers	 watoa huduma
+ ready for checkout	 tayari kulipa
+ record	 kumbukumbu
+ records	 kumbukumbu
+ review	 maoni
+ reviews	 maoni
+ running low on stock (5 or fewer). Tap to restock.	 zinaelekea kuisha (5 au chini). Gusa kuongeza akiba.
+ so far)	 hadi sasa)
+ sold on FarmConnect   	 zimeuzwa kupitia FarmConnect   
+ taken down	 zimeondolewa
+ to cart	 kwenye kikapu
+ unread	 hazijasomwa
+ waiting for verification  →	 wanasubiri uthibitisho  →
+ · Led by 	 · Kiongozi: 
+ · Village: 	 · Kijiji: 
+ · Ward: 	 · Wadi: 
+" and the ID number match the ID photos\n	" na nambari ya kitambulisho vinalingana na picha za kitambulisho\n
+"Verified Farmer" badge.\n\n	"Mkulima Aliyethibitishwa".\n\n
+%     💨 Wind 	%     💨 Upepo 
+%.1f mm · %d%%	%.1f mm · %d%%
+%.1f ★ · %d reviews	%.1f ★ · maoni %d
+(no name)	(hana jina)
+1 · Delivery details	1 · Maelezo ya uwasilishaji
+1. Identity	1. Utambulisho
+2 · Payment method	2 · Njia ya malipo
+2. Phone verification	2. Uthibitisho wa simu
+3 · Order summary	3 · Muhtasari wa oda
+3. Where you farm	3. Unapolima
+4. Farm details	4. Maelezo ya shamba
+5. Terms	5. Masharti
+6-digit code from SMS	Msimbo wa tarakimu 6 kutoka SMS
+90kg bag	gunia la kilo 90
+A cancelled order cannot be reopened	Oda iliyoghairiwa haiwezi kufunguliwa tena
+A delivered order cannot be cancelled	Oda iliyowasilishwa haiwezi kughairiwa
+A farm with products cannot be deleted. Remove its products first.	Shamba lenye bidhaa haliwezi kufutwa. Ondoa bidhaa zake kwanza.
+A product can have at most 6 photos	Bidhaa inaweza kuwa na picha 6 zaidi
+A reviewer is checking your details now.	Mkaguzi anakagua maelezo yako sasa.
+A reviewer is checking your details now. Your products go public once approved.	Mkaguzi anakagua maelezo yako sasa. Bidhaa zako zitaonekana kwa umma zikiidhinishwa.
+About	Kuhusu
+About this product	Kuhusu bidhaa hii
+Account re-activated	Akaunti imewashwa tena
+Account suspended	Akaunti imesimamishwa
+Account: 	Akaunti: 
+Across markets (latest):\n	Katika masoko mbalimbali (ya hivi punde):\n
+Active users (30 days)	Watumiaji hai (siku 30)
+Add	Ongeza
+Add a farm first (Dashboard → My farms)	Ongeza shamba kwanza (Dashibodi → Mashamba yangu)
+Add officer	Ongeza afisa
+Add product	Ongeza bidhaa
+Add provider	Ongeza mtoa huduma
+Add record	Ongeza kumbukumbu
+Add to cart	Weka kikapuni
+Add to directory	Ongeza kwenye orodha ya huduma
+Add up to 6 photos. The first one is the cover buyers see in the list.	Ongeza hadi picha 6. Ya kwanza ndiyo ya jalada wanayoiona wanunuzi kwenye orodha.
+Added	Imeongezwa
+Added 	Imeongezwa 
+Added to cart	Imewekwa kikapuni
+Admin	Msimamizi
+Admin console	Dashibodi ya msimamizi
+Administrator	Msimamizi
+Administrator accounts cannot be suspended	Akaunti za wasimamizi haziwezi kusimamishwa
+Admins	Wasimamizi
+Advisories	Ushauri
+Advisory	Ushauri
+Agreed with the seller	Mnakubaliana na muuzaji
+Agro-dealer	Muuza pembejeo
+Alerts	Arifa
+Alerts turned off	Arifa zimezimwa
+All	Zote
+All memberships are removed. This cannot be undone.	Uanachama wote utaondolewa. Hili haliwezi kutenduliwa.
+All orders	Oda zote
+All read	Zote zimesomwa
+Already have an account? Log in	Tayari una akaunti? Ingia
+Also send an SMS?	Tuma pia SMS?
+Amount in KES (for expenses and income)	Kiasi kwa KES (kwa matumizi na mapato)
+Analytics	Takwimu
+Announcement	Tangazo
+Announcements	Matangazo
+Approve	Idhinisha
+Approve - mark as Verified Farmer	Idhinisha - weka kama Mkulima Aliyethibitishwa
+Approve a farmer to make their farm and products visible to buyers.	Idhinisha mkulima ili shamba na bidhaa zake zionekane kwa wanunuzi.
+Approve this farmer?	Idhinisha mkulima huyu?
+Article	Makala
+Articles	Makala
+Audience must be ALL, FARMERS or BUYERS	Hadhira lazima iwe WOTE, WAKULIMA au WANUNUZI
+Back	Rudi
+Browse fresh produce from verified farmers and add what you need.	Tazama mazao mabichi kutoka kwa wakulima waliothibitishwa kisha ongeza unachohitaji.
+Browse the market	Tazama soko
+Business / office name	Jina la biashara / ofisi
+Buyer	Mnunuzi
+Buyers	Wanunuzi
+Buyers only	Wanunuzi pekee
+Buyers will no longer see this product. The farmer keeps it and can still edit it.	Wanunuzi hawataona tena bidhaa hii. Mkulima ataendelea kuwa nayo na anaweza kuihariri.
+Call	Piga simu
+Cancel	Ghairi
+Cancel order	Ghairi oda
+Cancel order #	Ghairi oda #
+Cancel this order?	Ghairi oda hii?
+Cancelled	Imeghairiwa
+Cannot read image	Imeshindwa kusoma picha
+Cart	Kikapu
+Cart is empty	Kikapu ni tupu
+Cart item not found	Bidhaa ya kikapu haikupatikana
+Cash on delivery	Fedha taslimu wakati wa kupokea
+Category	Kategoria
+Category (e.g. Vegetables)	Kategoria (mf. Mboga)
+Chat	Gumzo
+Checkout	Malipo
+Choose a farm	Chagua shamba
+Choose a sub-county in Trans Nzoia	Chagua kaunti ndogo ya Trans Nzoia
+Close	Funga
+Code expired. Request a new one	Msimbo umeisha muda. Omba mpya
+Code sent. Check your SMS	Msimbo umetumwa. Angalia SMS yako
+Complete every section below, then submit. Your ID details stay private.	Kamilisha kila sehemu hapa chini kisha uwasilishe. Maelezo ya kitambulisho chako yanabaki siri.
+Complete the form below and submit it.	Jaza fomu iliyo hapa chini kisha uiwasilishe.
+Confirm order	Thibitisha oda
+Confirm that:\n• the name "	Hakikisha kuwa:\n• jina "
+Confirmed	Imethibitishwa
+Confirmed by seller	Imethibitishwa na muuzaji
+Contact phone	Simu ya mawasiliano
+Contact phone or email	Simu au barua pepe ya mawasiliano
+Contact: 	Mawasiliano: 
+Continue shopping	Endelea kununua
+Cooperative	Chama cha ushirika
+Could not get location	Imeshindwa kupata eneo
+Could not get location. Turn on GPS or type the coordinates.	Imeshindwa kupata eneo. Washa GPS au andika kuratibu.
+Could not get the report: 	Imeshindwa kupata ripoti: 
+Could not read file	Imeshindwa kusoma faili
+Could not read image	Imeshindwa kusoma picha
+Could not read one of the photos	Imeshindwa kusoma moja ya picha
+Could not read that image	Imeshindwa kusoma picha hiyo
+Could not send SMS	Imeshindwa kutuma SMS
+Could not store file	Imeshindwa kuhifadhi faili
+County	Kaunti
+County Agricultural Officers can review and approve farmer verifications.	Maafisa wa Kilimo wa Kaunti wanaweza kukagua na kuidhinisha uthibitisho wa wakulima.
+County analytics	Takwimu za kaunti
+County officer	Afisa wa kaunti
+County programme	Mpango wa kaunti
+County: Trans Nzoia	Kaunti: Trans Nzoia
+Cover	Jalada
+Create	Unda
+Create a farm first (My farms)	Unda shamba kwanza (Mashamba yangu)
+Create account	Fungua akaunti
+Create group	Unda kikundi
+Crop or product (e.g. Maize, Beans, Milk)	Zao au bidhaa (mf. Mahindi, Maharage, Maziwa)
+Crop, animal or item (e.g. Maize, Dairy cows, Fertiliser)	Zao, mnyama au kitu (mf. Mahindi, Ng'ombe wa maziwa, Mbolea)
+Crops	Mazao
+Customer	Mteja
+Customer orders	Oda za wateja
+Date	Tarehe
+Date (leave empty for today)	Tarehe (acha wazi kwa leo)
+Date (training, programme or deadline)	Tarehe (mafunzo, mpango au tarehe ya mwisho)
+Delete	Futa
+Delete 	Futa 
+Delete latest	Futa ya hivi punde
+Delete this farm's products first	Futa bidhaa za shamba hili kwanza
+Delete this post?	Futa chapisho hili?
+Delete this record?	Futa kumbukumbu hii?
+Delivered	Imewasilishwa
+Delivery	Uwasilishaji
+Delivery address (town, estate, landmark)	Anwani ya uwasilishaji (mji, mtaa, alama)
+Description	Maelezo
+Details	Maelezo
+Directory	Orodha ya huduma
+Document not uploaded	Nyaraka haijapakiwa
+Documents (confirm the name and ID number match)	Nyaraka (hakikisha jina na nambari ya kitambulisho vinalingana)
+Don't have an account? Sign up	Huna akaunti? Jisajili
+Draft saved	Rasimu imehifadhiwa
+Edit	Hariri
+Edit farm	Hariri shamba
+Edit product	Hariri bidhaa
+Edit record	Hariri kumbukumbu
+Email	Barua pepe
+Email already registered	Barua pepe tayari imesajiliwa
+Email: 	Barua pepe: 
+Empty file	Faili tupu
+Enjoy your fresh produce!	Furahia mazao yako mabichi!
+Enter a valid Kenyan phone number (e.g. 0712345678)	Weka nambari sahihi ya simu ya Kenya (mf. 0712345678)
+Enter a valid phone number	Weka nambari sahihi ya simu
+Enter a valid price	Weka bei sahihi
+Enter email and password	Weka barua pepe na nenosiri
+Enter phone and the 6-digit code	Weka simu na msimbo wa tarakimu 6
+Enter the amount in KES	Weka kiasi kwa KES
+Enter the product name	Weka jina la bidhaa
+Enter the quantity	Weka idadi
+Enter the stock quantity	Weka idadi ya bidhaa zilizopo
+Enter where we should deliver	Weka mahali pa kuwasilisha
+Enter your phone number	Weka nambari yako ya simu
+Error 	Hitilafu 
+Every seller here is identity-checked and approved by the county before their produce is listed.	Kila muuzaji hapa amekaguliwa utambulisho na kuidhinishwa na kaunti kabla mazao yake kuorodheshwa.
+Everyone	Kila mtu
+Expense	Matumizi
+Expenses	Matumizi
+Extension	Ugani
+Farm	Shamba
+Farm GPS: %.6f, %.6f	GPS ya shamba: %.6f, %.6f
+Farm GPS: -	GPS ya shamba: -
+Farm deleted	Shamba limefutwa
+Farm location (GPS)	Mahali pa shamba (GPS)
+Farm location must be inside Trans Nzoia County	Mahali pa shamba lazima pawe ndani ya Kaunti ya Trans Nzoia
+Farm name	Jina la shamba
+Farm name required	Jina la shamba linahitajika
+Farm not found	Shamba halikupatikana
+Farm records	Kumbukumbu za shamba
+Farm records created	Kumbukumbu za shamba zilizoundwa
+Farm size (acres)	Ukubwa wa shamba (ekari)
+Farm size must be greater than 0	Ukubwa wa shamba lazima uwe zaidi ya 0
+FarmConnect · Trans Nzoia County	FarmConnect · Kaunti ya Trans Nzoia
+Farmer	Mkulima
+Farmer group	Kikundi cha wakulima
+Farmer satisfaction (	Kuridhika kwa wakulima (
+Farmer verifications	Uthibitisho wa wakulima
+Farmer verified ✓	Mkulima amethibitishwa ✓
+Farmers	Wakulima
+Farmers by sub-county	Wakulima kwa kaunti ndogo
+Farmers only	Wakulima pekee
+Farmers using digital records	Wakulima wanaotumia kumbukumbu za kidijitali
+Farmer–buyer connections	Miunganisho ya mkulima na mnunuzi
+Farming tip	Kidokezo cha kilimo
+Farming: 	Kilimo: 
+Farms	Mashamba
+File not found	Faili haikupatikana
+File too large (max 6 MB)	Faili ni kubwa mno (upeo MB 6)
+Fill all fields (password min 6 characters)	Jaza sehemu zote (nenosiri angalau herufi 6)
+Fill every field. The password needs at least 8 characters.	Jaza kila sehemu. Nenosiri linahitaji angalau herufi 8.
+Finance	Fedha
+Fix the issues and submit again.	Rekebisha masuala kisha uwasilishe tena.
+Forecast data: Open-Meteo. Advice is general guidance. Ask your county extension officer for crop-specific recommendations.	Data ya utabiri: Open-Meteo. Ushauri ni mwongozo wa jumla. Muulize afisa ugani wa kaunti kwa mapendekezo mahususi ya mazao.
+Fresh produce straight from verified Trans Nzoia farmers.	Mazao mabichi moja kwa moja kutoka kwa wakulima wa Trans Nzoia waliothibitishwa.
+Friend	Rafiki
+Full description	Maelezo kamili
+Full name	Jina kamili
+Full name (exactly as on your National ID)	Jina kamili (kama lilivyo kwenye Kitambulisho chako cha Taifa)
+General	Kwa ujumla
+Get verified	Thibitishwa
+Group	Kikundi
+Group created	Kikundi kimeundwa
+Group deleted	Kikundi kimefutwa
+Group leaders cannot leave. Ask the county office to change the leader or delete the group.	Viongozi wa vikundi hawawezi kuondoka. Waombe ofisi ya kaunti kubadilisha kiongozi au kufuta kikundi.
+Group members	Wanachama wa vikundi
+Group name	Jina la kikundi
+Group not found	Kikundi hakikupatikana
+Groups	Vikundi
+Groups & cooperatives	Vikundi na vyama vya ushirika
+Groups by type	Vikundi kwa aina
+Groups onboarded	Vikundi vilivyojiunga
+Harvest	Mavuno
+Hello, 	Habari, 
+Here is how your farm business is doing.	Hivi ndivyo biashara ya shamba lako inavyoendelea.
+Hidden	Imefichwa
+How do you like FarmConnect?	Unaonaje FarmConnect?
+I accept FarmConnect's verification and privacy terms	Ninakubali masharti ya uthibitisho na faragha ya FarmConnect
+I want to join as	Nataka kujiunga kama
+Income	Mapato
+Indicators and trends	Viashiria na mwenendo
+Information	Taarifa
+Information interactions	Matumizi ya taarifa
+Information published by type	Taarifa zilizochapishwa kwa aina
+Invalid email or password	Barua pepe au nenosiri si sahihi
+It disappears for everyone. Notifications already sent stay in people's inbox.	Litatoweka kwa kila mtu. Arifa zilizokwisha tumwa zitabaki kwenye kikasha cha watu.
+It will be visible to buyers again (if the farmer is verified).	Litaonekana tena kwa wanunuzi (ikiwa mkulima amethibitishwa).
+Items	Bidhaa
+Join	Jiunge
+Join the farm-to-market community	Jiunge na jamii ya shamba hadi sokoni
+Join this group	Jiunge na kikundi hiki
+Joined 	Alijiunga 
+KES %,.0f	KES %,.0f
+KES 0	KES 0
+Keep order	Weka oda
+Kenyan National ID number	Nambari ya Kitambulisho cha Taifa cha Kenya
+Language	Lugha
+Largest groups (members)	Vikundi vikubwa zaidi (wanachama)
+Latitude	Latitudo
+Leader	Kiongozi
+Learn	Jifunze
+Learn & opportunities	Jifunze na fursa
+Leave	Ondoka
+Leave 	Ondoka 
+Leave group	Ondoka kwenye kikundi
+Live products	Bidhaa zilizo hewani
+Live products by category	Bidhaa zilizo hewani kwa kategoria
+Livestock	Mifugo
+Loading the forecast...	Inapakia utabiri...
+Location (e.g. Nakuru)	Eneo (mf. Nakuru)
+Location permission denied. Type the coordinates instead.	Ruhusa ya eneo imekataliwa. Andika kuratibu badala yake.
+Location: 	Eneo: 
+Log out	Toka
+Login	Ingia
+Longitude	Longitudo
+M-Pesa on delivery	M-Pesa wakati wa kupokea
+Machinery hire	Ukodishaji wa mitambo
+Main crops / livestock (e.g. maize, dairy cows)	Mazao makuu / mifugo (mf. mahindi, ng'ombe wa maziwa)
+Manage	Simamia
+Mark all read	Weka zote zimesomwa
+Mark as delivered	Weka kama imewasilishwa
+Mark as shipped	Weka kama imetumwa
+Market (e.g. Kitale, Endebess)	Soko (mf. Kitale, Endebess)
+Market listings	Bidhaa sokoni
+Market prices	Bei za soko
+Marketplace	Soko
+Markets	Masoko
+Maximum 	Upeo 
+Meeting place / town	Mahali pa mkutano / mji
+Member	Mwanachama
+Member not found	Mwanachama hakupatikana
+Message	Ujumbe
+Message / details	Ujumbe / maelezo
+Message who?	Mtumie nani ujumbe?
+Messages	Ujumbe
+Messages are visible only to you two	Ujumbe unaonekana kwenu nyinyi wawili tu
+Messages exchanged	Ujumbe uliobadilishwa
+Mixed farming	Kilimo mchanganyiko
+Mobile number (e.g. 0712345678)	Nambari ya simu (mf. 0712345678)
+Money in	Pesa zilizoingia
+Money out	Pesa zilizotoka
+My cart	Kikapu changu
+My farms	Mashamba yangu
+My groups	Vikundi vyangu
+My orders	Oda zangu
+My products	Bidhaa zangu
+My reviews	Maoni yangu
+National ID - back	Kitambulisho cha Taifa - nyuma
+National ID - front	Kitambulisho cha Taifa - mbele
+National ID must be 7 or 8 digits	Kitambulisho cha Taifa lazima kiwe na tarakimu 7 au 8
+National ID photo - back	Picha ya Kitambulisho cha Taifa - nyuma
+National ID photo - front	Picha ya Kitambulisho cha Taifa - mbele
+National ID: 	Kitambulisho cha Taifa: 
+Network error: 	Hitilafu ya mtandao: 
+New county officer	Afisa mpya wa kaunti
+New farm	Shamba jipya
+New group	Kikundi kipya
+New message	Ujumbe mpya
+New product	Bidhaa mpya
+New record	Kumbukumbu mpya
+Next 7 days	Siku 7 zijazo
+No conversations yet.\nTap “New message” to talk to a seller, buyer or county officer.	Bado hakuna mazungumzo.\nGusa “Ujumbe mpya” kuzungumza na muuzaji, mnunuzi au afisa wa kaunti.
+No data yet	Bado hakuna data
+No farms yet. Tap + to add your first farm.	Bado hakuna mashamba. Gusa + ili kuongeza shamba lako la kwanza.
+No groups here yet.\nCreate one and invite your neighbours to join.	Bado hakuna vikundi hapa.\nUnda kimoja uwaalike majirani zako wajiunge.
+No location set	Hakuna eneo lililowekwa
+No maps app installed	Hakuna programu ya ramani iliyosakinishwa
+No members yet	Bado hakuna wanachama
+No orders here yet	Bado hakuna oda hapa
+No orders yet	Bado hakuna oda
+No orders yet. New orders will show up here.	Bado hakuna oda. Oda mpya zitaonekana hapa.
+No prices posted yet.\nCounty officers post the daily market prices here.	Bado hakuna bei zilizochapishwa.\nMaafisa wa kaunti huchapisha bei za kila siku za soko hapa.
+No products found	Hakuna bidhaa zilizopatikana
+No products to show yet.\nNew produce appears here once farmers are verified.	Bado hakuna bidhaa za kuonyesha.\nMazao mapya yataonekana hapa wakulima watakapothibitishwa.
+No products yet. Tap + to add your first one, with photos and a full description.	Bado hakuna bidhaa. Gusa + ili kuongeza ya kwanza, pamoja na picha na maelezo kamili.
+No products yet. Tap Add product to list your first one.	Bado hakuna bidhaa. Gusa Ongeza bidhaa ili kuorodhesha ya kwanza.
+No providers listed yet.\nThe county office keeps this directory up to date.	Bado hakuna watoa huduma walioorodheshwa.\nOfisi ya kaunti husasisha orodha hii.
+No ratings yet	Bado hakuna makadirio
+No records yet.\nTap “Add record” to log planting, harvest, livestock, expenses or income.	Bado hakuna kumbukumbu.\nGusa “Ongeza kumbukumbu” kuandika upandaji, mavuno, mifugo, matumizi au mapato.
+No reviews yet.\nBuyers can rate a seller after receiving an order.	Bado hakuna maoni.\nWanunuzi wanaweza kumkadiria muuzaji baada ya kupokea oda.
+No users match	Hakuna mtumiaji anayelingana
+No, in-app only	Hapana, ndani ya programu pekee
+Not allowed	Hairuhusiwi
+Not found	Haikupatikana
+Not submitted	Haijawasilishwa
+Not uploaded	Haijapakiwa
+Not verified	Haijathibitishwa
+Not verified yet	Bado haujathibitishwa
+Not your cart	Hiki si kikapu chako
+Not your farm	Hili si shamba lako
+Not your order	Hii si oda yako
+Not your product	Hii si bidhaa yako
+Not your record	Hii si kumbukumbu yako
+Not yours	Hii si yako
+Note	Kumbuka
+Note to the seller (optional)	Ujumbe kwa muuzaji (si lazima)
+Notes	Maelezo
+Notes (optional)	Maelezo ya ziada (si lazima)
+Nothing here	Hakuna kitu hapa
+Nothing here yet	Bado hakuna kitu hapa
+Nothing published here yet.\nCounty officers post tips, trainings and programmes in this space.	Bado hakuna kilichochapishwa hapa.\nMaafisa wa kaunti huchapisha vidokezo, mafunzo na programu hapa.
+Notice to members	Tangazo kwa wanachama
+OK	Sawa
+Officer account created	Akaunti ya afisa imeundwa
+Officers	Maafisa
+Officers active (30 days)	Maafisa hai (siku 30)
+On the way	Iko njiani
+Only 	Pekee 
+Only JPG or PNG images are allowed	Picha za JPG au PNG pekee ndizo zinazoruhusiwa
+Only farmers and county staff can create groups	Wakulima na wafanyakazi wa kaunti pekee ndio wanaoweza kuunda vikundi
+Only farmers can join groups	Wakulima pekee ndio wanaoweza kujiunga na vikundi
+Only pending orders can be cancelled	Oda zinazosubiri pekee ndizo zinazoweza kughairiwa
+Only the group leader or county staff can do this	Kiongozi wa kikundi au wafanyakazi wa kaunti pekee ndio wanaoweza kufanya hili
+Open farm location in Maps	Fungua mahali pa shamba kwenye Ramani
+Opportunities	Fursa
+Opportunities accessed	Fursa zilizotumiwa
+Opportunity	Fursa
+Order	Oda
+Order #	Oda #
+Order not found	Oda haikupatikana
+Order placed	Oda imetumwa
+Order placed!	Oda imetumwa!
+Order progress	Maendeleo ya oda
+Orders	Oda
+Orders by status	Oda kwa hali
+Orders per month	Oda kwa mwezi
+Other	Nyingine
+Out of stock	Imeisha
+Password	Nenosiri
+Password (min 6)	Nenosiri (angalau 6)
+Pay the seller when the order arrives.	Mlipe muuzaji oda inapofika.
+Payment	Malipo
+Pending	Inasubiri
+Pending orders	Oda zinazosubiri
+Pending verification	Inasubiri uthibitisho
+Per unit (e.g. 90kg bag, kg, litre)	Kwa kipimo (mf. gunia la kilo 90, kg, lita)
+Pests & diseases	Wadudu na magonjwa
+Phone	Simu
+Phone number for the delivery	Nambari ya simu kwa uwasilishaji
+Phone verified ✓	Simu imethibitishwa ✓
+Phone: 	Simu: 
+Photo not found	Picha haikupatikana
+Photo upload failed: 	Kupakia picha kumeshindwa: 
+Photo uploaded	Picha imepakiwa
+Place order	Tuma oda
+Place order · 	Tuma oda · 
+Placed 	Imetumwa 
+Planting	Upandaji
+Please give a reason	Tafadhali toa sababu
+Please log in again	Tafadhali ingia tena
+Post	Chapisha
+Post a market price	Chapisha bei ya soko
+Post deleted	Chapisho limefutwa
+Post not found	Chapisho halikupatikana
+Post price	Chapisha bei
+Post-harvest	Baada ya mavuno
+Preparing the report...	Inaandaa ripoti...
+Price (KES)	Bei (KES)
+Price in KES	Bei kwa KES
+Price not found	Bei haikupatikana
+Price posted. Subscribers were notified.	Bei imechapishwa. Wanaofuatilia wamearifiwa.
+Price removed	Bei imeondolewa
+Prices	Bei
+Proceed to checkout	Endelea kulipa
+Produce buyer	Mnunuzi wa mazao
+Product	Bidhaa
+Product deleted	Bidhaa imefutwa
+Product has existing orders. Set quantity to 0 instead	Bidhaa ina oda zilizopo. Weka idadi kuwa 0 badala yake
+Product moderation	Usimamizi wa bidhaa
+Product name	Jina la bidhaa
+Product not found	Bidhaa haikupatikana
+Product photo	Picha ya bidhaa
+Product photos	Picha za bidhaa
+Product saved	Bidhaa imehifadhiwa
+Products	Bidhaa
+Profit	Faida
+Programme indicators	Viashiria vya mpango
+Programmes	Programu
+Programmes communicated	Programu zilizotangazwa
+Proof of farming (farm photo or cooperative / farmer document photo)	Uthibitisho wa kilimo (picha ya shamba au ya hati ya ushirika / mkulima)
+Proof of farming activity	Uthibitisho wa shughuli za kilimo
+Publish	Chapisha
+Publish to farmers	Chapisha kwa wakulima
+Published and everyone was notified	Imechapishwa na kila mtu amearifiwa
+Quantity (acres planted, kg harvested, number of animals)	Idadi (ekari zilizopandwa, kg zilizovunwa, idadi ya wanyama)
+Quantity in stock	Idadi iliyopo
+Quick actions	Vitendo vya haraka
+Rate 	Kadiria 
+Rate FarmConnect	Kadiria FarmConnect
+Rate us	Tukadirie
+Rate which seller?	Kadiria muuzaji yupi?
+Re-activate	Washa tena
+Re-activate 	Washa tena 
+Read the terms	Soma masharti
+Reason shown to the farmer (min 5 characters)	Sababu itakayoonyeshwa kwa mkulima (angalau herufi 5)
+Reason: 	Sababu: 
+Recent orders	Oda za hivi karibuni
+Record not found	Kumbukumbu haikupatikana
+Recorded harvest by crop (kg)	Mavuno yaliyorekodiwa kwa zao (kg)
+Records	Kumbukumbu
+Register my interest  (	Sajili nia yangu  (
+Registered buyers	Wanunuzi waliosajiliwa
+Registered farmers	Wakulima waliosajiliwa
+Registration cancelled	Usajili umeghairiwa
+Registration is only for programmes, trainings and opportunities	Usajili ni kwa programu, mafunzo na fursa pekee
+Reject	Kataa
+Reject verification	Kataa uthibitisho
+Rejected	Imekataliwa
+Rejected. The farmer can fix and resubmit	Imekataliwa. Mkulima anaweza kurekebisha na kuwasilisha tena
+Rejection reason: 	Sababu ya kukataliwa: 
+Remove	Ondoa
+Remove 	Ondoa 
+Remove this photo?	Ondoa picha hii?
+Remove this review?	Ondoa maoni haya?
+Removed from the directory	Imeondolewa kwenye orodha
+Replace	Badilisha
+Reply	Jibu
+Reply posted	Jibu limechapishwa
+Reply to 	Jibu kwa 
+Request a code for this number first	Omba msimbo kwa nambari hii kwanza
+Required	Inahitajika
+Resend in 	Tuma tena baada ya 
+Restore	Rejesha
+Restore 	Rejesha 
+Review farmer	Kagua mkulima
+Review not found	Maoni hayakupatikana
+Review started	Ukaguzi umeanza
+Review your order and confirm	Kagua oda yako kisha uthibitishe
+Reviewer: 	Mkaguzi: 
+Right now in 	Sasa hivi 
+SACCO	SACCO
+Sales	Mauzo
+Sales per month (KES)	Mauzo kwa mwezi (KES)
+Save	Hifadhi
+Save draft	Hifadhi rasimu
+Save product	Hifadhi bidhaa
+Saved	Imehifadhiwa
+Saved to wishlist	Imehifadhiwa kwenye vipendwa
+Saved. Buyers will see it once you are verified.	Imehifadhiwa. Wanunuzi wataiona ukishathibitishwa.
+Saved: 	Imehifadhiwa: 
+Say hello 👋	Salimia 👋
+Search	Tafuta
+Search a crop or market...	Tafuta zao au soko...
+Search by name or email	Tafuta kwa jina au barua pepe
+Search groups...	Tafuta vikundi...
+Search maize, tomatoes, milk...	Tafuta mahindi, nyanya, maziwa...
+Search produce...	Tafuta mazao...
+Search products	Tafuta bidhaa
+Search seeds, vets, transport...	Tafuta mbegu, madaktari wa mifugo, usafiri...
+Search tips, trainings, programmes...	Tafuta vidokezo, mafunzo, programu...
+See all	Ona zote
+Select sub-county	Chagua kaunti ndogo
+Select type of farming	Chagua aina ya kilimo
+Selfie	Selfie
+Selfie (face clearly visible)	Selfie (uso uonekane vizuri)
+Seller	Muuzaji
+Seller not found	Muuzaji hakupatikana
+Seller reviews	Maoni kuhusu muuzaji
+Send	Tuma
+Send code	Tuma msimbo
+Sent to 	Imetumwa kwa 
+Server returned 	Seva ilirudisha 
+Service directory	Orodha ya huduma
+Services	Huduma
+Services: 	Huduma: 
+Share report	Shiriki ripoti
+Share the report	Shiriki ripoti
+Shipped	Njiani
+Short summary (one line)	Muhtasari mfupi (mstari mmoja)
+Soil & water	Udongo na maji
+Sold by	Inauzwa na
+Sold per	Inauzwa kwa
+Start review	Anza ukaguzi
+Stay	Baki
+Storage	Uhifadhi
+Sub-county	Kaunti ndogo
+Sub-county (tap to choose)	Kaunti ndogo (gusa kuchagua)
+Sub-county: 	Kaunti ndogo: 
+Submit	Wasilisha
+Submit for verification	Wasilisha kwa uthibitisho
+Submitted 	Imewasilishwa 
+Submitted. We will review your details	Imewasilishwa. Tutakagua maelezo yako
+Subtotal	Jumla ndogo
+Success	Imefanikiwa
+Suspend	Simamisha
+Suspend 	Simamisha 
+Take down	Ondoa
+Take down 	Ondoa 
+Tell other buyers about the produce and delivery (optional)	Waambie wanunuzi wengine kuhusu mazao na uwasilishaji (si lazima)
+Tell us what to improve (optional)	Tuambie cha kuboresha (si lazima)
+Temporary password (min 8 characters)	Nenosiri la muda (angalau herufi 8)
+Thank you for your feedback!	Asante kwa maoni yako!
+Thank you! Your review helps other buyers.	Asante! Maoni yako yanasaidia wanunuzi wengine.
+That is all we have in stock	Hiyo ndiyo yote tuliyonayo
+The farmer has not added a description yet.	Mkulima bado hajaongeza maelezo.
+The leader cannot be removed	Kiongozi hawezi kuondolewa
+The price date cannot be in the future	Tarehe ya bei haiwezi kuwa ya baadaye
+The reserved stock goes back to the seller. This cannot be undone.	Bidhaa zilizohifadhiwa zinarudi kwa muuzaji. Hili haliwezi kutenduliwa.
+The seller is preparing your produce.	Muuzaji anaandaa mazao yako.
+The seller will confirm your order shortly. You can follow every step from My orders.	Muuzaji atathibitisha oda yako hivi karibuni. Unaweza kufuatilia kila hatua kwenye Oda zangu.
+There is nobody you can message yet	Bado hakuna unayeweza kumtumia ujumbe
+They will be able to log in again.	Wataweza kuingia tena.
+They will be logged out and blocked until you re-activate them.	Watatolewa na kuzuiwa hadi uwawashe tena.
+This National ID is already registered to another account	Kitambulisho hiki cha Taifa tayari kimesajiliwa kwenye akaunti nyingine
+This account has been suspended. Please contact FarmConnect support.	Akaunti hii imesimamishwa. Tafadhali wasiliana na msaada wa FarmConnect.
+This account is not available	Akaunti hii haipatikani
+This is not your order	Hii si oda yako
+This is not your review	Haya si maoni yako
+This order was cancelled. Any reserved stock was returned to the seller.	Oda hii ilighairiwa. Bidhaa zozote zilizohifadhiwa zimerudishwa kwa muuzaji.
+This phone number is already verified on another account	Nambari hii ya simu tayari imethibitishwa kwenye akaunti nyingine
+This role cannot be self-registered	Jukumu hili haliwezi kujisajili lenyewe
+This seller was not part of the order	Muuzaji huyu hakuwa sehemu ya oda
+Tips	Vidokezo
+Title	Kichwa
+Too many wrong attempts. Request a new code	Majaribio mengi yasiyo sahihi. Omba msimbo mpya
+Topic	Mada
+Total	Jumla
+Total sales on the platform	Jumla ya mauzo kwenye jukwaa
+Town / location	Mji / eneo
+Track my order	Fuatilia oda yangu
+Training	Mafunzo
+Trainings	Mafunzo
+Trans Nzoia County	Kaunti ya Trans Nzoia
+Transport	Usafiri
+Type	Aina
+Type a message	Andika ujumbe
+Type of record	Aina ya kumbukumbu
+Under review	Inakaguliwa
+Unit (acres, kg, bags, animals...)	Kipimo (ekari, kg, magunia, wanyama...)
+Unit (kg, bunch, crate)	Kipimo (kg, furushi, kreti)
+Unknown document type	Aina ya nyaraka haijulikani
+Unknown farming type	Aina ya kilimo haijulikani
+Unknown payment method	Njia ya malipo haijulikani
+Upload	Pakia
+Use my current location	Tumia eneo langu la sasa
+User not found	Mtumiaji hakupatikana
+Users	Watumiaji
+Venue / location	Ukumbi / eneo
+Verification	Uthibitisho
+Verification & privacy terms	Masharti ya uthibitisho na faragha
+Verification not found	Uthibitisho haukupatikana
+Verification rejected	Uthibitisho umekataliwa
+Verified	Amethibitishwa
+Verified farmers	Wakulima waliothibitishwa
+Verified farmers by sub-county	Wakulima waliothibitishwa kwa kaunti ndogo
+Verify code	Thibitisha msimbo
+Verify farmers	Thibitisha wakulima
+Verify your account	Thibitisha akaunti yako
+Verify your identity and farm so buyers can see your products. Unverified farmers are not listed.	Thibitisha utambulisho na shamba lako ili wanunuzi waone bidhaa zako. Wakulima ambao hawajathibitishwa hawaorodheshwi.
+Verify your identity and farm to earn the Verified Farmer badge.	Thibitisha utambulisho na shamba lako ili upate beji ya Mkulima Aliyethibitishwa.
+Veterinary	Daktari wa mifugo
+View all	Ona zote
+Village / location	Kijiji / eneo
+Wait 60 seconds before requesting another code	Subiri sekunde 60 kabla ya kuomba msimbo mwingine
+Waiting for the seller	Inasubiri muuzaji
+Ward	Wadi
+We received your details. A reviewer will pick them up soon.	Tumepokea maelezo yako. Mkaguzi atayashughulikia hivi karibuni.
+We received your details. Your products stay hidden from buyers until you are approved.	Tumepokea maelezo yako. Bidhaa zako zitabaki zimefichwa kwa wanunuzi hadi uidhinishwe.
+We sent your order to the seller.	Tumemtumia muuzaji oda yako.
+Weather	Hali ya hewa
+Weather & advice	Hali ya hewa na ushauri
+Weather service interrupted	Huduma ya hali ya hewa imekatizwa
+Weather service is not reachable right now. Try again later.	Huduma ya hali ya hewa haipatikani sasa. Jaribu tena baadaye.
+Welcome back, please login to your account	Karibu tena, tafadhali ingia kwenye akaunti yako
+Welcome to 	Karibu 
+What does the group do?	Kikundi hiki kinafanya nini?
+What they offer (e.g. seeds, fertiliser, vaccines)	Wanachotoa (mf. mbegu, mbolea, chanjo)
+Who should see it?	Nani aone hili?
+Wishlist	Vipendwa
+Women group	Kikundi cha wanawake
+Wrong code	Msimbo si sahihi
+Yes, SMS too	Ndiyo, SMS pia
+You already replied	Tayari umejibu
+You already reviewed this seller for this order	Tayari umemkadiria muuzaji huyu kwa oda hii
+You are all caught up 🎉\nOrder updates, messages and county notices appear here.	Umemaliza yote 🎉\nTaarifa za oda, ujumbe na matangazo ya kaunti huonekana hapa.
+You are live! Buyers can see your farm and products, with your Verified badge.	Uko hewani! Wanunuzi wanaweza kuona shamba na bidhaa zako, pamoja na beji yako ya Uthibitisho.
+You are not a member	Wewe si mwanachama
+You are registered	Umesajiliwa
+You can review a seller after the order is delivered	Unaweza kumkadiria muuzaji baada ya oda kuwasilishwa
+You cannot message this user	Huwezi kumtumia mtumiaji huyu ujumbe
+You cannot message yourself	Huwezi kujitumia ujumbe
+You have not ordered anything yet.\nFresh produce is waiting in the market.	Bado hujaagiza chochote.\nMazao mabichi yanakusubiri sokoni.
+You joined 	Umejiunga na 
+You pay the seller when your order arrives. No money is taken inside the app.	Unamlipa muuzaji oda yako inapofika. Hakuna pesa inayotozwa ndani ya programu.
+You will be notified when 	Utaarifiwa wakati bei za 
+Your cart is empty	Kikapu chako ni tupu
+Your identity and farm are verified. Buyers can see your badge.	Utambulisho na shamba lako vimethibitishwa. Wanunuzi wanaweza kuona beji yako.
+Your order is being delivered.	Oda yako inaletwa.
+Your rating	Ukadiriaji wako
+Your reply (public, one reply only)	Jibu lako (la hadharani, jibu moja tu)
+Youth group	Kikundi cha vijana
+by 	na 
+farm details only to confirm you are a real farmer in Trans Nzoia County.\n\n	maelezo ya shamba kwa lengo la kuthibitisha kuwa wewe ni mkulima halisi katika Kaunti ya Trans Nzoia.\n\n
+geo:%f,%f?q=%f,%f(Farm)	geo:%f,%f?q=%f,%f(Farm)
+kg	kg
+• Giving false information can lead to rejection or removal of your account.\n\n	• Kutoa taarifa za uongo kunaweza kusababisha kukataliwa au kuondolewa kwa akaunti yako.\n\n
+• Only authorized FarmConnect administrators and County Agricultural Officers can see these details.\n\n	• Ni wasimamizi walioidhinishwa wa FarmConnect na Maafisa wa Kilimo wa Kaunti pekee wanaoweza kuona maelezo haya.\n\n
+• We collect your name, National ID number and photos, phone number, farm location and 	• Tunakusanya jina lako, nambari na picha za Kitambulisho cha Taifa, nambari ya simu, mahali pa shamba na 
+• You can ask us to correct or delete your information.	• Unaweza kutuomba tusahihishe au tufute taarifa zako.
+• Your ID number and photos are never shown to buyers or the public. Buyers only see a 	• Nambari na picha zako za kitambulisho hazionyeshwi kamwe kwa wanunuzi wala umma. Wanunuzi huona tu 
+• Your ID number is stored encrypted. Your details are not sold or shared for advertising.\n\n	• Nambari yako ya kitambulisho huhifadhiwa kwa usimbaji fiche. Taarifa zako haziuzwi wala kushirikiwa kwa matangazo.\n\n
+• the selfie matches the ID photo\n• the farm proof and location look genuine	• selfie inalingana na picha ya kitambulisho\n• uthibitisho wa shamba na eneo vinaonekana halisi
+↩ Seller: 	↩ Muuzaji: 
+⏳ Farmer not verified yet (not public)	⏳ Mkulima bado hajathibitishwa (haonekani kwa umma)
+⏳ Hidden from buyers until you are verified	⏳ Zimefichwa kwa wanunuzi hadi uthibitishwe
+⏳ You can add products now, but buyers will only see them after your farmer verification is approved.	⏳ Unaweza kuongeza bidhaa sasa, lakini wanunuzi wataziona tu baada ya uthibitisho wako wa mkulima kuidhinishwa.
+★  Bad	★  Mbaya
+★★  Poor	★★  Hafifu
+★★★  Okay	★★★  Wastani
+★★★★  Good	★★★★  Nzuri
+★★★★★  Excellent	★★★★★  Bora kabisa
+★★★★☆  Good	★★★★☆  Nzuri
+★★★☆☆  Okay	★★★☆☆  Wastani
+★★☆☆☆  Poor	★★☆☆☆  Hafifu
+★☆☆☆☆  Bad	★☆☆☆☆  Mbaya
+♡ Save	♡ Hifadhi
+⛔ Removed by an administrator	⛔ Imeondolewa na msimamizi
+⛔ Taken down by admin	⛔ Imeondolewa na msimamizi
+✓ Registered · tap to cancel	✓ Umesajiliwa · gusa kughairi
+✓ Uploaded	✓ Imepakiwa
+✓ Verified	✓ Amethibitishwa
+✓ Verified Farmer	✓ Mkulima Aliyethibitishwa
+✓ Verified farmer	✓ Mkulima aliyethibitishwa
+✓ Verified: 	✓ Imethibitishwa: 
+✓ You are a verified farmer. This product goes live in the marketplace as soon as you save.	✓ Wewe ni mkulima aliyethibitishwa. Bidhaa hii itaonekana sokoni mara tu utakapohifadhi.
+⭐ Rate the seller	⭐ Mkadirie muuzaji
+＋\nAdd photos	＋\nOngeza picha
+🌐 Kiswahili / English	🌐 Kiswahili / English
+🌱 What this means for your farm	🌱 Maana yake kwa shamba lako
+🌿 FarmConnect	🌿 FarmConnect
+🌿 Hello,	🌿 Habari,
+🌿 Welcome back,	🌿 Karibu tena,
+💧 Humidity 	💧 Unyevu 
+💬 Message seller	💬 Mtumie muuzaji ujumbe
+💬 Message the buyer	💬 Mtumie mnunuzi ujumbe
+💬 Message the leader	💬 Mtumie kiongozi ujumbe
+💬 Message the seller	💬 Mtumie muuzaji ujumbe
+💵  Cash on delivery	💵  Fedha taslimu wakati wa kupokea
+📞 Call	📞 Piga simu
+📣 Send a notice to all members	📣 Tuma tangazo kwa wanachama wote
+📱  M-Pesa on delivery	📱  M-Pesa wakati wa kupokea
+🔔 Alert me on changes	🔔 Nijulishe kuna mabadiliko
+🔔 Alert on	🔔 Arifa imewashwa
+🔕 Stop alerts	🔕 Zima arifa
+🗑 Delete group	🗑 Futa kikundi
+🛡 Review desk	🛡 Dawati la ukaguzi

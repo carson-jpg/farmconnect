@@ -27,7 +27,7 @@ final class Labels {
 
     static String name(String[] values, String[] names, String v) {
         int i = idx(values, v);
-        return i < 0 ? (v == null ? "" : v) : names[i];
+        return com.farmconnect.app.util.I18n.t(i < 0 ? (v == null ? "" : v) : names[i]);
     }
 
     static String postIcon(String t) {
@@ -78,6 +78,31 @@ final class Labels {
         }
     }
 
+    static String cropIcon(String crop) {
+        String c = crop == null ? "" : crop.toLowerCase();
+        if (c.contains("maize") || c.contains("corn")) return "🌽";
+        if (c.contains("bean")) return "🫘";
+        if (c.contains("wheat") || c.contains("rice") || c.contains("sorghum") || c.contains("millet")) return "🌾";
+        if (c.contains("potato")) return "🥔";
+        if (c.contains("tomato")) return "🍅";
+        if (c.contains("cabbage") || c.contains("kale") || c.contains("sukuma") || c.contains("spinach")) return "🥬";
+        if (c.contains("onion")) return "🧅";
+        if (c.contains("milk")) return "🥛";
+        if (c.contains("egg")) return "🥚";
+        if (c.contains("banana")) return "🍌";
+        if (c.contains("avocado")) return "🥑";
+        if (c.contains("carrot")) return "🥕";
+        if (c.contains("chicken") || c.contains("poultry")) return "🐔";
+        if (c.contains("beef") || c.contains("cattle") || c.contains("cow")) return "🐄";
+        return "🌱";
+    }
+
+    static String stars(int n) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 5; i++) sb.append(i < n ? "★" : "☆");
+        return sb.toString();
+    }
+
     static String roleIcon(String r) {
         switch (r == null ? "" : r) {
             case "FARMER": return "🧑‍🌾";
@@ -91,9 +116,9 @@ final class Labels {
     static String roleName(String r) {
         if (r == null) return "";
         switch (r) {
-            case "OFFICER": return "County officer";
-            case "ADMIN": return "Administrator";
-            default: return r.charAt(0) + r.substring(1).toLowerCase();
+            case "OFFICER": return com.farmconnect.app.util.I18n.t("County officer");
+            case "ADMIN": return com.farmconnect.app.util.I18n.t("Administrator");
+            default: return com.farmconnect.app.util.I18n.t(r.charAt(0) + r.substring(1).toLowerCase());
         }
     }
 

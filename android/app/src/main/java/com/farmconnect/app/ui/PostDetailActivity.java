@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -32,7 +34,7 @@ public class PostDetailActivity extends AppCompatActivity {
         post = p;
         b.tvType.setText(Labels.postIcon(p.type) + "  " + Labels.name(Labels.POST_TYPES, Labels.POST_NAMES, p.type));
         b.tvPostTitle.setText(p.title);
-        b.tvMeta.setText((p.authorName == null ? "County" : p.authorName) + " · " + Ui.dateOnly(p.createdAt) + " · 👁 " + p.views);
+        b.tvMeta.setText((p.authorName == null ? I18n.t("County") : p.authorName) + " · " + Ui.dateOnly(p.createdAt) + " · 👁 " + p.views);
         b.tvBody.setText(p.body);
 
         StringBuilder ev = new StringBuilder();
@@ -43,14 +45,14 @@ public class PostDetailActivity extends AppCompatActivity {
 
         boolean hasContact = p.contact != null && !p.contact.trim().isEmpty();
         b.tvContact.setVisibility(hasContact ? View.VISIBLE : View.GONE);
-        if (hasContact) b.tvContact.setText("Contact: " + p.contact);
+        if (hasContact) b.tvContact.setText(I18n.t("Contact: ") + p.contact);
 
         boolean registrable = "PROGRAMME".equals(p.type) || "TRAINING".equals(p.type) || "OPPORTUNITY".equals(p.type);
         b.btnRegister.setVisibility(registrable ? View.VISIBLE : View.GONE);
         if (registrable) {
-            b.btnRegister.setText(p.registered ? "✓ Registered · tap to cancel" : "Register my interest  (" + p.registrations + " so far)");
+            b.btnRegister.setText(p.registered ? I18n.t("✓ Registered · tap to cancel") : I18n.t("Register my interest  (") + p.registrations + I18n.t(" so far)"));
             b.btnRegister.setOnClickListener(v -> Ui.watch(this, vm.togglePostRegistration(p.id), b.progress, u -> {
-                Ui.toast(this, u.registered ? "You are registered" : "Registration cancelled");
+                Ui.toast(this, u.registered ? I18n.t("You are registered") : I18n.t("Registration cancelled"));
                 render(u);
             }));
         }
@@ -62,13 +64,13 @@ public class PostDetailActivity extends AppCompatActivity {
         boolean staff = Labels.isStaff();
         b.btnDelete.setVisibility(staff ? View.VISIBLE : View.GONE);
         b.btnDelete.setOnClickListener(v -> new AlertDialog.Builder(this)
-                .setTitle("Delete this post?")
-                .setMessage("It disappears for everyone. Notifications already sent stay in people's inbox.")
-                .setPositiveButton("Delete", (d, w) -> Ui.watch(this, vm.deletePost(p.id), b.progress, x -> {
-                    Ui.toast(this, "Post deleted");
+                .setTitle(I18n.t("Delete this post?"))
+                .setMessage(I18n.t("It disappears for everyone. Notifications already sent stay in people's inbox."))
+                .setPositiveButton(I18n.t("Delete"), (d, w) -> Ui.watch(this, vm.deletePost(p.id), b.progress, x -> {
+                    Ui.toast(this, I18n.t("Post deleted"));
                     finish();
                 }))
-                .setNegativeButton("Cancel", null).show());
+                .setNegativeButton(I18n.t("Cancel"), null).show());
         b.actionBar.setVisibility(registrable || phone || staff ? View.VISIBLE : View.GONE);
     }
 }

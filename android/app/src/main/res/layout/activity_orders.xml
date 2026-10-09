@@ -8,12 +8,12 @@
         android:background="@drawable/bg_dash_header" android:gravity="center_vertical" android:orientation="horizontal"
         android:paddingBottom="24dp" android:paddingEnd="16dp" android:paddingStart="16dp" android:paddingTop="20dp">
         <ImageButton android:id="@+id/btnBack" android:layout_width="42dp" android:layout_height="42dp"
-            android:layout_marginEnd="12dp" android:background="@drawable/bg_icon_glass" android:contentDescription="Back"
+            android:layout_marginEnd="12dp" android:background="@drawable/bg_icon_glass" android:contentDescription="@string/t_0557fa92"
             android:padding="10dp" android:src="@drawable/ic_back" android:tint="#FFFFFF" />
         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
             android:orientation="vertical">
             <TextView android:id="@+id/tvTitle" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:fontFamily="serif" android:text="My orders" android:textColor="#FFFFFF" android:textSize="22sp"
+                android:fontFamily="serif" android:text="@string/t_74ecd923" android:textColor="#FFFFFF" android:textSize="22sp"
                 android:textStyle="bold" />
             <TextView android:id="@+id/tvSubtitle" android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:text="" android:textColor="#CFE8B5" android:textSize="13sp" />
@@ -26,17 +26,17 @@
             android:paddingStart="12dp" android:paddingTop="8dp" app:selectionRequired="true" app:singleLine="true"
             app:singleSelection="true">
             <com.google.android.material.chip.Chip android:id="@+id/chipAll" style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content" android:layout_height="wrap_content" android:checked="true" android:tag="ALL" android:text="All" />
+                android:layout_width="wrap_content" android:layout_height="wrap_content" android:checked="true" android:tag="ALL" android:text="@string/t_b1c94ca2" />
             <com.google.android.material.chip.Chip android:id="@+id/chipPending" style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content" android:layout_height="wrap_content" android:tag="PENDING" android:text="Pending" />
+                android:layout_width="wrap_content" android:layout_height="wrap_content" android:tag="PENDING" android:text="@string/t_2d13df6f" />
             <com.google.android.material.chip.Chip android:id="@+id/chipConfirmed" style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content" android:layout_height="wrap_content" android:tag="CONFIRMED" android:text="Confirmed" />
+                android:layout_width="wrap_content" android:layout_height="wrap_content" android:tag="CONFIRMED" android:text="@string/t_205bc73c" />
             <com.google.android.material.chip.Chip android:id="@+id/chipShipped" style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content" android:layout_height="wrap_content" android:tag="SHIPPED" android:text="Shipped" />
+                android:layout_width="wrap_content" android:layout_height="wrap_content" android:tag="SHIPPED" android:text="@string/t_747cf5c8" />
             <com.google.android.material.chip.Chip android:id="@+id/chipDelivered" style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content" android:layout_height="wrap_content" android:tag="DELIVERED" android:text="Delivered" />
+                android:layout_width="wrap_content" android:layout_height="wrap_content" android:tag="DELIVERED" android:text="@string/t_67edd3b9" />
             <com.google.android.material.chip.Chip android:id="@+id/chipCancelled" style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content" android:layout_height="wrap_content" android:tag="CANCELLED" android:text="Cancelled" />
+                android:layout_width="wrap_content" android:layout_height="wrap_content" android:tag="CANCELLED" android:text="@string/t_a149e85a" />
         </com.google.android.material.chip.ChipGroup>
     </HorizontalScrollView>
     <ProgressBar android:id="@+id/progress" style="?android:attr/progressBarStyleHorizontal" android:layout_width="match_parent"
@@ -45,7 +45,7 @@
         android:gravity="center" android:orientation="vertical" android:padding="40dp" android:visibility="gone">
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📦" android:textSize="56sp" />
         <TextView android:id="@+id/tvEmptyText" android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:layout_marginTop="8dp" android:gravity="center" android:text="No orders here yet"
+            android:layout_marginTop="8dp" android:gravity="center" android:text="@string/t_e46d1dd4"
             android:textColor="@color/fc_muted" android:textSize="15sp" />
     </LinearLayout>
     <androidx.recyclerview.widget.RecyclerView android:id="@+id/rv" android:layout_width="match_parent"

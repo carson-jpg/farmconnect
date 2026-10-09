@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,7 +34,7 @@ public class AdminUsersActivity extends AppCompatActivity {
         b = ActivityAdminUsersBinding.inflate(getLayoutInflater());
         setContentView(b.getRoot());
         vm = new ViewModelProvider(this).get(AdminViewModel.class);
-        b.tvTitle.setText("Users");
+        b.tvTitle.setText(I18n.t("Users"));
         b.btnBack.setOnClickListener(v -> finish());
         adapter = new UserAdapter();
         b.rv.setLayoutManager(new LinearLayoutManager(this));
@@ -51,32 +53,32 @@ public class AdminUsersActivity extends AppCompatActivity {
         Ui.watch(this, vm.users("ALL".equals(role) ? null : role, b.etSearch.getText().toString().trim()), b.progress, list -> {
             adapter.set(list);
             b.tvEmpty.setVisibility(list.isEmpty() ? View.VISIBLE : View.GONE);
-            b.tvSubtitle.setText(list.size() + (list.size() == 1 ? " account" : " accounts"));
+            b.tvSubtitle.setText(list.size() + (list.size() == 1 ? I18n.t(" account") : I18n.t(" accounts")));
         });
     }
 
     private void toggle(UserSummary u) {
         boolean enable = !u.enabled;
         new AlertDialog.Builder(this)
-                .setTitle((enable ? "Re-activate " : "Suspend ") + u.name + "?")
-                .setMessage(enable ? "They will be able to log in again."
-                        : "They will be logged out and blocked until you re-activate them.")
-                .setPositiveButton(enable ? "Re-activate" : "Suspend", (d, w) ->
+                .setTitle((enable ? I18n.t("Re-activate ") : I18n.t("Suspend ")) + u.name + "?")
+                .setMessage(enable ? I18n.t("They will be able to log in again.")
+                        : I18n.t("They will be logged out and blocked until you re-activate them."))
+                .setPositiveButton(enable ? I18n.t("Re-activate") : I18n.t("Suspend"), (d, w) ->
                         Ui.watch(this, vm.setUserEnabled(u.id, enable), b.progress, x -> {
-                            Ui.toast(this, enable ? "Account re-activated" : "Account suspended");
+                            Ui.toast(this, enable ? I18n.t("Account re-activated") : I18n.t("Account suspended"));
                             load();
                         }))
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(I18n.t("Cancel"), null)
                 .show();
     }
 
     private void officerDialog() {
         DialogOfficerBinding d = DialogOfficerBinding.inflate(getLayoutInflater());
         AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle("New county officer")
+                .setTitle(I18n.t("New county officer"))
                 .setView(d.getRoot())
-                .setPositiveButton("Create account", null)
-                .setNegativeButton("Cancel", null)
+                .setPositiveButton(I18n.t("Create account"), null)
+                .setNegativeButton(I18n.t("Cancel"), null)
                 .create();
         dialog.show();
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
@@ -86,12 +88,12 @@ public class AdminUsersActivity extends AppCompatActivity {
             String pass = d.etPassword.getText().toString();
             if (name.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
                     || phone.length() < 9 || pass.length() < 8) {
-                Ui.toast(this, "Fill every field. The password needs at least 8 characters.");
+                Ui.toast(this, I18n.t("Fill every field. The password needs at least 8 characters."));
                 return;
             }
             Ui.watch(this, vm.createOfficer(new OfficerRequest(name, email, phone, pass)), b.progress, r -> {
                 dialog.dismiss();
-                Ui.toast(this, "Officer account created");
+                Ui.toast(this, I18n.t("Officer account created"));
                 load();
             });
         });
@@ -117,13 +119,13 @@ public class AdminUsersActivity extends AppCompatActivity {
             h.ib.tvName.setText(u.name);
             h.ib.tvEmail.setText(u.email);
             StringBuilder tags = new StringBuilder(u.role.charAt(0) + u.role.substring(1).toLowerCase());
-            if ("FARMER".equals(u.role)) tags.append(u.verified ? "  ·  ✓ Verified" : "  ·  Not verified");
-            if (!u.enabled) tags.append("  ·  ⛔ Suspended");
+            if ("FARMER".equals(u.role)) tags.append(u.verified ? I18n.t("  ·  ✓ Verified") : I18n.t("  ·  Not verified"));
+            if (!u.enabled) tags.append(I18n.t("  ·  ⛔ Suspended"));
             h.ib.tvTags.setText(tags.toString());
             h.ib.tvTags.setTextColor(u.enabled ? 0xFF2E7D32 : 0xFFC62828);
             boolean admin = "ADMIN".equals(u.role);
             h.ib.btnToggle.setVisibility(admin ? View.GONE : View.VISIBLE);
-            h.ib.btnToggle.setText(u.enabled ? "Suspend" : "Re-activate");
+            h.ib.btnToggle.setText(u.enabled ? I18n.t("Suspend") : I18n.t("Re-activate"));
             h.ib.btnToggle.setTextColor(u.enabled ? 0xFFC62828 : 0xFF2E7D32);
             h.ib.btnToggle.setOnClickListener(v -> toggle(u));
         }

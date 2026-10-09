@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -22,7 +24,7 @@ public class RegisterActivity extends AppCompatActivity {
             String pass = b.etPassword.getText().toString();
             String role = b.rbFarmer.isChecked() ? "FARMER" : "BUYER";
             if (name.isEmpty() || email.isEmpty() || pass.length() < 6) {
-                Ui.toast(this, "Fill all fields (password min 6 characters)");
+                Ui.toast(this, I18n.t("Fill all fields (password min 6 characters)"));
                 return;
             }
             Ui.watch(this, vm.register(name, email, phone, pass, role), b.progress, r -> {

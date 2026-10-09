@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
@@ -33,7 +35,7 @@ public class BuyerHomeActivity extends AppCompatActivity implements ProductAdapt
         vm = new ViewModelProvider(this).get(BuyerViewModel.class);
 
         String name = Session.name();
-        b.tvGreeting.setText(name == null || name.trim().isEmpty() ? "Friend" : name.trim().split(" ")[0]);
+        b.tvGreeting.setText(name == null || name.trim().isEmpty() ? I18n.t("Friend") : name.trim().split(" ")[0]);
 
         adapter = new ProductAdapter(ProductAdapter.Mode.BUYER, this);
         b.rv.setLayoutManager(new LinearLayoutManager(this));
@@ -65,7 +67,7 @@ public class BuyerHomeActivity extends AppCompatActivity implements ProductAdapt
         for (String n : names) {
             Chip c = new Chip(this);
             c.setId(View.generateViewId());
-            c.setText(n);
+            c.setText(I18n.t(n));
             c.setTag(n);
             c.setCheckable(true);
             c.setCheckedIconVisible(false);
@@ -98,15 +100,15 @@ public class BuyerHomeActivity extends AppCompatActivity implements ProductAdapt
         }
         adapter.set(shown);
         b.tvEmpty.setVisibility(shown.isEmpty() ? View.VISIBLE : View.GONE);
-        b.tvCount.setText(shown.isEmpty() ? "Marketplace"
-                : shown.size() + (shown.size() == 1 ? " product" : " products") + ("All".equals(category) ? "" : " · " + category));
+        b.tvCount.setText(shown.isEmpty() ? I18n.t("Marketplace")
+                : shown.size() + (shown.size() == 1 ? I18n.t(" product") : I18n.t(" products")) + ("All".equals(category) ? "" : " · " + category));
     }
 
     @Override public void onPrimary(Product p) {
-        Ui.watch(this, vm.addToCart(p.id, 1), null, c -> Ui.toast(this, "Added to cart"));
+        Ui.watch(this, vm.addToCart(p.id, 1), null, c -> Ui.toast(this, I18n.t("Added to cart")));
     }
 
     @Override public void onSecondary(Product p) {
-        Ui.watch(this, vm.addWish(p.id), null, x -> Ui.toast(this, "Saved to wishlist"));
+        Ui.watch(this, vm.addWish(p.id), null, x -> Ui.toast(this, I18n.t("Saved to wishlist")));
     }
 }

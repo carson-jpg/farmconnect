@@ -12,13 +12,13 @@
         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
             android:orientation="vertical">
             <TextView android:id="@+id/tvTitle" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:fontFamily="serif" android:text="Admin console" android:textColor="#FFFFFF" android:textSize="22sp"
+                android:fontFamily="serif" android:text="@string/t_f50f4a0e" android:textColor="#FFFFFF" android:textSize="22sp"
                 android:textStyle="bold" />
             <TextView android:id="@+id/tvSubtitle" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="FarmConnect · Trans Nzoia County" android:textColor="#CFE8B5" android:textSize="13sp" />
+                android:text="@string/t_d751d407" android:textColor="#CFE8B5" android:textSize="13sp" />
         </LinearLayout>
         <ImageButton android:id="@+id/btnLogout" android:layout_width="44dp" android:layout_height="44dp"
-            android:background="@drawable/bg_icon_glass" android:contentDescription="Log out" android:padding="11dp"
+            android:background="@drawable/bg_icon_glass" android:contentDescription="@string/t_4394c8d8" android:padding="11dp"
             android:src="@drawable/ic_logout" android:tint="#FFFFFF" />
     </LinearLayout>
 
@@ -29,9 +29,9 @@
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"
                 android:padding="20dp">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Total sales on the platform" android:textColor="@color/fc_muted" android:textSize="13sp" />
+                    android:text="@string/t_cfa1a17e" android:textColor="@color/fc_muted" android:textSize="13sp" />
                 <TextView android:id="@+id/tvRevenue" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:fontFamily="serif" android:text="KES 0" android:textColor="@color/fc_primary" android:textSize="32sp"
+                    android:fontFamily="serif" android:text="@string/t_0452c67b" android:textColor="@color/fc_primary" android:textSize="32sp"
                     android:textStyle="bold" />
                 <TextView android:id="@+id/tvRevenueSub" android:layout_width="wrap_content" android:layout_height="wrap_content"
                     android:textColor="@color/fc_muted" android:textSize="12sp" />
@@ -53,13 +53,13 @@
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:orientation="vertical" android:padding="16dp">
                         <ImageView android:layout_width="40dp" android:layout_height="40dp" android:background="@drawable/bg_icon_circle"
-                            android:contentDescription="Users" android:padding="9dp" android:src="@drawable/ic_people"
+                            android:contentDescription="@string/t_f9aae5fd" android:padding="9dp" android:src="@drawable/ic_people"
                             android:tint="@color/fc_primary" />
                         <TextView android:id="@+id/tvUsers" android:layout_width="wrap_content" android:layout_height="wrap_content"
                             android:layout_marginTop="12dp" android:fontFamily="serif" android:text="–"
                             android:textColor="@color/fc_text" android:textSize="22sp" android:textStyle="bold" />
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Users" android:textColor="@color/fc_muted" android:textSize="13sp" />
+                            android:text="@string/t_f9aae5fd" android:textColor="@color/fc_muted" android:textSize="13sp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
                 <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content"
@@ -68,13 +68,13 @@
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:orientation="vertical" android:padding="16dp">
                         <ImageView android:layout_width="40dp" android:layout_height="40dp" android:background="@drawable/bg_icon_circle"
-                            android:contentDescription="Verified farmers" android:padding="9dp" android:src="@drawable/ic_verified"
+                            android:contentDescription="@string/t_24a71aa2" android:padding="9dp" android:src="@drawable/ic_verified"
                             android:tint="@color/fc_primary" />
                         <TextView android:id="@+id/tvFarmers" android:layout_width="wrap_content" android:layout_height="wrap_content"
                             android:layout_marginTop="12dp" android:fontFamily="serif" android:text="–"
                             android:textColor="@color/fc_text" android:textSize="22sp" android:textStyle="bold" />
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Verified farmers" android:textColor="@color/fc_muted" android:textSize="13sp" />
+                            android:text="@string/t_24a71aa2" android:textColor="@color/fc_muted" android:textSize="13sp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
@@ -86,13 +86,13 @@
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:orientation="vertical" android:padding="16dp">
                         <ImageView android:layout_width="40dp" android:layout_height="40dp" android:background="@drawable/bg_icon_circle"
-                            android:contentDescription="Orders" android:padding="9dp" android:src="@drawable/ic_receipt"
+                            android:contentDescription="@string/t_7442e29d" android:padding="9dp" android:src="@drawable/ic_receipt"
                             android:tint="@color/fc_primary" />
                         <TextView android:id="@+id/tvOrders" android:layout_width="wrap_content" android:layout_height="wrap_content"
                             android:layout_marginTop="12dp" android:fontFamily="serif" android:text="–"
                             android:textColor="@color/fc_text" android:textSize="22sp" android:textStyle="bold" />
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Orders" android:textColor="@color/fc_muted" android:textSize="13sp" />
+                            android:text="@string/t_7442e29d" android:textColor="@color/fc_muted" android:textSize="13sp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
                 <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content"
@@ -101,13 +101,13 @@
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:orientation="vertical" android:padding="16dp">
                         <ImageView android:layout_width="40dp" android:layout_height="40dp" android:background="@drawable/bg_icon_circle"
-                            android:contentDescription="Live products" android:padding="9dp" android:src="@drawable/ic_inventory"
+                            android:contentDescription="@string/t_82ce739f" android:padding="9dp" android:src="@drawable/ic_inventory"
                             android:tint="@color/fc_primary" />
                         <TextView android:id="@+id/tvProducts" android:layout_width="wrap_content" android:layout_height="wrap_content"
                             android:layout_marginTop="12dp" android:fontFamily="serif" android:text="–"
                             android:textColor="@color/fc_text" android:textSize="22sp" android:textStyle="bold" />
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Live products" android:textColor="@color/fc_muted" android:textSize="13sp" />
+                            android:text="@string/t_82ce739f" android:textColor="@color/fc_muted" android:textSize="13sp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
@@ -122,7 +122,7 @@
 
         <!-- Quick actions -->
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="20dp"
-            android:layout_marginTop="14dp" android:fontFamily="serif" android:text="Manage" android:textColor="@color/fc_text"
+            android:layout_marginTop="14dp" android:fontFamily="serif" android:text="@string/t_34e34c43" android:textColor="@color/fc_text"
             android:textSize="18sp" android:textStyle="bold" />
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal"
             android:paddingBottom="4dp" android:paddingEnd="12dp" android:paddingStart="12dp" android:paddingTop="8dp">
@@ -130,37 +130,37 @@
                 android:layout_weight="1" android:background="?attr/selectableItemBackgroundBorderless" android:clickable="true"
                 android:focusable="true" android:gravity="center_horizontal" android:orientation="vertical" android:padding="8dp">
                 <ImageView android:layout_width="56dp" android:layout_height="56dp" android:background="@drawable/bg_icon_circle"
-                    android:contentDescription="Verify farmers" android:padding="15dp" android:src="@drawable/ic_verified"
+                    android:contentDescription="@string/t_4264aa08" android:padding="15dp" android:src="@drawable/ic_verified"
                     android:tint="@color/fc_primary" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp"
-                    android:text="Verify farmers" android:textColor="@color/fc_text" android:textSize="12sp" android:textStyle="bold" />
+                    android:text="@string/t_4264aa08" android:textColor="@color/fc_text" android:textSize="12sp" android:textStyle="bold" />
             </LinearLayout>
             <LinearLayout android:id="@+id/actUsers" android:layout_width="0dp" android:layout_height="wrap_content"
                 android:layout_weight="1" android:background="?attr/selectableItemBackgroundBorderless" android:clickable="true"
                 android:focusable="true" android:gravity="center_horizontal" android:orientation="vertical" android:padding="8dp">
                 <ImageView android:layout_width="56dp" android:layout_height="56dp" android:background="@drawable/bg_icon_circle"
-                    android:contentDescription="Users" android:padding="15dp" android:src="@drawable/ic_people"
+                    android:contentDescription="@string/t_f9aae5fd" android:padding="15dp" android:src="@drawable/ic_people"
                     android:tint="@color/fc_primary" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp"
-                    android:text="Users" android:textColor="@color/fc_text" android:textSize="12sp" android:textStyle="bold" />
+                    android:text="@string/t_f9aae5fd" android:textColor="@color/fc_text" android:textSize="12sp" android:textStyle="bold" />
             </LinearLayout>
             <LinearLayout android:id="@+id/actOrders" android:layout_width="0dp" android:layout_height="wrap_content"
                 android:layout_weight="1" android:background="?attr/selectableItemBackgroundBorderless" android:clickable="true"
                 android:focusable="true" android:gravity="center_horizontal" android:orientation="vertical" android:padding="8dp">
                 <ImageView android:layout_width="56dp" android:layout_height="56dp" android:background="@drawable/bg_icon_circle"
-                    android:contentDescription="Orders" android:padding="15dp" android:src="@drawable/ic_receipt"
+                    android:contentDescription="@string/t_7442e29d" android:padding="15dp" android:src="@drawable/ic_receipt"
                     android:tint="@color/fc_primary" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp"
-                    android:text="Orders" android:textColor="@color/fc_text" android:textSize="12sp" android:textStyle="bold" />
+                    android:text="@string/t_7442e29d" android:textColor="@color/fc_text" android:textSize="12sp" android:textStyle="bold" />
             </LinearLayout>
             <LinearLayout android:id="@+id/actProducts" android:layout_width="0dp" android:layout_height="wrap_content"
                 android:layout_weight="1" android:background="?attr/selectableItemBackgroundBorderless" android:clickable="true"
                 android:focusable="true" android:gravity="center_horizontal" android:orientation="vertical" android:padding="8dp">
                 <ImageView android:layout_width="56dp" android:layout_height="56dp" android:background="@drawable/bg_icon_circle"
-                    android:contentDescription="Products" android:padding="15dp" android:src="@drawable/ic_inventory"
+                    android:contentDescription="@string/t_068f80c7" android:padding="15dp" android:src="@drawable/ic_inventory"
                     android:tint="@color/fc_primary" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp"
-                    android:text="Products" android:textColor="@color/fc_text" android:textSize="12sp" android:textStyle="bold" />
+                    android:text="@string/t_068f80c7" android:textColor="@color/fc_text" android:textSize="12sp" android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>
 
@@ -171,11 +171,11 @@
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"
                 android:padding="18dp">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="serif"
-                    android:text="Orders by status" android:textColor="@color/fc_text" android:textSize="17sp" android:textStyle="bold" />
+                    android:text="@string/t_5aeccf14" android:textColor="@color/fc_text" android:textSize="17sp" android:textStyle="bold" />
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:layout_marginTop="10dp" android:orientation="horizontal">
                         <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
-                            android:text="Waiting for the seller" android:textColor="@color/fc_text" android:textSize="13sp" />
+                            android:text="@string/t_2e04c87c" android:textColor="@color/fc_text" android:textSize="13sp" />
                         <TextView android:id="@+id/tvPendingN" android:layout_width="wrap_content" android:layout_height="wrap_content"
                             android:text="0" android:textColor="@color/fc_text" android:textSize="13sp" android:textStyle="bold" />
                     </LinearLayout>
@@ -185,7 +185,7 @@
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:layout_marginTop="10dp" android:orientation="horizontal">
                         <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
-                            android:text="Delivered" android:textColor="@color/fc_text" android:textSize="13sp" />
+                            android:text="@string/t_67edd3b9" android:textColor="@color/fc_text" android:textSize="13sp" />
                         <TextView android:id="@+id/tvDeliveredN" android:layout_width="wrap_content" android:layout_height="wrap_content"
                             android:text="0" android:textColor="@color/fc_text" android:textSize="13sp" android:textStyle="bold" />
                     </LinearLayout>
@@ -195,7 +195,7 @@
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:layout_marginTop="10dp" android:orientation="horizontal">
                         <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
-                            android:text="Cancelled" android:textColor="@color/fc_text" android:textSize="13sp" />
+                            android:text="@string/t_a149e85a" android:textColor="@color/fc_text" android:textSize="13sp" />
                         <TextView android:id="@+id/tvCancelledN" android:layout_width="wrap_content" android:layout_height="wrap_content"
                             android:text="0" android:textColor="@color/fc_text" android:textSize="13sp" android:textStyle="bold" />
                     </LinearLayout>
@@ -209,13 +209,13 @@
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical"
             android:orientation="horizontal" android:paddingEnd="20dp" android:paddingStart="20dp" android:paddingTop="18dp">
             <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
-                android:fontFamily="serif" android:text="Recent orders" android:textColor="@color/fc_text" android:textSize="18sp"
+                android:fontFamily="serif" android:text="@string/t_4bfa4ae2" android:textColor="@color/fc_text" android:textSize="18sp"
                 android:textStyle="bold" />
             <TextView android:id="@+id/tvAllOrders" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:padding="8dp" android:text="View all" android:textColor="@color/fc_primary" android:textStyle="bold" />
+                android:padding="8dp" android:text="@string/t_0b4db271" android:textColor="@color/fc_primary" android:textStyle="bold" />
         </LinearLayout>
         <TextView android:id="@+id/tvNoOrders" android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:gravity="center" android:padding="20dp" android:text="No orders yet" android:textColor="@color/fc_muted"
+            android:gravity="center" android:padding="20dp" android:text="@string/t_a4678864" android:textColor="@color/fc_muted"
             android:visibility="gone" />
         <LinearLayout android:id="@+id/recentContainer" android:layout_width="match_parent" android:layout_height="wrap_content"
             android:orientation="vertical" android:paddingBottom="28dp" />

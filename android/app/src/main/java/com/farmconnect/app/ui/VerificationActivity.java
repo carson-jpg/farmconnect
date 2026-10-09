@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
@@ -42,12 +44,12 @@ public class VerificationActivity extends AppCompatActivity {
     private final ActivityResultLauncher<String> locationPermission =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), granted -> {
                 if (granted) fetchLocation();
-                else Ui.toast(this, "Location permission denied. Type the coordinates instead.");
+                else Ui.toast(this, I18n.t("Location permission denied. Type the coordinates instead."));
             });
 
     @Override protected void onCreate(Bundle s) {
         super.onCreate(s);
-        setTitle("Verify your account");
+        setTitle(I18n.t("Verify your account"));
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         b = ActivityVerificationBinding.inflate(getLayoutInflater());
         setContentView(b.getRoot());
@@ -63,17 +65,17 @@ public class VerificationActivity extends AppCompatActivity {
 
         b.btnSendOtp.setOnClickListener(v -> {
             String phone = text(b.etPhone);
-            if (phone.isEmpty()) { Ui.toast(this, "Enter your phone number"); return; }
+            if (phone.isEmpty()) { Ui.toast(this, I18n.t("Enter your phone number")); return; }
             Ui.watch(this, vm.sendOtp(phone), b.progress, x -> {
-                Ui.toast(this, "Code sent. Check your SMS");
+                Ui.toast(this, I18n.t("Code sent. Check your SMS"));
                 startCooldown();
             });
         });
         b.btnVerifyOtp.setOnClickListener(v -> {
             String phone = text(b.etPhone), code = text(b.etOtp);
-            if (phone.isEmpty() || code.isEmpty()) { Ui.toast(this, "Enter phone and the 6-digit code"); return; }
+            if (phone.isEmpty() || code.isEmpty()) { Ui.toast(this, I18n.t("Enter phone and the 6-digit code")); return; }
             Ui.watch(this, vm.verifyOtp(phone, code), b.progress, r -> {
-                Ui.toast(this, "Phone verified ✓");
+                Ui.toast(this, I18n.t("Phone verified ✓"));
                 b.etOtp.setText("");
                 updateFlags(r);
             });
@@ -88,13 +90,13 @@ public class VerificationActivity extends AppCompatActivity {
         b.tvTerms.setOnClickListener(v -> showTerms());
         b.btnSave.setOnClickListener(v ->
                 Ui.watch(this, vm.saveDraft(collect()), b.progress, r -> {
-                    Ui.toast(this, "Draft saved");
+                    Ui.toast(this, I18n.t("Draft saved"));
                     updateFlags(r);
                 }));
         b.btnSubmit.setOnClickListener(v ->
                 Ui.watch(this, vm.saveDraft(collect()), b.progress, saved ->
                         Ui.watch(this, vm.submit(), b.progress, r -> {
-                            Ui.toast(this, "Submitted. We will review your details");
+                            Ui.toast(this, I18n.t("Submitted. We will review your details"));
                             updateFlags(r);
                         })));
 
@@ -140,7 +142,7 @@ public class VerificationActivity extends AppCompatActivity {
 
     private void fillForm(VerificationResponse v) {
         if (v.fullName != null) b.etFullName.setText(v.fullName);
-        if (v.maskedNationalId != null) b.tilNationalId.setHelperText("Saved: " + v.maskedNationalId + " (leave empty to keep)");
+        if (v.maskedNationalId != null) b.tilNationalId.setHelperText(I18n.t("Saved: ") + v.maskedNationalId + I18n.t(" (leave empty to keep)"));
         if (v.phone != null) b.etPhone.setText(v.phone);
         for (int i = 1; i < SUB.length; i++) if (SUB[i].equals(v.subCounty)) b.spSubCounty.setSelection(i);
         if (v.ward != null) b.etWard.setText(v.ward);
@@ -158,27 +160,27 @@ public class VerificationActivity extends AppCompatActivity {
         flag(b.tvIdBack, b.btnIdBack, v.hasIdBack);
         flag(b.tvSelfie, b.btnSelfie, v.hasSelfie);
         flag(b.tvProof, b.btnProof, v.hasProof);
-        b.tvPhoneStatus.setText(v.phoneVerified ? "✓ Verified: " + v.phone : "Not verified");
+        b.tvPhoneStatus.setText(v.phoneVerified ? I18n.t("✓ Verified: ") + v.phone : I18n.t("Not verified"));
         b.tvPhoneStatus.setTextColor(v.phoneVerified ? 0xFF2E7D32 : 0xFFC62828);
 
         String title, msg;
         int bg;
         switch (v.status == null ? "DRAFT" : v.status) {
             case "PENDING":
-                bg = 0xFFE3F2FD; title = "Pending verification";
-                msg = "We received your details. A reviewer will pick them up soon."; break;
+                bg = 0xFFE3F2FD; title = I18n.t("Pending verification");
+                msg = I18n.t("We received your details. A reviewer will pick them up soon."); break;
             case "UNDER_REVIEW":
-                bg = 0xFFEDE7F6; title = "Under review";
-                msg = "A reviewer is checking your details now."; break;
+                bg = 0xFFEDE7F6; title = I18n.t("Under review");
+                msg = I18n.t("A reviewer is checking your details now."); break;
             case "VERIFIED":
-                bg = 0xFFE3F1E0; title = "✓ Verified Farmer";
-                msg = "Your identity and farm are verified. Buyers can see your badge."; break;
+                bg = 0xFFE3F1E0; title = I18n.t("✓ Verified Farmer");
+                msg = I18n.t("Your identity and farm are verified. Buyers can see your badge."); break;
             case "REJECTED":
-                bg = 0xFFFDECEA; title = "Verification rejected";
-                msg = (v.rejectionReason == null ? "" : "Reason: " + v.rejectionReason + "\n") + "Fix the issues and submit again."; break;
+                bg = 0xFFFDECEA; title = I18n.t("Verification rejected");
+                msg = (v.rejectionReason == null ? "" : I18n.t("Reason: ") + v.rejectionReason + "\n") + I18n.t("Fix the issues and submit again."); break;
             default:
-                bg = 0xFFFFF4D6; title = "Not verified yet";
-                msg = "Complete every section below, then submit. Your ID details stay private.";
+                bg = 0xFFFFF4D6; title = I18n.t("Not verified yet");
+                msg = I18n.t("Complete every section below, then submit. Your ID details stay private.");
         }
         b.cardStatus.setCardBackgroundColor(bg);
         b.tvStatusTitle.setText(title);
@@ -187,9 +189,9 @@ public class VerificationActivity extends AppCompatActivity {
     }
 
     private void flag(TextView tv, android.widget.Button btn, boolean has) {
-        tv.setText(has ? "✓ Uploaded" : "Not uploaded");
+        tv.setText(has ? I18n.t("✓ Uploaded") : I18n.t("Not uploaded"));
         tv.setTextColor(has ? 0xFF2E7D32 : 0xFFC62828);
-        btn.setText(has ? "Replace" : "Upload");
+        btn.setText(has ? I18n.t("Replace") : I18n.t("Upload"));
     }
 
     private void setEditable(boolean on) {
@@ -215,13 +217,13 @@ public class VerificationActivity extends AppCompatActivity {
             try {
                 byte[] data = ImageUtil.compress(this, uri);
                 runOnUiThread(() -> Ui.watch(this, vm.uploadDoc(type, data), b.progress, r -> {
-                    Ui.toast(this, "Photo uploaded");
+                    Ui.toast(this, I18n.t("Photo uploaded"));
                     updateFlags(r);
                 }));
             } catch (Exception e) {
                 runOnUiThread(() -> {
                     b.progress.setVisibility(View.GONE);
-                    Ui.toast(this, "Could not read that image");
+                    Ui.toast(this, I18n.t("Could not read that image"));
                 });
             }
         }).start();
@@ -231,8 +233,8 @@ public class VerificationActivity extends AppCompatActivity {
         b.btnSendOtp.setEnabled(false);
         if (timer != null) timer.cancel();
         timer = new CountDownTimer(60_000, 1_000) {
-            @Override public void onTick(long ms) { b.btnSendOtp.setText("Resend in " + (ms / 1000) + "s"); }
-            @Override public void onFinish() { b.btnSendOtp.setText("Send code"); b.btnSendOtp.setEnabled(true); }
+            @Override public void onTick(long ms) { b.btnSendOtp.setText(I18n.t("Resend in ") + (ms / 1000) + "s"); }
+            @Override public void onFinish() { b.btnSendOtp.setText(I18n.t("Send code")); b.btnSendOtp.setEnabled(true); }
         }.start();
     }
 
@@ -244,7 +246,7 @@ public class VerificationActivity extends AppCompatActivity {
                 .addOnSuccessListener(loc -> {
                     b.progress.setVisibility(View.GONE);
                     if (loc == null) {
-                        Ui.toast(this, "Could not get location. Turn on GPS or type the coordinates.");
+                        Ui.toast(this, I18n.t("Could not get location. Turn on GPS or type the coordinates."));
                         return;
                     }
                     b.etLat.setText(String.format(Locale.US, "%.6f", loc.getLatitude()));
@@ -252,22 +254,22 @@ public class VerificationActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> {
                     b.progress.setVisibility(View.GONE);
-                    Ui.toast(this, "Could not get location");
+                    Ui.toast(this, I18n.t("Could not get location"));
                 });
     }
 
     private void showTerms() {
         new AlertDialog.Builder(this)
-                .setTitle("Verification & privacy terms")
-                .setMessage("• We collect your name, National ID number and photos, phone number, farm location and "
-                        + "farm details only to confirm you are a real farmer in Trans Nzoia County.\n\n"
-                        + "• Only authorized FarmConnect administrators and County Agricultural Officers can see these details.\n\n"
-                        + "• Your ID number and photos are never shown to buyers or the public. Buyers only see a "
-                        + "\"Verified Farmer\" badge.\n\n"
-                        + "• Your ID number is stored encrypted. Your details are not sold or shared for advertising.\n\n"
-                        + "• Giving false information can lead to rejection or removal of your account.\n\n"
-                        + "• You can ask us to correct or delete your information.")
-                .setPositiveButton("OK", null)
+                .setTitle(I18n.t("Verification & privacy terms"))
+                .setMessage(I18n.t("• We collect your name, National ID number and photos, phone number, farm location and ")
+                        + I18n.t("farm details only to confirm you are a real farmer in Trans Nzoia County.\n\n")
+                        + I18n.t("• Only authorized FarmConnect administrators and County Agricultural Officers can see these details.\n\n")
+                        + I18n.t("• Your ID number and photos are never shown to buyers or the public. Buyers only see a ")
+                        + I18n.t("\"Verified Farmer\" badge.\n\n")
+                        + I18n.t("• Your ID number is stored encrypted. Your details are not sold or shared for advertising.\n\n")
+                        + I18n.t("• Giving false information can lead to rejection or removal of your account.\n\n")
+                        + I18n.t("• You can ask us to correct or delete your information."))
+                .setPositiveButton(I18n.t("OK"), null)
                 .show();
     }
 }

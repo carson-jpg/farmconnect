@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.View;
@@ -28,10 +30,10 @@ public abstract class BaseListActivity extends AppCompatActivity {
     /** {tag, label} pairs. The first one is selected at start. */
     protected String[][] chips() { return null; }
     protected boolean searchable() { return false; }
-    protected String searchHint() { return "Search"; }
+    protected String searchHint() { return I18n.t("Search"); }
     protected String fabText() { return null; }
     protected void onFab() {}
-    protected String emptyText() { return "Nothing here yet"; }
+    protected String emptyText() { return I18n.t("Nothing here yet"); }
     protected String headerActionLabel() { return null; }
     protected void onHeaderAction() {}
 
@@ -82,7 +84,7 @@ public abstract class BaseListActivity extends AppCompatActivity {
         for (int i = 0; i < cs.length; i++) {
             Chip c = new Chip(this);
             c.setId(View.generateViewId());
-            c.setText(cs[i][1]);
+            c.setText(com.farmconnect.app.util.I18n.t(cs[i][1]));
             c.setTag(cs[i][0]);
             c.setCheckable(true);
             c.setCheckedIconVisible(false);

@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -62,9 +64,9 @@ public class CheckoutActivity extends AppCompatActivity {
         }
         hasItems = !items.isEmpty();
         b.tvTotal.setText(Ui.kes(total));
-        b.btnPlace.setText("Place order · " + Ui.kes(total));
+        b.btnPlace.setText(I18n.t("Place order · ") + Ui.kes(total));
         b.btnPlace.setEnabled(hasItems);
-        b.tvSubtitle.setText(hasItems ? items.size() + (items.size() == 1 ? " product" : " products") : "Your cart is empty");
+        b.tvSubtitle.setText(hasItems ? items.size() + (items.size() == 1 ? I18n.t(" product") : I18n.t(" products")) : I18n.t("Your cart is empty"));
     }
 
     private void place() {
@@ -73,8 +75,8 @@ public class CheckoutActivity extends AppCompatActivity {
         String phone = b.etPhone.getText().toString().replaceAll("[\\s-]", "");
         String address = b.etAddress.getText().toString().trim();
         String note = b.etNote.getText().toString().trim();
-        if (!phone.matches("\\+?\\d{9,13}")) { b.tilPhone.setError("Enter a valid phone number"); b.etPhone.requestFocus(); return; }
-        if (address.length() < 5) { b.tilAddress.setError("Enter where we should deliver"); b.etAddress.requestFocus(); return; }
+        if (!phone.matches("\\+?\\d{9,13}")) { b.tilPhone.setError(I18n.t("Enter a valid phone number")); b.etPhone.requestFocus(); return; }
+        if (address.length() < 5) { b.tilAddress.setError(I18n.t("Enter where we should deliver")); b.etAddress.requestFocus(); return; }
         String pay = b.rbMpesa.isChecked() ? "MPESA_ON_DELIVERY" : "CASH_ON_DELIVERY";
 
         b.btnPlace.setEnabled(false);

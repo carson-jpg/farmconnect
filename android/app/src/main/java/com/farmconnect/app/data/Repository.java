@@ -1,5 +1,7 @@
 package com.farmconnect.app.data;
 
+import com.farmconnect.app.util.I18n;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import androidx.lifecycle.LiveData;
@@ -111,6 +113,18 @@ public class Repository {
     public LiveData<Resource<Void>> sendFeedback(int rating, String comment) { return run(api().sendFeedback(new FeedbackRequest(rating, comment))); }
     public LiveData<Resource<Analytics>> analytics() { return run(api().analytics()); }
 
+    public LiveData<Resource<List<Price>>> prices(String q) { return run(api().prices(emptyToNull(q))); }
+    public LiveData<Resource<List<PricePoint>>> priceHistory(String crop, String market) { return run(api().priceHistory(crop, market)); }
+    public LiveData<Resource<Price>> postPrice(PriceRequest r) { return run(api().postPrice(r)); }
+    public LiveData<Resource<Void>> deletePrice(long id) { return run(api().deletePrice(id)); }
+    public LiveData<Resource<AlertToggle>> togglePriceAlert(String crop) { return run(api().togglePriceAlert(crop)); }
+    public LiveData<Resource<Review>> createReview(long orderId, long sellerId, int rating, String comment) {
+        return run(api().createReview(new ReviewRequest(orderId, sellerId, rating, comment)));
+    }
+    public LiveData<Resource<SellerReviewSummary>> sellerReviews(long id) { return run(api().sellerReviews(id)); }
+    public LiveData<Resource<Review>> replyReview(long id, String text) { return run(api().replyReview(id, new ReplyRequest(text))); }
+    public LiveData<Resource<Void>> deleteReview(long id) { return run(api().deleteReview(id)); }
+
     private static String emptyToNull(String s) { return s == null || s.trim().isEmpty() ? null : s.trim(); }
 
     // admin
@@ -142,11 +156,11 @@ public class Repository {
                 IO.execute(() -> {
                     Bitmap bm = BitmapFactory.decodeStream(body.byteStream());
                     if (bm != null) live.postValue(Resource.success(bm));
-                    else live.postValue(Resource.error("Could not read image"));
+                    else live.postValue(Resource.error(I18n.t("Could not read image")));
                 });
             }
             @Override public void onFailure(Call<ResponseBody> c, Throwable t) {
-                live.setValue(Resource.error("Network error: " + t.getMessage()));
+                live.setValue(Resource.error(I18n.t("Network error: ") + t.getMessage()));
             }
         });
         return live;
@@ -161,7 +175,7 @@ public class Repository {
                 else live.setValue(Resource.error(errorText(r)));
             }
             @Override public void onFailure(Call<T> c, Throwable t) {
-                live.setValue(Resource.error("Network error: " + t.getMessage()));
+                live.setValue(Resource.error(I18n.t("Network error: ") + t.getMessage()));
             }
         });
         return live;
@@ -173,8 +187,8 @@ public class Repository {
             JsonObject o = JsonParser.parseString(s).getAsJsonObject();
             if (o.has("message") && !o.get("message").getAsString().isEmpty()) return o.get("message").getAsString();
         } catch (Exception ignored) { }
-        if (r.code() == 401) return "Please log in again";
-        if (r.code() == 403) return "Not allowed";
-        return "Error " + r.code();
+        if (r.code() == 401) return I18n.t("Please log in again");
+        if (r.code() == 403) return I18n.t("Not allowed");
+        return I18n.t("Error ") + r.code();
     }
 }

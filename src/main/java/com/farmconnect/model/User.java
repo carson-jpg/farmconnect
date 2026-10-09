@@ -27,4 +27,9 @@ public class User {
     private Instant createdAt = Instant.now();
     /** Last time this account used the API (updated at most once an hour). Used for "active users". */
     private Instant lastActiveAt;
+    /** Average seller rating (1-5) and number of reviews; kept up to date by ReviewController. */
+    @Column(columnDefinition = "double precision default 0 not null")
+    private double ratingAvg;
+    @Column(columnDefinition = "integer default 0 not null")
+    private int ratingCount;
 }

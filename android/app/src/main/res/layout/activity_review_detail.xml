@@ -35,7 +35,7 @@
                     android:layout_marginTop="6dp" android:textColor="@color/fc_text" android:textSize="14sp" />
                 <Button android:id="@+id/btnMap" style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Open farm location in Maps" android:textAllCaps="false" />
+                    android:text="@string/t_d5075adc" android:textAllCaps="false" />
                 <TextView android:id="@+id/tvFarm" android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:layout_marginTop="6dp" android:textColor="@color/fc_text" android:textSize="14sp" />
                 <TextView android:id="@+id/tvReviewed" android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -51,27 +51,27 @@
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:orientation="vertical" android:padding="16dp">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Documents (confirm the name and ID number match)" android:textColor="@color/fc_text"
+                    android:text="@string/t_87c02a58" android:textColor="@color/fc_text"
                     android:textSize="15sp" android:textStyle="bold" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp" android:text="National ID - front" android:textColor="@color/fc_muted" android:textSize="12sp" />
+                    android:layout_marginTop="14dp" android:text="@string/t_62ea4160" android:textColor="@color/fc_muted" android:textSize="12sp" />
                 <ImageView android:id="@+id/ivIdFront" android:layout_width="match_parent" android:layout_height="220dp"
-                    android:layout_marginTop="4dp" android:background="#EEF2EC" android:contentDescription="National ID - front"
+                    android:layout_marginTop="4dp" android:background="#EEF2EC" android:contentDescription="@string/t_62ea4160"
                     android:scaleType="fitCenter" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp" android:text="National ID - back" android:textColor="@color/fc_muted" android:textSize="12sp" />
+                    android:layout_marginTop="14dp" android:text="@string/t_3ed50ed8" android:textColor="@color/fc_muted" android:textSize="12sp" />
                 <ImageView android:id="@+id/ivIdBack" android:layout_width="match_parent" android:layout_height="220dp"
-                    android:layout_marginTop="4dp" android:background="#EEF2EC" android:contentDescription="National ID - back"
+                    android:layout_marginTop="4dp" android:background="#EEF2EC" android:contentDescription="@string/t_3ed50ed8"
                     android:scaleType="fitCenter" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp" android:text="Selfie" android:textColor="@color/fc_muted" android:textSize="12sp" />
+                    android:layout_marginTop="14dp" android:text="@string/t_3864935d" android:textColor="@color/fc_muted" android:textSize="12sp" />
                 <ImageView android:id="@+id/ivSelfie" android:layout_width="match_parent" android:layout_height="220dp"
-                    android:layout_marginTop="4dp" android:background="#EEF2EC" android:contentDescription="Selfie"
+                    android:layout_marginTop="4dp" android:background="#EEF2EC" android:contentDescription="@string/t_3864935d"
                     android:scaleType="fitCenter" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp" android:text="Proof of farming activity" android:textColor="@color/fc_muted" android:textSize="12sp" />
+                    android:layout_marginTop="14dp" android:text="@string/t_25a4250c" android:textColor="@color/fc_muted" android:textSize="12sp" />
                 <ImageView android:id="@+id/ivProof" android:layout_width="match_parent" android:layout_height="220dp"
-                    android:layout_marginTop="4dp" android:background="#EEF2EC" android:contentDescription="Proof of farming activity"
+                    android:layout_marginTop="4dp" android:background="#EEF2EC" android:contentDescription="@string/t_25a4250c"
                     android:scaleType="fitCenter" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -79,12 +79,12 @@
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
             android:layout_marginTop="16dp" android:layout_marginBottom="24dp" android:orientation="vertical">
             <Button android:id="@+id/btnStart" android:layout_width="match_parent" android:layout_height="56dp"
-                android:text="Start review" android:textAllCaps="false" android:visibility="gone" />
+                android:text="@string/t_5a1960c3" android:textAllCaps="false" android:visibility="gone" />
             <Button android:id="@+id/btnApprove" android:layout_width="match_parent" android:layout_height="56dp"
-                android:text="Approve - mark as Verified Farmer" android:textAllCaps="false" android:visibility="gone" />
+                android:text="@string/t_b6e5a7d6" android:textAllCaps="false" android:visibility="gone" />
             <Button android:id="@+id/btnReject" style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp"
-                android:text="Reject" android:textAllCaps="false" android:textColor="@color/fc_danger" android:visibility="gone" />
+                android:text="@string/t_d98ac127" android:textAllCaps="false" android:textColor="@color/fc_danger" android:visibility="gone" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,7 +35,7 @@ public class FarmAdapter extends RecyclerView.Adapter<FarmAdapter.VH> {
     @Override public void onBindViewHolder(VH h, int pos) {
         Farm f = items.get(pos);
         h.b.tvName.setText(f.name);
-        h.b.tvLocation.setText(f.location == null || f.location.isEmpty() ? "No location set" : "📍 " + f.location + (f.subCounty == null || f.subCounty.isEmpty() ? "" : " · " + f.subCounty));
+        h.b.tvLocation.setText(f.location == null || f.location.isEmpty() ? I18n.t("No location set") : "📍 " + f.location + (f.subCounty == null || f.subCounty.isEmpty() ? "" : " · " + f.subCounty));
         h.b.tvDesc.setText(f.description == null ? "" : f.description);
         h.b.btnEdit.setOnClickListener(v -> listener.onEdit(f));
         h.b.btnDelete.setOnClickListener(v -> listener.onDelete(f));

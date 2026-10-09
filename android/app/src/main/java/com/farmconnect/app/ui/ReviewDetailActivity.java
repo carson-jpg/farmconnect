@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
@@ -25,7 +27,7 @@ public class ReviewDetailActivity extends AppCompatActivity {
 
     @Override protected void onCreate(Bundle s) {
         super.onCreate(s);
-        setTitle("Review farmer");
+        setTitle(I18n.t("Review farmer"));
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         b = ActivityReviewDetailBinding.inflate(getLayoutInflater());
         setContentView(b.getRoot());
@@ -34,7 +36,7 @@ public class ReviewDetailActivity extends AppCompatActivity {
 
         b.btnStart.setOnClickListener(v ->
                 Ui.watch(this, vm.start(id), b.progress, d -> {
-                    Ui.toast(this, "Review started");
+                    Ui.toast(this, I18n.t("Review started"));
                     bind(d);
                 }));
         b.btnApprove.setOnClickListener(v -> confirmApprove());
@@ -52,18 +54,18 @@ public class ReviewDetailActivity extends AppCompatActivity {
         current = d;
         b.tvFullName.setText(v(d.fullName));
         Ui.styleVerification(b.tvStatus, d.status);
-        b.tvNationalId.setText("National ID: " + v(d.nationalId));
-        b.tvPhone.setText("Phone: " + v(d.phone) + (d.phoneVerified ? "  ✓ OTP verified" : "  (not verified)"));
-        b.tvAccount.setText("Account: " + v(d.accountName) + " · " + v(d.accountEmail));
-        b.tvLocation.setText(v(d.county) + " County · " + v(d.subCounty) + " · Ward: " + v(d.ward) + " · Village: " + v(d.village));
+        b.tvNationalId.setText(I18n.t("National ID: ") + v(d.nationalId));
+        b.tvPhone.setText(I18n.t("Phone: ") + v(d.phone) + (d.phoneVerified ? I18n.t("  ✓ OTP verified") : I18n.t("  (not verified)")));
+        b.tvAccount.setText(I18n.t("Account: ") + v(d.accountName) + " · " + v(d.accountEmail));
+        b.tvLocation.setText(v(d.county) + I18n.t(" County · ") + v(d.subCounty) + I18n.t(" · Ward: ") + v(d.ward) + I18n.t(" · Village: ") + v(d.village));
         boolean hasGps = d.farmLat != null && d.farmLng != null;
-        b.tvGps.setText(hasGps ? String.format(Locale.US, "Farm GPS: %.6f, %.6f", d.farmLat, d.farmLng) : "Farm GPS: -");
+        b.tvGps.setText(hasGps ? String.format(Locale.US, I18n.t("Farm GPS: %.6f, %.6f"), d.farmLat, d.farmLng) : I18n.t("Farm GPS: -"));
         b.btnMap.setVisibility(hasGps ? View.VISIBLE : View.GONE);
-        b.tvFarm.setText("Farming: " + v(d.farmingType) + " · " + v(d.mainProduce)
-                + " · " + (d.farmSize == null ? "-" : d.farmSize + " acres"));
-        b.tvReviewed.setText(d.reviewedByName == null ? "" : "Reviewer: " + d.reviewedByName
+        b.tvFarm.setText(I18n.t("Farming: ") + v(d.farmingType) + " · " + v(d.mainProduce)
+                + " · " + (d.farmSize == null ? "-" : d.farmSize + I18n.t(" acres")));
+        b.tvReviewed.setText(d.reviewedByName == null ? "" : I18n.t("Reviewer: ") + d.reviewedByName
                 + (d.reviewedAt == null ? "" : " · " + Ui.dateTime(d.reviewedAt)));
-        b.tvReason.setText(d.rejectionReason == null ? "" : "Rejection reason: " + d.rejectionReason);
+        b.tvReason.setText(d.rejectionReason == null ? "" : I18n.t("Rejection reason: ") + d.rejectionReason);
 
         b.btnStart.setVisibility("PENDING".equals(d.status) ? View.VISIBLE : View.GONE);
         boolean reviewing = "UNDER_REVIEW".equals(d.status);
@@ -82,45 +84,45 @@ public class ReviewDetailActivity extends AppCompatActivity {
     private void confirmApprove() {
         String name = current == null ? "" : v(current.fullName);
         new AlertDialog.Builder(this)
-                .setTitle("Approve this farmer?")
-                .setMessage("Confirm that:\n• the name \"" + name + "\" and the ID number match the ID photos\n"
-                        + "• the selfie matches the ID photo\n• the farm proof and location look genuine")
-                .setPositiveButton("Approve", (x, y) ->
+                .setTitle(I18n.t("Approve this farmer?"))
+                .setMessage(I18n.t("Confirm that:\n• the name \"") + name + I18n.t("\" and the ID number match the ID photos\n")
+                        + I18n.t("• the selfie matches the ID photo\n• the farm proof and location look genuine"))
+                .setPositiveButton(I18n.t("Approve"), (x, y) ->
                         Ui.watch(this, vm.approve(id), b.progress, d -> {
-                            Ui.toast(this, "Farmer verified ✓");
+                            Ui.toast(this, I18n.t("Farmer verified ✓"));
                             bind(d);
                         }))
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(I18n.t("Cancel"), null)
                 .show();
     }
 
     private void askReject() {
         EditText reason = new EditText(this);
-        reason.setHint("Reason shown to the farmer (min 5 characters)");
+        reason.setHint(I18n.t("Reason shown to the farmer (min 5 characters)"));
         reason.setPadding(48, 32, 48, 32);
         new AlertDialog.Builder(this)
-                .setTitle("Reject verification")
+                .setTitle(I18n.t("Reject verification"))
                 .setView(reason)
-                .setPositiveButton("Reject", (x, y) -> {
+                .setPositiveButton(I18n.t("Reject"), (x, y) -> {
                     String r = reason.getText().toString().trim();
-                    if (r.length() < 5) { Ui.toast(this, "Please give a reason"); return; }
+                    if (r.length() < 5) { Ui.toast(this, I18n.t("Please give a reason")); return; }
                     Ui.watch(this, vm.reject(id, r), b.progress, d -> {
-                        Ui.toast(this, "Rejected. The farmer can fix and resubmit");
+                        Ui.toast(this, I18n.t("Rejected. The farmer can fix and resubmit"));
                         bind(d);
                     });
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(I18n.t("Cancel"), null)
                 .show();
     }
 
     private void openMap() {
         if (current == null || current.farmLat == null || current.farmLng == null) return;
-        String uri = String.format(Locale.US, "geo:%f,%f?q=%f,%f(Farm)", current.farmLat, current.farmLng,
+        String uri = String.format(Locale.US, I18n.t("geo:%f,%f?q=%f,%f(Farm)"), current.farmLat, current.farmLng,
                 current.farmLat, current.farmLng);
         try {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(uri)));
         } catch (ActivityNotFoundException e) {
-            Ui.toast(this, "No maps app installed");
+            Ui.toast(this, I18n.t("No maps app installed"));
         }
     }
 }

@@ -1,0 +1,74 @@
+diff --git a/android/app/src/main/java/com/farmconnect/app/data/ApiService.java b/android/app/src/main/java/com/farmconnect/app/data/ApiService.java
+index 41794c2..340eed5 100644
+--- a/android/app/src/main/java/com/farmconnect/app/data/ApiService.java
++++ b/android/app/src/main/java/com/farmconnect/app/data/ApiService.java
+@@ -94,7 +94,7 @@ public interface ApiService {
+     @DELETE("api/prices/{id}") Call<Void> deletePrice(@Path("id") long id);
+     @POST("api/prices/alerts/toggle") Call<AlertToggle> togglePriceAlert(@Query("crop") String crop);
+     @POST("api/reviews") Call<Review> createReview(@Body ReviewRequest r);
+-    @GET("api/reviews/seller/{id}") Call<ReviewSummary> sellerReviews(@Path("id") long id);
++    @GET("api/reviews/seller/{id}") Call<SellerReviewSummary> sellerReviews(@Path("id") long id);
+     @POST("api/reviews/{id}/reply") Call<Review> replyReview(@Path("id") long id, @Body ReplyRequest r);
+     @DELETE("api/reviews/{id}") Call<Void> deleteReview(@Path("id") long id);
+ 
+diff --git a/android/app/src/main/java/com/farmconnect/app/data/Models.java b/android/app/src/main/java/com/farmconnect/app/data/Models.java
+index e7e8852..66b7bae 100644
+--- a/android/app/src/main/java/com/farmconnect/app/data/Models.java
++++ b/android/app/src/main/java/com/farmconnect/app/data/Models.java
+@@ -199,7 +199,7 @@ public class Models {
+     }
+     public static class ReplyRequest { public String reply; public ReplyRequest(String r) { reply = r; } }
+     public static class Review { public long id; public int rating; public String buyerName, comment, reply, createdAt, repliedAt; }
+-    public static class ReviewSummary {
++    public static class SellerReviewSummary {
+         public long sellerId; public String sellerName; public boolean verified; public double average; public int count;
+         public int[] distribution; public List<Review> reviews;
+     }
+diff --git a/android/app/src/main/java/com/farmconnect/app/data/Repository.java b/android/app/src/main/java/com/farmconnect/app/data/Repository.java
+index be3b5e6..90427b4 100644
+--- a/android/app/src/main/java/com/farmconnect/app/data/Repository.java
++++ b/android/app/src/main/java/com/farmconnect/app/data/Repository.java
+@@ -121,7 +121,7 @@ public class Repository {
+     public LiveData<Resource<Review>> createReview(long orderId, long sellerId, int rating, String comment) {
+         return run(api().createReview(new ReviewRequest(orderId, sellerId, rating, comment)));
+     }
+-    public LiveData<Resource<ReviewSummary>> sellerReviews(long id) { return run(api().sellerReviews(id)); }
++    public LiveData<Resource<SellerReviewSummary>> sellerReviews(long id) { return run(api().sellerReviews(id)); }
+     public LiveData<Resource<Review>> replyReview(long id, String text) { return run(api().replyReview(id, new ReplyRequest(text))); }
+     public LiveData<Resource<Void>> deleteReview(long id) { return run(api().deleteReview(id)); }
+ 
+diff --git a/android/app/src/main/java/com/farmconnect/app/ui/ReviewsActivity.java b/android/app/src/main/java/com/farmconnect/app/ui/ReviewsActivity.java
+index ef9ba30..8f5f637 100644
+--- a/android/app/src/main/java/com/farmconnect/app/ui/ReviewsActivity.java
++++ b/android/app/src/main/java/com/farmconnect/app/ui/ReviewsActivity.java
+@@ -6,7 +6,7 @@ import android.widget.LinearLayout;
+ import android.widget.TextView;
+ import androidx.appcompat.app.AlertDialog;
+ import com.farmconnect.app.data.Models.Review;
+-import com.farmconnect.app.data.Models.ReviewSummary;
++import com.farmconnect.app.data.Models.SellerReviewSummary;
+ import com.farmconnect.app.data.Session;
+ import com.farmconnect.app.util.Ui;
+ import com.google.android.material.card.MaterialCardView;
+@@ -27,7 +27,7 @@ public class ReviewsActivity extends BaseListActivity {
+         Ui.watch(this, vm.sellerReviews(sellerId), b.progress, this::render);
+     }
+ 
+-    private void render(ReviewSummary s) {
++    private void render(SellerReviewSummary s) {
+         b.tvTitle.setText(s.sellerName == null ? I18n.t("Seller reviews") : s.sellerName);
+         boolean mine = Session.id() == sellerId;
+         boolean admin = "ADMIN".equals(Session.role());
+diff --git a/android/app/src/main/java/com/farmconnect/app/vm/CommunityViewModel.java b/android/app/src/main/java/com/farmconnect/app/vm/CommunityViewModel.java
+index e6a07ee..36001c5 100644
+--- a/android/app/src/main/java/com/farmconnect/app/vm/CommunityViewModel.java
++++ b/android/app/src/main/java/com/farmconnect/app/vm/CommunityViewModel.java
+@@ -49,7 +49,7 @@ public class CommunityViewModel extends ViewModel {
+     public LiveData<Resource<Void>> deletePrice(long id) { return repo.deletePrice(id); }
+     public LiveData<Resource<AlertToggle>> togglePriceAlert(String crop) { return repo.togglePriceAlert(crop); }
+     public LiveData<Resource<Review>> createReview(long orderId, long sellerId, int rating, String comment) { return repo.createReview(orderId, sellerId, rating, comment); }
+-    public LiveData<Resource<ReviewSummary>> sellerReviews(long id) { return repo.sellerReviews(id); }
++    public LiveData<Resource<SellerReviewSummary>> sellerReviews(long id) { return repo.sellerReviews(id); }
+     public LiveData<Resource<Review>> replyReview(long id, String text) { return repo.replyReview(id, text); }
+     public LiveData<Resource<Void>> deleteReview(long id) { return repo.deleteReview(id); }
+     public LiveData<Resource<List<Farm>>> myFarms() { return repo.myFarms(); }

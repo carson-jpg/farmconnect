@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.os.Bundle;
 import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,7 +19,7 @@ public class WishlistActivity extends AppCompatActivity implements ProductAdapte
 
     @Override protected void onCreate(Bundle s) {
         super.onCreate(s);
-        setTitle("Wishlist");
+        setTitle(I18n.t("Wishlist"));
         b = ActivityListBinding.inflate(getLayoutInflater());
         setContentView(b.getRoot());
         vm = new ViewModelProvider(this).get(BuyerViewModel.class);
@@ -35,7 +37,7 @@ public class WishlistActivity extends AppCompatActivity implements ProductAdapte
     }
 
     @Override public void onPrimary(Product p) {
-        Ui.watch(this, vm.addToCart(p.id, 1), null, c -> Ui.toast(this, "Added to cart"));
+        Ui.watch(this, vm.addToCart(p.id, 1), null, c -> Ui.toast(this, I18n.t("Added to cart")));
     }
 
     @Override public void onSecondary(Product p) {

@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,15 +42,15 @@ public class ProductDetailActivity extends AppCompatActivity {
         b.btnMinus.setOnClickListener(v -> { if (qty > 1) { qty--; b.tvQty.setText(String.valueOf(qty)); } });
         b.btnPlus.setOnClickListener(v -> {
             if (product != null && qty < product.quantity) { qty++; b.tvQty.setText(String.valueOf(qty)); }
-            else Ui.toast(this, "That is all we have in stock");
+            else Ui.toast(this, I18n.t("That is all we have in stock"));
         });
         b.btnCart.setOnClickListener(v -> {
             if (product == null) return;
-            Ui.watch(this, vm.addToCart(product.id, qty), null, c -> Ui.toast(this, "Added " + qty + " to cart"));
+            Ui.watch(this, vm.addToCart(product.id, qty), null, c -> Ui.toast(this, I18n.t("Added ") + qty + I18n.t(" to cart")));
         });
         b.btnSave.setOnClickListener(v -> {
             if (product == null) return;
-            Ui.watch(this, vm.addWish(product.id), null, x -> Ui.toast(this, "Saved to wishlist"));
+            Ui.watch(this, vm.addWish(product.id), null, x -> Ui.toast(this, I18n.t("Saved to wishlist")));
         });
 
         long id = getIntent().getLongExtra("id", -1);
@@ -60,7 +62,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         product = p;
         b.tvName.setText(p.name);
         b.tvPrice.setText(Ui.kes(p.price) + (p.unit != null && !p.unit.isEmpty() ? " / " + p.unit : ""));
-        b.tvStock.setText(p.quantity > 0 ? p.quantity + " in stock" : "Out of stock");
+        b.tvStock.setText(p.quantity > 0 ? p.quantity + I18n.t(" in stock") : I18n.t("Out of stock"));
         b.tvStock.setTextColor(p.quantity > 0 ? 0xFF2E7D32 : 0xFFC62828);
         b.btnCart.setEnabled(p.quantity > 0);
         b.tvVerified.setVisibility(p.farmerVerified ? View.VISIBLE : View.GONE);
@@ -70,7 +72,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         if (hasSummary) b.tvSummary.setText(p.summary);
 
         boolean hasDesc = p.description != null && !p.description.trim().isEmpty();
-        b.tvDescription.setText(hasDesc ? p.description : "The farmer has not added a description yet.");
+        b.tvDescription.setText(hasDesc ? p.description : I18n.t("The farmer has not added a description yet."));
         b.tvDescription.setAlpha(hasDesc ? 1f : 0.6f);
 
         boolean hasCat = p.category != null && !p.category.isEmpty();
@@ -82,7 +84,12 @@ public class ProductDetailActivity extends AppCompatActivity {
         b.btnMessageSeller.setOnClickListener(v -> startActivity(new android.content.Intent(this, ChatActivity.class)
                 .putExtra("userId", p.farmerId).putExtra("name", p.farmName == null ? "Seller" : p.farmName)));
         b.tvFarm.setText(p.farmName == null ? "" : p.farmName + (p.farmerVerified ? "  ✓" : ""));
-        b.tvFarmLoc.setText(p.farmLocation == null || p.farmLocation.isEmpty() ? "Trans Nzoia County" : p.farmLocation);
+        String loc = p.farmLocation == null || p.farmLocation.isEmpty() ? I18n.t("Trans Nzoia County") : p.farmLocation;
+        loc += p.sellerReviews > 0 ? String.format(java.util.Locale.US, I18n.t("  ·  ★ %.1f (%d reviews)"), p.sellerRating, p.sellerReviews) : I18n.t("  ·  No reviews yet");
+        b.tvFarmLoc.setText(loc);
+        android.view.View.OnClickListener openReviews = v -> startActivity(new android.content.Intent(this, ReviewsActivity.class).putExtra("sellerId", p.farmerId));
+        b.tvFarm.setOnClickListener(openReviews);
+        b.tvFarmLoc.setOnClickListener(openReviews);
 
         List<String> urls = new ArrayList<>();
         if (p.imageUrls != null) urls.addAll(p.imageUrls);

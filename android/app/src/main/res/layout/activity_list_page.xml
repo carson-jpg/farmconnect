@@ -8,7 +8,7 @@
         android:background="@drawable/bg_dash_header" android:gravity="center_vertical" android:orientation="horizontal"
         android:paddingBottom="26dp" android:paddingEnd="16dp" android:paddingStart="16dp" android:paddingTop="20dp">
         <ImageButton android:id="@+id/btnBack" android:layout_width="42dp" android:layout_height="42dp"
-            android:layout_marginEnd="12dp" android:background="@drawable/bg_icon_glass" android:contentDescription="Back"
+            android:layout_marginEnd="12dp" android:background="@drawable/bg_icon_glass" android:contentDescription="@string/t_0557fa92"
             android:padding="10dp" android:src="@drawable/ic_back" android:tint="#FFFFFF" />
         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
             android:orientation="vertical">
@@ -26,7 +26,7 @@
         app:cardCornerRadius="16dp" app:cardElevation="5dp" app:strokeWidth="0dp">
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical"
             android:orientation="horizontal" android:paddingEnd="8dp" android:paddingStart="16dp">
-            <ImageView android:layout_width="22dp" android:layout_height="22dp" android:contentDescription="Search"
+            <ImageView android:layout_width="22dp" android:layout_height="22dp" android:contentDescription="@string/t_13348442"
                 android:src="@drawable/ic_search" android:tint="@color/fc_muted" />
             <EditText android:id="@+id/etSearch" android:layout_width="0dp" android:layout_height="50dp" android:layout_weight="1"
                 android:background="@null" android:imeOptions="actionSearch" android:inputType="text" android:maxLines="1"

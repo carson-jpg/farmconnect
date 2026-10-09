@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -32,7 +34,7 @@ public class AdminHomeActivity extends AppCompatActivity {
         vm = new ViewModelProvider(this).get(AdminViewModel.class);
 
         String name = Session.name();
-        b.tvTitle.setText("Hello, " + (name == null || name.trim().isEmpty() ? "Admin" : name.trim().split(" ")[0]));
+        b.tvTitle.setText(I18n.t("Hello, ") + (name == null || name.trim().isEmpty() ? I18n.t("Admin") : name.trim().split(" ")[0]));
         b.btnLogout.setOnClickListener(v -> Ui.logout(this));
 
         View.OnClickListener verify = v -> startActivity(new Intent(this, ReviewerHomeActivity.class));
@@ -56,7 +58,7 @@ public class AdminHomeActivity extends AppCompatActivity {
 
     private void showStats(AdminStats st) {
         b.tvRevenue.setText(Ui.kes(st.revenue));
-        b.tvRevenueSub.setText(st.orders + " orders · " + st.deliveredOrders + " delivered");
+        b.tvRevenueSub.setText(st.orders + I18n.t(" orders · ") + st.deliveredOrders + I18n.t(" delivered"));
         b.tvUsers.setText(String.valueOf(st.users));
         b.tvFarmers.setText(st.verifiedFarmers + " / " + st.farmers);
         b.tvOrders.setText(String.valueOf(st.orders));
@@ -64,7 +66,7 @@ public class AdminHomeActivity extends AppCompatActivity {
 
         long waiting = st.pendingVerifications + st.underReview;
         b.tvAttention.setVisibility(waiting > 0 ? View.VISIBLE : View.GONE);
-        b.tvAttention.setText("⏳ " + waiting + (waiting == 1 ? " farmer is" : " farmers are") + " waiting for verification  →");
+        b.tvAttention.setText("⏳ " + waiting + (waiting == 1 ? I18n.t(" farmer is") : I18n.t(" farmers are")) + I18n.t(" waiting for verification  →"));
 
         b.tvPendingN.setText(String.valueOf(st.pendingOrders));
         b.tvDeliveredN.setText(String.valueOf(st.deliveredOrders));
@@ -100,7 +102,7 @@ public class AdminHomeActivity extends AppCompatActivity {
             LinearLayout col = new LinearLayout(this);
             col.setOrientation(LinearLayout.VERTICAL);
             TextView t1 = new TextView(this);
-            t1.setText("Order #" + o.id + " · " + (o.buyerName == null ? "Customer" : o.buyerName));
+            t1.setText(I18n.t("Order #") + o.id + " · " + (o.buyerName == null ? I18n.t("Customer") : o.buyerName));
             t1.setTextColor(0xFF1C2B1E);
             t1.setTextSize(14);
             t1.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);

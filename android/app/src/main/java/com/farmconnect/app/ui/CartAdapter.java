@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
@@ -46,7 +48,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.VH> {
             h.b.ivThumb.setImageResource(R.drawable.ph_product);
         }
         h.b.tvName.setText(c.product.name);
-        h.b.tvFarm.setText(c.product.farmName == null ? "" : "by " + c.product.farmName);
+        h.b.tvFarm.setText(c.product.farmName == null ? "" : I18n.t("by ") + c.product.farmName);
         String unit = c.product.unit == null || c.product.unit.isEmpty() ? "" : " / " + c.product.unit;
         h.b.tvUnit.setText(Ui.kes(c.product.price) + unit);
         h.b.tvQty.setText(String.valueOf(c.quantity));

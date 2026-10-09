@@ -11,21 +11,21 @@
             android:background="@drawable/bg_glass_card" android:orientation="vertical" android:padding="24dp">
 
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="🌿 FarmConnect" android:textColor="#CFE8B5" android:textSize="14sp"
+                android:text="@string/t_f0f91c85" android:textColor="#CFE8B5" android:textSize="14sp"
                 android:fontFamily="serif" android:textStyle="bold" />
 
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:layout_marginTop="12dp" android:text="Create account" android:textColor="#FFFFFF"
+                android:layout_marginTop="12dp" android:text="@string/t_42369faa" android:textColor="#FFFFFF"
                 android:textSize="32sp" android:textStyle="bold" android:fontFamily="serif" />
 
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:layout_marginTop="4dp" android:text="Join the farm-to-market community"
+                android:layout_marginTop="4dp" android:text="@string/t_13ecca04"
                 android:textColor="#E6FFFFFF" android:textSize="13sp" />
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:layout_marginTop="14dp" android:hint="Full name"
+                android:layout_marginTop="14dp" android:hint="@string/t_f11b368c"
                 android:textColorHint="#E6FFFFFF"
                 app:hintTextColor="#FFFFFF"
                 app:boxBackgroundColor="#26FFFFFF"
@@ -40,7 +40,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:layout_marginTop="14dp" android:hint="Email"
+                android:layout_marginTop="14dp" android:hint="@string/t_ce8ae9da"
                 android:textColorHint="#E6FFFFFF"
                 app:hintTextColor="#FFFFFF"
                 app:boxBackgroundColor="#26FFFFFF"
@@ -55,7 +55,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:layout_marginTop="14dp" android:hint="Phone"
+                android:layout_marginTop="14dp" android:hint="@string/t_bcc254b5"
                 android:textColorHint="#E6FFFFFF"
                 app:hintTextColor="#FFFFFF"
                 app:boxBackgroundColor="#26FFFFFF"
@@ -70,7 +70,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:layout_marginTop="14dp" android:hint="Password (min 6)"
+                android:layout_marginTop="14dp" android:hint="@string/t_72e40f94"
                 android:textColorHint="#E6FFFFFF"
                 app:hintTextColor="#FFFFFF"
                 app:boxBackgroundColor="#26FFFFFF"
@@ -84,16 +84,16 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:layout_marginTop="18dp" android:text="I want to join as"
+                android:layout_marginTop="18dp" android:text="@string/t_c3db2ac5"
                 android:textColor="#E6FFFFFF" android:textSize="13sp" />
 
             <RadioGroup android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:orientation="horizontal">
                 <RadioButton android:id="@+id/rbBuyer" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:checked="true" android:text="Buyer"
+                    android:layout_height="wrap_content" android:checked="true" android:text="@string/t_65fba9ec"
                     android:textColor="#FFFFFF" android:buttonTint="#FFFFFF" />
                 <RadioButton android:id="@+id/rbFarmer" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:layout_marginStart="24dp" android:text="Farmer"
+                    android:layout_height="wrap_content" android:layout_marginStart="24dp" android:text="@string/t_8bf7aa45"
                     android:textColor="#FFFFFF" android:buttonTint="#FFFFFF" />
             </RadioGroup>
 
@@ -104,12 +104,12 @@
             <androidx.appcompat.widget.AppCompatButton android:id="@+id/btnRegister"
                 android:layout_width="match_parent" android:layout_height="56dp"
                 android:layout_marginTop="20dp" android:background="@drawable/bg_btn_primary"
-                android:text="Create account" android:textAllCaps="false" android:textColor="#FFFFFF"
+                android:text="@string/t_42369faa" android:textAllCaps="false" android:textColor="#FFFFFF"
                 android:textSize="18sp" android:textStyle="bold" android:fontFamily="serif" />
 
             <TextView android:id="@+id/tvLogin" android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:layout_gravity="center_horizontal"
-                android:padding="16dp" android:text="Already have an account? Log in"
+                android:padding="16dp" android:text="@string/t_b52213de"
                 android:textColor="#FFFFFF" android:textSize="13sp" android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>

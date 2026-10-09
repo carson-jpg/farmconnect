@@ -8,12 +8,12 @@
         android:background="@drawable/bg_dash_header" android:gravity="center_vertical" android:orientation="horizontal"
         android:paddingBottom="36dp" android:paddingEnd="16dp" android:paddingStart="16dp" android:paddingTop="20dp">
         <ImageButton android:id="@+id/btnBack" android:layout_width="42dp" android:layout_height="42dp"
-            android:layout_marginEnd="12dp" android:background="@drawable/bg_icon_glass" android:contentDescription="Back"
+            android:layout_marginEnd="12dp" android:background="@drawable/bg_icon_glass" android:contentDescription="@string/t_0557fa92"
             android:padding="10dp" android:src="@drawable/ic_back" android:tint="#FFFFFF" />
         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
             android:orientation="vertical">
             <TextView android:id="@+id/tvTitle" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:fontFamily="serif" android:text="Users" android:textColor="#FFFFFF" android:textSize="22sp"
+                android:fontFamily="serif" android:text="@string/t_f9aae5fd" android:textColor="#FFFFFF" android:textSize="22sp"
                 android:textStyle="bold" />
             <TextView android:id="@+id/tvSubtitle" android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:text="" android:textColor="#CFE8B5" android:textSize="13sp" />
@@ -25,10 +25,10 @@
         app:cardBackgroundColor="@color/fc_card" app:cardCornerRadius="16dp" app:cardElevation="5dp" app:strokeWidth="0dp">
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical"
             android:orientation="horizontal" android:paddingEnd="8dp" android:paddingStart="16dp">
-            <ImageView android:layout_width="22dp" android:layout_height="22dp" android:contentDescription="Search"
+            <ImageView android:layout_width="22dp" android:layout_height="22dp" android:contentDescription="@string/t_13348442"
                 android:src="@drawable/ic_search" android:tint="@color/fc_muted" />
             <EditText android:id="@+id/etSearch" android:layout_width="0dp" android:layout_height="50dp" android:layout_weight="1"
-                android:background="@null" android:hint="Search by name or email" android:imeOptions="actionSearch" android:inputType="text"
+                android:background="@null" android:hint="@string/t_cd6a6757" android:imeOptions="actionSearch" android:inputType="text"
                 android:maxLines="1" android:paddingEnd="12dp" android:paddingStart="12dp" android:textSize="15sp" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
@@ -37,25 +37,25 @@
             android:layout_height="wrap_content" android:paddingEnd="12dp" android:paddingStart="12dp" android:paddingTop="8dp"
             app:selectionRequired="true" app:singleLine="true" app:singleSelection="true">
             <com.google.android.material.chip.Chip android:id="@+id/chipAll" style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content" android:layout_height="wrap_content" android:checked="true" android:tag="ALL" android:text="All" />
+                android:layout_width="wrap_content" android:layout_height="wrap_content" android:checked="true" android:tag="ALL" android:text="@string/t_b1c94ca2" />
             <com.google.android.material.chip.Chip android:id="@+id/chipFarmers" style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content" android:layout_height="wrap_content" android:tag="FARMER" android:text="Farmers" />
+                android:layout_width="wrap_content" android:layout_height="wrap_content" android:tag="FARMER" android:text="@string/t_cba34aae" />
             <com.google.android.material.chip.Chip android:id="@+id/chipBuyers" style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content" android:layout_height="wrap_content" android:tag="BUYER" android:text="Buyers" />
+                android:layout_width="wrap_content" android:layout_height="wrap_content" android:tag="BUYER" android:text="@string/t_573d777a" />
             <com.google.android.material.chip.Chip android:id="@+id/chipOfficers" style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content" android:layout_height="wrap_content" android:tag="OFFICER" android:text="Officers" />
+                android:layout_width="wrap_content" android:layout_height="wrap_content" android:tag="OFFICER" android:text="@string/t_89cb9934" />
             <com.google.android.material.chip.Chip android:id="@+id/chipAdmins" style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content" android:layout_height="wrap_content" android:tag="ADMIN" android:text="Admins" />
+                android:layout_width="wrap_content" android:layout_height="wrap_content" android:tag="ADMIN" android:text="@string/t_3124e632" />
         </com.google.android.material.chip.ChipGroup>
     </HorizontalScrollView>
     <ProgressBar android:id="@+id/progress" style="?android:attr/progressBarStyleHorizontal" android:layout_width="match_parent"
         android:layout_height="3dp" android:indeterminate="true" android:visibility="invisible" />
     <TextView android:id="@+id/tvEmpty" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center"
-        android:padding="36dp" android:text="No users match" android:textColor="@color/fc_muted" android:visibility="gone" />
+        android:padding="36dp" android:text="@string/t_0a0b4c16" android:textColor="@color/fc_muted" android:visibility="gone" />
     <androidx.recyclerview.widget.RecyclerView android:id="@+id/rv" android:layout_width="match_parent" android:layout_height="0dp"
         android:layout_weight="1" android:clipToPadding="false" android:paddingBottom="90dp" />
 </LinearLayout>
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton android:id="@+id/fabOfficer"
         android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="bottom|end"
-        android:layout_margin="18dp" android:text="Add officer" android:textAllCaps="false" />
+        android:layout_margin="18dp" android:text="@string/t_1119af72" android:textAllCaps="false" />
 </FrameLayout>

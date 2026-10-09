@@ -7,5 +7,6 @@ public class FarmApp extends Application {
     @Override public void onCreate() {
         super.onCreate();
         Session.init(this);
+        com.farmconnect.app.util.I18n.init(this);
     }
 }

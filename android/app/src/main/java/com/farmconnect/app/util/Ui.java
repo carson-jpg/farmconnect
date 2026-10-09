@@ -24,9 +24,9 @@ import java.util.TimeZone;
 import java.util.function.Consumer;
 
 public class Ui {
-    public static void toast(Context c, String m) { Toast.makeText(c, m, Toast.LENGTH_SHORT).show(); }
+    public static void toast(Context c, String m) { Toast.makeText(c, I18n.t(m), Toast.LENGTH_SHORT).show(); }
 
-    public static String kes(double v) { return String.format(Locale.US, "KES %,.0f", v); }
+    public static String kes(double v) { return String.format(Locale.US, I18n.t("KES %,.0f"), v); }
 
     /** "2026-10-02T06:12:33.123Z" -> "02 Oct 2026, 09:12" in the phone's time zone. */
     public static String dateTime(String iso) {
@@ -35,7 +35,7 @@ public class Ui {
             SimpleDateFormat in = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
             in.setTimeZone(TimeZone.getTimeZone("UTC"));
             Date d = in.parse(iso.substring(0, 19));
-            return new SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault()).format(d);
+            return new SimpleDateFormat("dd MMM yyyy, HH:mm", I18n.locale()).format(d);
         } catch (Exception e) {
             return iso;
         }
@@ -44,7 +44,7 @@ public class Ui {
     /** Colored order-status pill. */
     public static void styleStatus(TextView tv, String status) {
         String s = status == null ? "" : status;
-        tv.setText(s.isEmpty() ? "" : s.charAt(0) + s.substring(1).toLowerCase(Locale.US));
+        tv.setText(I18n.t(s.isEmpty() ? "" : s.charAt(0) + s.substring(1).toLowerCase(Locale.US)));
         int c;
         switch (s) {
             case "PENDING": c = 0xFFF9A825; break;
@@ -63,15 +63,15 @@ public class Ui {
         if (iso == null || iso.length() < 10) return iso == null ? "" : iso;
         try {
             Date d = new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(iso.substring(0, 10));
-            return new SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(d);
+            return new SimpleDateFormat("dd MMM yyyy", I18n.locale()).format(d);
         } catch (Exception e) {
             return iso.substring(0, 10);
         }
     }
 
     public static String paymentLabel(String m) {
-        if ("MPESA_ON_DELIVERY".equals(m)) return "M-Pesa on delivery";
-        return "Cash on delivery";
+        if ("MPESA_ON_DELIVERY".equals(m)) return I18n.t("M-Pesa on delivery");
+        return I18n.t("Cash on delivery");
     }
 
     /** First letter of a name, for avatar circles. */
@@ -86,7 +86,7 @@ public class Ui {
             case "UNDER_REVIEW": return "Under review";
             case "VERIFIED": return "✓ Verified";
             case "REJECTED": return "Rejected";
-            default: return "Not submitted";
+            default: return I18n.t("Not submitted");
         }
     }
 
@@ -103,7 +103,7 @@ public class Ui {
 
     /** Colored verification-status pill. */
     public static void styleVerification(TextView tv, String status) {
-        tv.setText(verificationLabel(status));
+        tv.setText(I18n.t(verificationLabel(status)));
         tv.setBackgroundResource(R.drawable.bg_chip);
         tv.setBackgroundTintList(ColorStateList.valueOf(verificationColor(status)));
     }

@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.content.Intent;
 import com.farmconnect.app.data.Models.AppNotification;
 import com.farmconnect.app.data.Session;
@@ -9,9 +11,9 @@ import java.util.List;
 
 /** The bell: order updates, verification results, messages, new programmes and group notices. */
 public class NotificationsActivity extends BaseListActivity {
-    @Override protected String screenTitle() { return "Alerts"; }
-    @Override protected String emptyText() { return "You are all caught up 🎉\nOrder updates, messages and county notices appear here."; }
-    @Override protected String headerActionLabel() { return "Mark all read"; }
+    @Override protected String screenTitle() { return I18n.t("Alerts"); }
+    @Override protected String emptyText() { return I18n.t("You are all caught up 🎉\nOrder updates, messages and county notices appear here."); }
+    @Override protected String headerActionLabel() { return I18n.t("Mark all read"); }
 
     @Override protected void onHeaderAction() {
         Ui.watch(this, vm.readAllNotifications(), b.progress, c -> load());
@@ -24,6 +26,8 @@ public class NotificationsActivity extends BaseListActivity {
             case "MESSAGE": return "💬";
             case "POST": return "📢";
             case "GROUP": return "👥";
+            case "PRICE": return "💹";
+            case "REVIEW": return "⭐";
             default: return "🔔";
         }
     }
@@ -36,7 +40,7 @@ public class NotificationsActivity extends BaseListActivity {
                 if (!n.read) unread++;
                 rows.add(Row.of(icon(n.type), n.title).sub(n.body).meta(Ui.dateTime(n.createdAt)).unread(!n.read).click(() -> open(n)));
             }
-            show(rows, unread > 0 ? unread + " unread" : "All read");
+            show(rows, unread > 0 ? unread + I18n.t(" unread") : I18n.t("All read"));
         });
     }
 
@@ -45,12 +49,18 @@ public class NotificationsActivity extends BaseListActivity {
         Intent i = null;
         switch (n.type == null ? "" : n.type) {
             case "MESSAGE": {
-                String name = n.title != null && n.title.contains("from ") ? n.title.substring(n.title.indexOf("from ") + 5) : "Chat";
+                String name = n.title != null && n.title.contains("from ") ? n.title.substring(n.title.indexOf("from ") + 5) : I18n.t("Chat");
                 i = new Intent(this, ChatActivity.class).putExtra("userId", n.refId).putExtra("name", name);
                 break;
             }
             case "POST":
                 i = new Intent(this, PostDetailActivity.class).putExtra("id", n.refId);
+                break;
+            case "PRICE":
+                i = new Intent(this, PricesActivity.class);
+                break;
+            case "REVIEW":
+                i = new Intent(this, ReviewsActivity.class).putExtra("sellerId", n.refId);
                 break;
             case "GROUP":
                 i = new Intent(this, GroupDetailActivity.class).putExtra("id", n.refId);

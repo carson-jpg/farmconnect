@@ -37,6 +37,8 @@
         <activity android:name=".ui.GroupsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.GroupDetailActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.AnalyticsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.PricesActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.ReviewsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.AdminHomeActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.AdminUsersActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.AdminProductsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />

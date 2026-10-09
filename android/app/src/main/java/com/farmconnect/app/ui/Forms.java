@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.text.InputType;
@@ -40,7 +42,8 @@ public final class Forms {
     public static Field choice(String key, String label, boolean required, String[] values, String[] labels) {
         Field f = new Field(key, label, CHOICE, required);
         f.values = values;
-        f.labels = labels;
+        f.labels = new String[labels.length];
+        for (int i = 0; i < labels.length; i++) f.labels[i] = com.farmconnect.app.util.I18n.t(labels[i]);
         return f;
     }
 
@@ -109,7 +112,7 @@ public final class Forms {
         }
 
         AlertDialog dialog = new AlertDialog.Builder(a).setTitle(title).setView(sv)
-                .setPositiveButton(positive, null).setNegativeButton("Cancel", null).create();
+                .setPositiveButton(positive, null).setNegativeButton(I18n.t("Cancel"), null).create();
         dialog.show();
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             Map<String, String> out = new LinkedHashMap<>();
@@ -117,7 +120,7 @@ public final class Forms {
             for (Field f : fields) {
                 String val = (f.type == CHOICE || f.type == DATE) ? f.value
                         : String.valueOf(edits.get(f).getText()).trim();
-                if (f.required && val.isEmpty()) { tils.get(f).setError("Required"); ok = false; }
+                if (f.required && val.isEmpty()) { tils.get(f).setError(I18n.t("Required")); ok = false; }
                 out.put(f.key, val);
             }
             if (!ok) return;

@@ -20,11 +20,11 @@
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:orientation="vertical" android:padding="16dp">
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:fontFamily="serif" android:text="Product photos" android:textColor="@color/fc_text"
+                        android:fontFamily="serif" android:text="@string/t_40a8d09c" android:textColor="@color/fc_text"
                         android:textSize="18sp" android:textStyle="bold" />
                     <TextView android:id="@+id/tvPhotoHint" android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:layout_marginTop="2dp"
-                        android:text="Add up to 6 photos. The first one is the cover buyers see in the list."
+                        android:text="@string/t_6be1ff38"
                         android:textColor="@color/fc_muted" android:textSize="12sp" />
                     <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:layout_marginTop="12dp" android:scrollbars="none">
@@ -42,26 +42,26 @@
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:orientation="vertical" android:padding="16dp">
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:fontFamily="serif" android:text="Details" android:textColor="@color/fc_text"
+                        android:fontFamily="serif" android:text="@string/t_3ec365dd" android:textColor="@color/fc_text"
                         android:textSize="18sp" android:textStyle="bold" />
 
         <com.google.android.material.textfield.TextInputLayout android:id="@+id/tilFarm"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_marginTop="12dp" android:hint="Farm">
+            android:layout_marginTop="12dp" android:hint="@string/t_a7806cd5">
             <com.google.android.material.textfield.MaterialAutoCompleteTextView android:id="@+id/etFarm"
                 android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="none" />
         </com.google.android.material.textfield.TextInputLayout>
         <com.google.android.material.textfield.TextInputLayout android:id="@+id/tilName"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_marginTop="12dp" android:hint="Product name" >
+            android:layout_marginTop="12dp" android:hint="@string/t_df644ae1" >
             <com.google.android.material.textfield.TextInputEditText android:id="@+id/etName" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textCapWords"  />
         </com.google.android.material.textfield.TextInputLayout>
         <com.google.android.material.textfield.TextInputLayout android:id="@+id/tilCategory"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_marginTop="12dp" android:hint="Category">
+            android:layout_marginTop="12dp" android:hint="@string/t_3adbdb3a">
             <com.google.android.material.textfield.MaterialAutoCompleteTextView android:id="@+id/etCategory"
                 android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="none" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -70,7 +70,7 @@
                         <com.google.android.material.textfield.TextInputLayout android:id="@+id/tilPrice"
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginTop="12dp"
-                            android:layout_weight="1" android:hint="Price (KES)">
+                            android:layout_weight="1" android:hint="@string/t_ccac20d6">
                             <com.google.android.material.textfield.TextInputEditText android:id="@+id/etPrice"
                                 android:layout_width="match_parent" android:layout_height="wrap_content"
                                 android:inputType="numberDecimal" />
@@ -78,7 +78,7 @@
                         <com.google.android.material.textfield.TextInputLayout android:id="@+id/tilUnit"
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                             android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="10dp"
-                            android:layout_marginTop="12dp" android:layout_weight="1" android:hint="Sold per">
+                            android:layout_marginTop="12dp" android:layout_weight="1" android:hint="@string/t_82f6dbc6">
                             <com.google.android.material.textfield.MaterialAutoCompleteTextView android:id="@+id/etUnit"
                                 android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="none" />
                         </com.google.android.material.textfield.TextInputLayout>
@@ -87,7 +87,7 @@
         <com.google.android.material.textfield.TextInputLayout android:id="@+id/tilQty"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_marginTop="12dp" android:hint="Quantity in stock" >
+            android:layout_marginTop="12dp" android:hint="@string/t_dba03ee6" >
             <com.google.android.material.textfield.TextInputEditText android:id="@+id/etQty" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="number"  />
         </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
@@ -101,19 +101,19 @@
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:orientation="vertical" android:padding="16dp">
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:fontFamily="serif" android:text="Description" android:textColor="@color/fc_text"
+                        android:fontFamily="serif" android:text="@string/t_b5a7adde" android:textColor="@color/fc_text"
                         android:textSize="18sp" android:textStyle="bold" />
 
         <com.google.android.material.textfield.TextInputLayout android:id="@+id/tilSummary"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_marginTop="12dp" android:hint="Short summary (one line)" app:counterEnabled="true" app:counterMaxLength="200">
+            android:layout_marginTop="12dp" android:hint="@string/t_eca59ed2" app:counterEnabled="true" app:counterMaxLength="200">
             <com.google.android.material.textfield.TextInputEditText android:id="@+id/etSummary" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textCapSentences|textAutoCorrect" android:maxLength="200" android:maxLines="2" />
         </com.google.android.material.textfield.TextInputLayout>
         <com.google.android.material.textfield.TextInputLayout android:id="@+id/tilDescription"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_marginTop="12dp" android:hint="Full description" app:counterEnabled="true" app:counterMaxLength="5000" app:helperTextEnabled="true" app:helperText="How it is grown, harvest date, quality, storage, pickup or delivery...">
+            android:layout_marginTop="12dp" android:hint="@string/t_8c0c3d9b" app:counterEnabled="true" app:counterMaxLength="5000" app:helperTextEnabled="true" app:helperText="How it is grown, harvest date, quality, storage, pickup or delivery...">
             <com.google.android.material.textfield.TextInputEditText android:id="@+id/etDescription" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textMultiLine|textCapSentences|textAutoCorrect" android:gravity="top|start" android:maxLength="5000" android:minLines="7" />
         </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
@@ -131,7 +131,7 @@
         android:background="@color/fc_card" android:elevation="12dp" android:padding="14dp">
         <com.google.android.material.button.MaterialButton android:id="@+id/btnSave"
             android:layout_width="match_parent" android:layout_height="54dp" android:insetTop="0dp"
-            android:insetBottom="0dp" android:text="Save product" android:textAllCaps="false"
+            android:insetBottom="0dp" android:text="@string/t_86a83572" android:textAllCaps="false"
             android:textSize="16sp" android:textStyle="bold" app:cornerRadius="14dp" />
     </LinearLayout>
 </LinearLayout>

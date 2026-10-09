@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.os.Bundle;
 import android.view.Gravity;
 import android.widget.LinearLayout;
@@ -25,8 +27,8 @@ public class WeatherActivity extends AppCompatActivity {
         b = ActivitySimplePageBinding.inflate(getLayoutInflater());
         setContentView(b.getRoot());
         vm = new ViewModelProvider(this).get(CommunityViewModel.class);
-        b.tvTitle.setText("Weather & advice");
-        b.tvSubtitle.setText("Loading the forecast...");
+        b.tvTitle.setText(I18n.t("Weather & advice"));
+        b.tvSubtitle.setText(I18n.t("Loading the forecast..."));
         b.btnBack.setOnClickListener(v -> finish());
         Ui.watch(this, vm.weather(), b.progress, this::render);
     }
@@ -40,7 +42,7 @@ public class WeatherActivity extends AppCompatActivity {
 
     private static String dayName(String iso) {
         try {
-            return new SimpleDateFormat("EEE d MMM", Locale.getDefault()).format(new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(iso));
+            return new SimpleDateFormat("EEE d MMM", com.farmconnect.app.util.I18n.locale()).format(new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(iso));
         } catch (Exception e) { return iso; }
     }
 
@@ -55,14 +57,14 @@ public class WeatherActivity extends AppCompatActivity {
         TextView temp = Cards.text(c, Math.round(w.tempC) + "°C", 44, 0xFF2E7D32, true);
         temp.setTypeface(android.graphics.Typeface.SERIF, android.graphics.Typeface.BOLD);
         in.addView(temp);
-        in.addView(Cards.text(c, "Right now in " + w.place, 13, 0xFF5E7061, false));
+        in.addView(Cards.text(c, I18n.t("Right now in ") + w.place, 13, 0xFF5E7061, false));
         in.addView(Cards.spacer(c, 8));
-        in.addView(Cards.text(c, "💧 Humidity " + w.humidity + "%     💨 Wind " + Math.round(w.windKmh) + " km/h     🌧 Rain now "
-                + String.format(Locale.US, "%.1f", w.rainNowMm) + " mm", 13, 0xFF1C2B1E, false));
+        in.addView(Cards.text(c, I18n.t("💧 Humidity ") + w.humidity + I18n.t("%     💨 Wind ") + Math.round(w.windKmh) + I18n.t(" km/h     🌧 Rain now ")
+                + String.format(Locale.US, "%.1f", w.rainNowMm) + I18n.t(" mm"), 13, 0xFF1C2B1E, false));
 
         MaterialCardView adv = Cards.card(c, content, 12);
         LinearLayout ai = Cards.inner(adv);
-        ai.addView(Cards.title(c, "🌱 What this means for your farm"));
+        ai.addView(Cards.title(c, I18n.t("🌱 What this means for your farm")));
         for (String a : w.advisories) {
             TextView t = Cards.text(c, "•  " + a, 14, 0xFF1C2B1E, false);
             t.setPadding(0, Cards.dp(c, 8), 0, 0);
@@ -71,7 +73,7 @@ public class WeatherActivity extends AppCompatActivity {
 
         MaterialCardView week = Cards.card(c, content, 12);
         LinearLayout wi = Cards.inner(week);
-        wi.addView(Cards.title(c, "Next 7 days"));
+        wi.addView(Cards.title(c, I18n.t("Next 7 days")));
         for (WeatherDay d : w.days) {
             LinearLayout row = new LinearLayout(c);
             row.setOrientation(LinearLayout.HORIZONTAL);
@@ -81,11 +83,11 @@ public class WeatherActivity extends AppCompatActivity {
             TextView day = Cards.text(c, "  " + dayName(d.date), 14, 0xFF1C2B1E, true);
             row.addView(day, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
             row.addView(Cards.text(c, Math.round(d.minC) + "° – " + Math.round(d.maxC) + "°     ", 13, 0xFF1C2B1E, false));
-            row.addView(Cards.text(c, String.format(Locale.US, "%.1f mm · %d%%", d.rainMm, d.rainProb), 13, 0xFF2E7D32, true));
+            row.addView(Cards.text(c, String.format(Locale.US, I18n.t("%.1f mm · %d%%"), d.rainMm, d.rainProb), 13, 0xFF2E7D32, true));
             wi.addView(row);
         }
         content.addView(Cards.spacer(c, 12));
-        TextView src = Cards.text(c, "Forecast data: Open-Meteo. Advice is general guidance. Ask your county extension officer for crop-specific recommendations.", 11, 0xFF5E7061, false);
+        TextView src = Cards.text(c, I18n.t("Forecast data: Open-Meteo. Advice is general guidance. Ask your county extension officer for crop-specific recommendations."), 11, 0xFF5E7061, false);
         content.addView(src);
     }
 }

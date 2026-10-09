@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.os.Bundle;
 import android.view.View;
 import androidx.appcompat.app.AlertDialog;
@@ -41,11 +43,11 @@ public class OrdersActivity extends AppCompatActivity implements OrderAdapter.Li
         farmerVm = new ViewModelProvider(this).get(FarmerViewModel.class);
         adminVm = new ViewModelProvider(this).get(AdminViewModel.class);
 
-        b.tvTitle.setText(mode == OrderAdapter.Mode.BUYER ? "My orders"
-                : mode == OrderAdapter.Mode.FARMER ? "Customer orders" : "All orders");
+        b.tvTitle.setText(mode == OrderAdapter.Mode.BUYER ? I18n.t("My orders")
+                : mode == OrderAdapter.Mode.FARMER ? I18n.t("Customer orders") : I18n.t("All orders"));
         b.tvEmptyText.setText(mode == OrderAdapter.Mode.BUYER
-                ? "You have not ordered anything yet.\nFresh produce is waiting in the market."
-                : "No orders here yet");
+                ? I18n.t("You have not ordered anything yet.\nFresh produce is waiting in the market.")
+                : I18n.t("No orders here yet"));
         b.btnBack.setOnClickListener(v -> finish());
 
         adapter = new OrderAdapter(mode, this);
@@ -75,7 +77,7 @@ public class OrdersActivity extends AppCompatActivity implements OrderAdapter.Li
         for (Order o : all) if ("ALL".equals(filter) || filter.equals(o.status)) shown.add(o);
         adapter.set(shown);
         b.tvEmpty.setVisibility(shown.isEmpty() ? View.VISIBLE : View.GONE);
-        b.tvSubtitle.setText(all.size() + (all.size() == 1 ? " order" : " orders"));
+        b.tvSubtitle.setText(all.size() + (all.size() == 1 ? I18n.t(" order") : I18n.t(" orders")));
     }
 
     @Override public void onAction(Order o) {
@@ -97,10 +99,10 @@ public class OrdersActivity extends AppCompatActivity implements OrderAdapter.Li
 
     private void confirmCancel(Order o, Runnable run) {
         new AlertDialog.Builder(this)
-                .setTitle("Cancel order #" + o.id + "?")
-                .setMessage("The reserved stock goes back to the seller. This cannot be undone.")
-                .setPositiveButton("Cancel order", (d, w) -> run.run())
-                .setNegativeButton("Keep order", null)
+                .setTitle(I18n.t("Cancel order #") + o.id + "?")
+                .setMessage(I18n.t("The reserved stock goes back to the seller. This cannot be undone."))
+                .setPositiveButton(I18n.t("Cancel order"), (d, w) -> run.run())
+                .setNegativeButton(I18n.t("Keep order"), null)
                 .show();
     }
 }

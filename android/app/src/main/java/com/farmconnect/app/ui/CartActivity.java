@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -25,7 +27,7 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.Liste
         adapter = new CartAdapter(this);
         b.rv.setLayoutManager(new LinearLayoutManager(this));
         b.rv.setAdapter(adapter);
-        b.tvTitle.setText("My cart");
+        b.tvTitle.setText(I18n.t("My cart"));
         b.btnBack.setOnClickListener(v -> finish());
         b.btnShop.setOnClickListener(v -> finish());
         b.btnCheckout.setOnClickListener(v -> startActivity(new Intent(this, CheckoutActivity.class)));
@@ -49,13 +51,13 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.Liste
         b.emptyState.setVisibility(empty ? View.VISIBLE : View.GONE);
         b.rv.setVisibility(empty ? View.GONE : View.VISIBLE);
         b.summaryBar.setVisibility(empty ? View.GONE : View.VISIBLE);
-        b.tvSubtitle.setText(empty ? "" : count + (count == 1 ? " item" : " items") + " ready for checkout");
+        b.tvSubtitle.setText(empty ? "" : count + (count == 1 ? I18n.t(" item") : I18n.t(" items")) + I18n.t(" ready for checkout"));
         b.tvSubtotal.setText(Ui.kes(total));
         b.tvTotal.setText(Ui.kes(total));
     }
 
     @Override public void onPlus(CartItem i) {
-        if (i.quantity >= i.product.quantity) { Ui.toast(this, "Only " + i.product.quantity + " in stock"); return; }
+        if (i.quantity >= i.product.quantity) { Ui.toast(this, I18n.t("Only ") + i.product.quantity + I18n.t(" in stock")); return; }
         Ui.watch(this, vm.setQty(i.id, i.quantity + 1), null, x -> load());
     }
 

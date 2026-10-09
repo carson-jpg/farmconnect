@@ -4,13 +4,13 @@
     android:orientation="vertical" android:padding="20dp">
     <Spinner android:id="@+id/spFarm" android:layout_width="match_parent" android:layout_height="wrap_content" />
     <EditText android:id="@+id/etName" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:hint="Product name" android:inputType="text" />
+        android:hint="@string/t_df644ae1" android:inputType="text" />
     <EditText android:id="@+id/etCategory" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:hint="Category (e.g. Vegetables)" android:inputType="text" />
+        android:hint="@string/t_7485516f" android:inputType="text" />
     <EditText android:id="@+id/etPrice" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:hint="Price (KES)" android:inputType="numberDecimal" />
+        android:hint="@string/t_ccac20d6" android:inputType="numberDecimal" />
     <EditText android:id="@+id/etQty" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:hint="Quantity in stock" android:inputType="number" />
+        android:hint="@string/t_dba03ee6" android:inputType="number" />
     <EditText android:id="@+id/etUnit" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:hint="Unit (kg, bunch, crate)" android:inputType="text" />
+        android:hint="@string/t_ca428722" android:inputType="text" />
 </LinearLayout>

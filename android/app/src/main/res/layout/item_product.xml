@@ -13,12 +13,12 @@
         <!-- Cover photo with badges -->
         <FrameLayout android:layout_width="match_parent" android:layout_height="190dp">
             <ImageView android:id="@+id/ivCover" android:layout_width="match_parent" android:layout_height="match_parent"
-                android:contentDescription="Product photo" android:scaleType="centerCrop"
+                android:contentDescription="@string/t_2227cc1d" android:scaleType="centerCrop"
                 android:src="@drawable/ph_product" />
             <TextView android:id="@+id/tvVerified" android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:layout_gravity="top|start" android:layout_margin="12dp" android:background="@drawable/bg_chip"
                 android:backgroundTint="#2E7D32" android:paddingStart="10dp" android:paddingEnd="10dp"
-                android:paddingTop="4dp" android:paddingBottom="4dp" android:text="✓ Verified farmer"
+                android:paddingTop="4dp" android:paddingBottom="4dp" android:text="@string/t_65401b86"
                 android:textColor="#FFFFFF" android:textSize="11sp" android:textStyle="bold" android:visibility="gone" />
             <TextView android:id="@+id/tvPhotoCount" android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end" android:layout_margin="12dp" android:background="@drawable/bg_chip"
@@ -33,7 +33,7 @@
             <TextView android:id="@+id/tvHidden" android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp" android:background="@drawable/bg_chip" android:backgroundTint="#FFF4D6"
                 android:paddingStart="10dp" android:paddingEnd="10dp" android:paddingTop="4dp" android:paddingBottom="4dp"
-                android:text="⏳ Hidden from buyers until you are verified" android:textColor="#7A5600"
+                android:text="@string/t_bb010214" android:textColor="#7A5600"
                 android:textSize="11sp" android:textStyle="bold" android:visibility="gone" />
 
             <TextView android:id="@+id/tvName" android:layout_width="match_parent" android:layout_height="wrap_content"

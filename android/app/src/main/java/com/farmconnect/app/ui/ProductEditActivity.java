@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -50,7 +52,7 @@ public class ProductEditActivity extends AppCompatActivity {
     @Override protected void onCreate(Bundle s) {
         super.onCreate(s);
         productId = getIntent().getLongExtra("id", -1);
-        setTitle(productId > 0 ? "Edit product" : "New product");
+        setTitle(productId > 0 ? I18n.t("Edit product") : I18n.t("New product"));
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         b = ActivityProductEditBinding.inflate(getLayoutInflater());
         setContentView(b.getRoot());
@@ -58,7 +60,7 @@ public class ProductEditActivity extends AppCompatActivity {
 
         picker = registerForActivityResult(new ActivityResultContracts.PickMultipleVisualMedia(MAX_PHOTOS), uris -> {
             for (Uri u : uris) {
-                if (existing.size() + pending.size() >= MAX_PHOTOS) { Ui.toast(this, "Maximum " + MAX_PHOTOS + " photos"); break; }
+                if (existing.size() + pending.size() >= MAX_PHOTOS) { Ui.toast(this, I18n.t("Maximum ") + MAX_PHOTOS + I18n.t(" photos")); break; }
                 pending.add(u);
             }
             renderPhotos();
@@ -66,13 +68,13 @@ public class ProductEditActivity extends AppCompatActivity {
 
         b.etCategory.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, CATEGORIES));
         b.etUnit.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, UNITS));
-        b.etUnit.setText("kg", false);
+        b.etUnit.setText(I18n.t("kg"), false);
         b.btnSave.setOnClickListener(v -> save());
         renderPhotos();
 
         Ui.watch(this, vm.myFarms(), b.progress, fs -> {
             farms = fs;
-            if (fs.isEmpty()) { Ui.toast(this, "Create a farm first (My farms)"); finish(); return; }
+            if (fs.isEmpty()) { Ui.toast(this, I18n.t("Create a farm first (My farms)")); finish(); return; }
             b.etFarm.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, farms));
             b.etFarm.setOnItemClickListener((p, v, pos, id) -> { selectedFarm = farms.get(pos); showNote(); });
             selectedFarm = farms.get(0);
@@ -89,11 +91,11 @@ public class ProductEditActivity extends AppCompatActivity {
         if (selectedFarm != null && selectedFarm.ownerVerified) {
             b.tvVisibilityNote.setBackgroundTintList(android.content.res.ColorStateList.valueOf(0xFFE3F1E0));
             b.tvVisibilityNote.setTextColor(0xFF1B5E20);
-            b.tvVisibilityNote.setText("✓ You are a verified farmer. This product goes live in the marketplace as soon as you save.");
+            b.tvVisibilityNote.setText(I18n.t("✓ You are a verified farmer. This product goes live in the marketplace as soon as you save."));
         } else {
             b.tvVisibilityNote.setBackgroundTintList(android.content.res.ColorStateList.valueOf(0xFFFFF4D6));
             b.tvVisibilityNote.setTextColor(0xFF7A5600);
-            b.tvVisibilityNote.setText("⏳ You can add products now, but buyers will only see them after your farmer verification is approved.");
+            b.tvVisibilityNote.setText(I18n.t("⏳ You can add products now, but buyers will only see them after your farmer verification is approved."));
         }
     }
 
@@ -129,8 +131,8 @@ public class ProductEditActivity extends AppCompatActivity {
             b.photoRow.addView(thumb(pending.get(i), existing.isEmpty() && i == 0, () -> { pending.remove(index); renderPhotos(); }));
         }
         if (existing.size() + pending.size() < MAX_PHOTOS) b.photoRow.addView(addTile());
-        b.tvPhotoHint.setText(existing.size() + pending.size() + " of " + MAX_PHOTOS
-                + " photos. The first one is the cover buyers see in the list.");
+        b.tvPhotoHint.setText(existing.size() + pending.size() + I18n.t(" of ") + MAX_PHOTOS
+                + I18n.t(" photos. The first one is the cover buyers see in the list."));
     }
 
     private View addTile() {
@@ -138,7 +140,7 @@ public class ProductEditActivity extends AppCompatActivity {
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(104), dp(104));
         t.setLayoutParams(lp);
         t.setGravity(Gravity.CENTER);
-        t.setText("＋\nAdd photos");
+        t.setText(I18n.t("＋\nAdd photos"));
         t.setTextColor(0xFF2E7D32);
         t.setTextSize(13);
         t.setBackgroundResource(com.farmconnect.app.R.drawable.bg_add_tile);
@@ -161,7 +163,7 @@ public class ProductEditActivity extends AppCompatActivity {
 
         if (cover) {
             TextView c = new TextView(this);
-            c.setText("Cover");
+            c.setText(I18n.t("Cover"));
             c.setTextColor(0xFFFFFFFF);
             c.setTextSize(11);
             c.setPadding(dp(8), dp(2), dp(8), dp(2));
@@ -186,13 +188,13 @@ public class ProductEditActivity extends AppCompatActivity {
 
     private void confirmRemoveExisting(int index) {
         new AlertDialog.Builder(this)
-                .setTitle("Remove this photo?")
-                .setPositiveButton("Remove", (d, w) -> Ui.watch(this, vm.deleteProductImage(productId, index), b.progress, p -> {
+                .setTitle(I18n.t("Remove this photo?"))
+                .setPositiveButton(I18n.t("Remove"), (d, w) -> Ui.watch(this, vm.deleteProductImage(productId, index), b.progress, p -> {
                     existing.clear();
                     if (p.imageUrls != null) existing.addAll(p.imageUrls);
                     renderPhotos();
                 }))
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(I18n.t("Cancel"), null)
                 .show();
     }
 
@@ -203,13 +205,13 @@ public class ProductEditActivity extends AppCompatActivity {
     private void save() {
         b.tilName.setError(null); b.tilPrice.setError(null); b.tilQty.setError(null);
         String name = text(b.etName);
-        if (name.isEmpty()) { b.tilName.setError("Enter the product name"); b.etName.requestFocus(); return; }
+        if (name.isEmpty()) { b.tilName.setError(I18n.t("Enter the product name")); b.etName.requestFocus(); return; }
         double price; int qty;
         try { price = Double.parseDouble(text(b.etPrice)); if (price < 0) throw new NumberFormatException(); }
-        catch (NumberFormatException e) { b.tilPrice.setError("Enter a valid price"); return; }
+        catch (NumberFormatException e) { b.tilPrice.setError(I18n.t("Enter a valid price")); return; }
         try { qty = Integer.parseInt(text(b.etQty)); if (qty < 0) throw new NumberFormatException(); }
-        catch (NumberFormatException e) { b.tilQty.setError("Enter the stock quantity"); return; }
-        if (selectedFarm == null) { Ui.toast(this, "Choose a farm"); return; }
+        catch (NumberFormatException e) { b.tilQty.setError(I18n.t("Enter the stock quantity")); return; }
+        if (selectedFarm == null) { Ui.toast(this, I18n.t("Choose a farm")); return; }
 
         ProductRequest r = new ProductRequest(name, text(b.etCategory), price, qty, text(b.etUnit), selectedFarm.id);
         r.summary = text(b.etSummary);
@@ -235,7 +237,7 @@ public class ProductEditActivity extends AppCompatActivity {
         if (pending.isEmpty()) {
             b.progress.setVisibility(View.INVISIBLE);
             Ui.toast(this, selectedFarm != null && selectedFarm.ownerVerified
-                    ? "Product saved" : "Saved. Buyers will see it once you are verified.");
+                    ? I18n.t("Product saved") : I18n.t("Saved. Buyers will see it once you are verified."));
             setResult(RESULT_OK);
             finish();
             return;
@@ -246,14 +248,14 @@ public class ProductEditActivity extends AppCompatActivity {
                 byte[] jpeg = ImageUtil.compress(this, uri);
                 runOnUiThread(() -> vm.addProductImage(productId, jpeg).observe(this, res -> {
                     if (res.status == Resource.Status.LOADING) return;
-                    if (res.status == Resource.Status.ERROR) { renderPhotos(); fail("Photo upload failed: " + res.message); return; }
+                    if (res.status == Resource.Status.ERROR) { renderPhotos(); fail(I18n.t("Photo upload failed: ") + res.message); return; }
                     pending.remove(0);
                     existing.clear();
                     if (res.data.imageUrls != null) existing.addAll(res.data.imageUrls);
                     uploadNext();
                 }));
             } catch (Exception e) {
-                runOnUiThread(() -> fail("Could not read one of the photos"));
+                runOnUiThread(() -> fail(I18n.t("Could not read one of the photos")));
             }
         }).start();
     }

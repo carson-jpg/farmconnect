@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.os.Bundle;
 import android.view.View;
 import androidx.appcompat.app.AlertDialog;
@@ -22,7 +24,7 @@ public class AdminProductsActivity extends AppCompatActivity implements ProductA
         b = ActivityAdminProductsBinding.inflate(getLayoutInflater());
         setContentView(b.getRoot());
         vm = new ViewModelProvider(this).get(AdminViewModel.class);
-        b.tvTitle.setText("Product moderation");
+        b.tvTitle.setText(I18n.t("Product moderation"));
         b.btnBack.setOnClickListener(v -> finish());
         adapter = new ProductAdapter(ProductAdapter.Mode.ADMIN, this);
         b.rv.setLayoutManager(new LinearLayoutManager(this));
@@ -37,19 +39,19 @@ public class AdminProductsActivity extends AppCompatActivity implements ProductA
             b.tvEmpty.setVisibility(list.isEmpty() ? View.VISIBLE : View.GONE);
             int down = 0;
             for (Product p : list) if (!p.active) down++;
-            b.tvSubtitle.setText(list.size() + " listings · " + down + " taken down");
+            b.tvSubtitle.setText(list.size() + I18n.t(" listings · ") + down + I18n.t(" taken down"));
         });
     }
 
     @Override public void onPrimary(Product p) {
         boolean makeActive = !p.active;
         new AlertDialog.Builder(this)
-                .setTitle((makeActive ? "Restore " : "Take down ") + p.name + "?")
-                .setMessage(makeActive ? "It will be visible to buyers again (if the farmer is verified)."
-                        : "Buyers will no longer see this product. The farmer keeps it and can still edit it.")
-                .setPositiveButton(makeActive ? "Restore" : "Take down", (d, w) ->
+                .setTitle((makeActive ? I18n.t("Restore ") : I18n.t("Take down ")) + p.name + "?")
+                .setMessage(makeActive ? I18n.t("It will be visible to buyers again (if the farmer is verified).")
+                        : I18n.t("Buyers will no longer see this product. The farmer keeps it and can still edit it."))
+                .setPositiveButton(makeActive ? I18n.t("Restore") : I18n.t("Take down"), (d, w) ->
                         Ui.watch(this, vm.setProductActive(p.id, makeActive), b.progress, x -> load()))
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(I18n.t("Cancel"), null)
                 .show();
     }
 

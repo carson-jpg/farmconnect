@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -41,8 +43,8 @@ public class ChatActivity extends AppCompatActivity {
         otherId = getIntent().getLongExtra("userId", -1);
         if (otherId < 0) { finish(); return; }
         String name = getIntent().getStringExtra("name");
-        b.tvTitle.setText(name == null ? "Chat" : name);
-        b.tvSubtitle.setText("Messages are visible only to you two");
+        b.tvTitle.setText(name == null ? I18n.t("Chat") : name);
+        b.tvSubtitle.setText(I18n.t("Messages are visible only to you two"));
         b.btnBack.setOnClickListener(v -> finish());
         LinearLayoutManager lm = new LinearLayoutManager(this);
         lm.setStackFromEnd(true);

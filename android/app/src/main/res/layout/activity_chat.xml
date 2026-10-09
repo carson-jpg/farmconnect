@@ -8,7 +8,7 @@
         android:background="@drawable/bg_dash_header" android:gravity="center_vertical" android:orientation="horizontal"
         android:paddingBottom="20dp" android:paddingEnd="16dp" android:paddingStart="16dp" android:paddingTop="20dp">
         <ImageButton android:id="@+id/btnBack" android:layout_width="42dp" android:layout_height="42dp"
-            android:layout_marginEnd="12dp" android:background="@drawable/bg_icon_glass" android:contentDescription="Back"
+            android:layout_marginEnd="12dp" android:background="@drawable/bg_icon_glass" android:contentDescription="@string/t_0557fa92"
             android:padding="10dp" android:src="@drawable/ic_back" android:tint="#FFFFFF" />
         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
             android:orientation="vertical">
@@ -23,16 +23,16 @@
     <androidx.recyclerview.widget.RecyclerView android:id="@+id/rv" android:layout_width="match_parent" android:layout_height="0dp"
         android:layout_weight="1" android:clipToPadding="false" android:padding="10dp" />
     <TextView android:id="@+id/tvEmpty" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:gravity="center" android:padding="24dp" android:text="Say hello 👋" android:textColor="@color/fc_muted"
+        android:gravity="center" android:padding="24dp" android:text="@string/t_f95384b6" android:textColor="@color/fc_muted"
         android:visibility="gone" />
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@color/fc_card"
         android:elevation="10dp" android:gravity="center_vertical" android:orientation="horizontal" android:padding="10dp">
         <EditText android:id="@+id/etMessage" android:layout_width="0dp" android:layout_height="wrap_content"
             android:layout_weight="1" android:background="@drawable/bg_chip" android:backgroundTint="@color/fc_bg"
-            android:hint="Type a message" android:inputType="textMultiLine|textCapSentences" android:maxHeight="120dp"
+            android:hint="@string/t_1bfb7b25" android:inputType="textMultiLine|textCapSentences" android:maxHeight="120dp"
             android:maxLength="1000" android:minHeight="46dp" android:paddingEnd="16dp" android:paddingStart="16dp" android:textSize="15sp" />
         <com.google.android.material.button.MaterialButton android:id="@+id/btnSend" android:layout_width="wrap_content"
             android:layout_height="46dp" android:layout_marginStart="8dp" android:insetBottom="0dp" android:insetTop="0dp"
-            android:text="Send" android:textAllCaps="false" app:cornerRadius="23dp" />
+            android:text="@string/t_94966d90" android:textAllCaps="false" app:cornerRadius="23dp" />
     </LinearLayout>
 </LinearLayout>

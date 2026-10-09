@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.content.Context;
 import android.graphics.Typeface;
 import android.view.Gravity;
@@ -88,7 +90,7 @@ final class Cards {
         double max = 0;
         for (Number n : data.values()) max = Math.max(max, n.doubleValue());
         if (data.isEmpty() || max <= 0) {
-            into.addView(text(c, "No data yet", 13, 0xFF5E7061, false));
+            into.addView(text(c, I18n.t("No data yet"), 13, 0xFF5E7061, false));
             return;
         }
         for (java.util.Map.Entry<String, ? extends Number> e : data.entrySet()) {

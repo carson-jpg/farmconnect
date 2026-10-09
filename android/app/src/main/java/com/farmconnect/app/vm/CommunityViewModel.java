@@ -43,5 +43,14 @@ public class CommunityViewModel extends ViewModel {
     public LiveData<Resource<Void>> announceToGroup(long id, String title, String body) { return repo.announceToGroup(id, title, body); }
     public LiveData<Resource<Void>> sendFeedback(int rating, String comment) { return repo.sendFeedback(rating, comment); }
     public LiveData<Resource<Analytics>> analytics() { return repo.analytics(); }
+    public LiveData<Resource<List<Price>>> prices(String q) { return repo.prices(q); }
+    public LiveData<Resource<List<PricePoint>>> priceHistory(String crop, String market) { return repo.priceHistory(crop, market); }
+    public LiveData<Resource<Price>> postPrice(PriceRequest r) { return repo.postPrice(r); }
+    public LiveData<Resource<Void>> deletePrice(long id) { return repo.deletePrice(id); }
+    public LiveData<Resource<AlertToggle>> togglePriceAlert(String crop) { return repo.togglePriceAlert(crop); }
+    public LiveData<Resource<Review>> createReview(long orderId, long sellerId, int rating, String comment) { return repo.createReview(orderId, sellerId, rating, comment); }
+    public LiveData<Resource<SellerReviewSummary>> sellerReviews(long id) { return repo.sellerReviews(id); }
+    public LiveData<Resource<Review>> replyReview(long id, String text) { return repo.replyReview(id, text); }
+    public LiveData<Resource<Void>> deleteReview(long id) { return repo.deleteReview(id); }
     public LiveData<Resource<List<Farm>>> myFarms() { return repo.myFarms(); }
 }

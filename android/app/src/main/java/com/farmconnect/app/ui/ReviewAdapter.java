@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,9 +32,9 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.VH> {
 
     @Override public void onBindViewHolder(VH h, int pos) {
         ReviewSummary r = items.get(pos);
-        h.b.tvName.setText(r.fullName == null || r.fullName.isEmpty() ? "(no name)" : r.fullName);
+        h.b.tvName.setText(r.fullName == null || r.fullName.isEmpty() ? I18n.t("(no name)") : r.fullName);
         h.b.tvLoc.setText((r.subCounty == null ? "" : r.subCounty) + (r.ward == null || r.ward.isEmpty() ? "" : " · " + r.ward));
-        h.b.tvDate.setText(r.submittedAt == null ? "" : "Submitted " + Ui.dateTime(r.submittedAt));
+        h.b.tvDate.setText(r.submittedAt == null ? "" : I18n.t("Submitted ") + Ui.dateTime(r.submittedAt));
         Ui.styleVerification(h.b.tvStatus, r.status);
         h.b.getRoot().setOnClickListener(v -> listener.onOpen(r));
     }

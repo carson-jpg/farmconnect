@@ -28,7 +28,7 @@ public final class Dtos {
     public record ProductResponse(Long id, String name, String summary, String description, String category,
                                   BigDecimal price, int quantity, String unit, String imageUrl,
                                   List<String> imageUrls, Long farmId, String farmName, String farmLocation,
-                                  boolean farmerVerified, boolean active, Long farmerId) {}
+                                  boolean farmerVerified, boolean active, Long farmerId, double sellerRating, int sellerReviews) {}
 
     public record CartRequest(@NotNull Long productId, @Min(1) int quantity) {}
     public record QuantityRequest(@Min(1) int quantity) {}

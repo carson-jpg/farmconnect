@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -20,7 +22,7 @@ public class FarmerProductsActivity extends AppCompatActivity implements Product
 
     @Override protected void onCreate(Bundle s) {
         super.onCreate(s);
-        setTitle("My products");
+        setTitle(I18n.t("My products"));
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         b = ActivityListBinding.inflate(getLayoutInflater());
         setContentView(b.getRoot());
@@ -28,7 +30,7 @@ public class FarmerProductsActivity extends AppCompatActivity implements Product
         adapter = new ProductAdapter(ProductAdapter.Mode.FARMER, this);
         b.rv.setLayoutManager(new LinearLayoutManager(this));
         b.rv.setAdapter(adapter);
-        b.tvEmpty.setText("No products yet. Tap + to add your first one, with photos and a full description.");
+        b.tvEmpty.setText(I18n.t("No products yet. Tap + to add your first one, with photos and a full description."));
         b.fab.setVisibility(View.VISIBLE);
         b.fab.setOnClickListener(v -> startActivity(new Intent(this, ProductEditActivity.class)));
         if (getIntent().getBooleanExtra("add", false)) {
@@ -57,12 +59,12 @@ public class FarmerProductsActivity extends AppCompatActivity implements Product
 
     @Override public void onSecondary(Product p) {
         new AlertDialog.Builder(this)
-                .setTitle("Delete " + p.name + "?")
-                .setPositiveButton("Delete", (x, y) -> Ui.watch(this, vm.deleteProduct(p.id), b.progress, r -> {
-                    Ui.toast(this, "Product deleted");
+                .setTitle(I18n.t("Delete ") + p.name + "?")
+                .setPositiveButton(I18n.t("Delete"), (x, y) -> Ui.watch(this, vm.deleteProduct(p.id), b.progress, r -> {
+                    Ui.toast(this, I18n.t("Product deleted"));
                     load();
                 }))
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(I18n.t("Cancel"), null)
                 .show();
     }
 }

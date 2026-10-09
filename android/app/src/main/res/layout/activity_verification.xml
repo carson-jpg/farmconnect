@@ -13,12 +13,12 @@
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:orientation="vertical" android:padding="16dp">
                 <TextView android:id="@+id/tvStatusTitle" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:text="Not verified yet"
+                    android:layout_height="wrap_content" android:text="@string/t_3c34afcf"
                     android:textColor="@color/fc_text" android:textSize="18sp" android:textStyle="bold"
                     android:fontFamily="serif" />
                 <TextView android:id="@+id/tvStatusMsg" android:layout_width="wrap_content"
                     android:layout_height="wrap_content" android:layout_marginTop="4dp"
-                    android:text="Complete the form below and submit it." android:textColor="@color/fc_text" android:textSize="13sp" />
+                    android:text="@string/t_0a9fe370" android:textColor="@color/fc_text" android:textSize="13sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -30,12 +30,12 @@
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:orientation="vertical" android:padding="16dp">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="1. Identity" android:textColor="@color/fc_text" android:textSize="17sp"
+                    android:text="@string/t_f81e321f" android:textColor="@color/fc_text" android:textSize="17sp"
                     android:textStyle="bold" android:fontFamily="serif" />
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp" android:hint="Full name (exactly as on your National ID)">
+                    android:layout_marginTop="10dp" android:hint="@string/t_b73dbf60">
                     <com.google.android.material.textfield.TextInputEditText android:id="@+id/etFullName"
                         android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:inputType="textPersonName" />
@@ -43,7 +43,7 @@
                 <com.google.android.material.textfield.TextInputLayout android:id="@+id/tilNationalId"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp" android:hint="Kenyan National ID number">
+                    android:layout_marginTop="10dp" android:hint="@string/t_55d99fee">
                     <com.google.android.material.textfield.TextInputEditText android:id="@+id/etNationalId"
                         android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:inputType="number" />
@@ -53,39 +53,39 @@
                     <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                         android:layout_weight="1" android:orientation="vertical">
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="National ID photo - front" android:textColor="@color/fc_text" android:textSize="14sp" android:textStyle="bold" />
+                            android:text="@string/t_8c9f8314" android:textColor="@color/fc_text" android:textSize="14sp" android:textStyle="bold" />
                         <TextView android:id="@+id/tvIdFront" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Not uploaded" android:textColor="@color/fc_danger" android:textSize="12sp" />
+                            android:text="@string/t_1fec54f9" android:textColor="@color/fc_danger" android:textSize="12sp" />
                     </LinearLayout>
                     <Button android:id="@+id/btnIdFront" style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="Upload" android:textAllCaps="false" />
+                        android:text="@string/t_91412465" android:textAllCaps="false" />
                 </LinearLayout>
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:layout_marginTop="12dp" android:gravity="center_vertical" android:orientation="horizontal">
                     <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                         android:layout_weight="1" android:orientation="vertical">
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="National ID photo - back" android:textColor="@color/fc_text" android:textSize="14sp" android:textStyle="bold" />
+                            android:text="@string/t_6ec8e244" android:textColor="@color/fc_text" android:textSize="14sp" android:textStyle="bold" />
                         <TextView android:id="@+id/tvIdBack" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Not uploaded" android:textColor="@color/fc_danger" android:textSize="12sp" />
+                            android:text="@string/t_1fec54f9" android:textColor="@color/fc_danger" android:textSize="12sp" />
                     </LinearLayout>
                     <Button android:id="@+id/btnIdBack" style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="Upload" android:textAllCaps="false" />
+                        android:text="@string/t_91412465" android:textAllCaps="false" />
                 </LinearLayout>
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:layout_marginTop="12dp" android:gravity="center_vertical" android:orientation="horizontal">
                     <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                         android:layout_weight="1" android:orientation="vertical">
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Selfie (face clearly visible)" android:textColor="@color/fc_text" android:textSize="14sp" android:textStyle="bold" />
+                            android:text="@string/t_d555d98d" android:textColor="@color/fc_text" android:textSize="14sp" android:textStyle="bold" />
                         <TextView android:id="@+id/tvSelfie" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Not uploaded" android:textColor="@color/fc_danger" android:textSize="12sp" />
+                            android:text="@string/t_1fec54f9" android:textColor="@color/fc_danger" android:textSize="12sp" />
                     </LinearLayout>
                     <Button android:id="@+id/btnSelfie" style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="Upload" android:textAllCaps="false" />
+                        android:text="@string/t_91412465" android:textAllCaps="false" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -95,30 +95,30 @@
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:orientation="vertical" android:padding="16dp">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="2. Phone verification" android:textColor="@color/fc_text" android:textSize="17sp"
+                    android:text="@string/t_0102a7b4" android:textColor="@color/fc_text" android:textSize="17sp"
                     android:textStyle="bold" android:fontFamily="serif" />
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp" android:hint="Mobile number (e.g. 0712345678)">
+                    android:layout_marginTop="10dp" android:hint="@string/t_8974e465">
                     <com.google.android.material.textfield.TextInputEditText android:id="@+id/etPhone"
                         android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:inputType="phone" />
                 </com.google.android.material.textfield.TextInputLayout>
                 <Button android:id="@+id/btnSendOtp" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp" android:text="Send code" android:textAllCaps="false" />
+                    android:layout_marginTop="8dp" android:text="@string/t_8dab6227" android:textAllCaps="false" />
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp" android:hint="6-digit code from SMS">
+                    android:layout_marginTop="10dp" android:hint="@string/t_081c48f0">
                     <com.google.android.material.textfield.TextInputEditText android:id="@+id/etOtp"
                         android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:inputType="number" />
                 </com.google.android.material.textfield.TextInputLayout>
                 <Button android:id="@+id/btnVerifyOtp" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp" android:text="Verify code" android:textAllCaps="false" />
+                    android:layout_marginTop="8dp" android:text="@string/t_19a670b5" android:textAllCaps="false" />
                 <TextView android:id="@+id/tvPhoneStatus" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp" android:text="Not verified" android:textColor="@color/fc_danger" android:textSize="13sp" />
+                    android:layout_marginTop="6dp" android:text="@string/t_ecddbd73" android:textColor="@color/fc_danger" android:textSize="13sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
         <com.google.android.material.card.MaterialCardView android:layout_width="match_parent"
@@ -127,16 +127,16 @@
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:orientation="vertical" android:padding="16dp">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="3. Where you farm" android:textColor="@color/fc_text" android:textSize="17sp"
+                    android:text="@string/t_92050c9a" android:textColor="@color/fc_text" android:textSize="17sp"
                     android:textStyle="bold" android:fontFamily="serif" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp" android:text="County: Trans Nzoia" android:textColor="@color/fc_muted" android:textSize="14sp" />
+                    android:layout_marginTop="8dp" android:text="@string/t_8e866a17" android:textColor="@color/fc_muted" android:textSize="14sp" />
                 <Spinner android:id="@+id/spSubCounty" android:layout_width="match_parent" android:layout_height="48dp"
                     android:layout_marginTop="6dp" />
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp" android:hint="Ward">
+                    android:layout_marginTop="10dp" android:hint="@string/t_dbe1b614">
                     <com.google.android.material.textfield.TextInputEditText android:id="@+id/etWard"
                         android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:inputType="text" />
@@ -144,19 +144,19 @@
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp" android:hint="Village / location">
+                    android:layout_marginTop="10dp" android:hint="@string/t_f9f8bd7f">
                     <com.google.android.material.textfield.TextInputEditText android:id="@+id/etVillage"
                         android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:inputType="text" />
                 </com.google.android.material.textfield.TextInputLayout>
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp" android:text="Farm location (GPS)" android:textColor="@color/fc_text"
+                    android:layout_marginTop="14dp" android:text="@string/t_71fd6316" android:textColor="@color/fc_text"
                     android:textSize="14sp" android:textStyle="bold" />
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
-                        android:layout_marginTop="8dp" android:layout_marginEnd="4dp" android:hint="Latitude">
+                        android:layout_marginTop="8dp" android:layout_marginEnd="4dp" android:hint="@string/t_3b0eb746">
                         <com.google.android.material.textfield.TextInputEditText android:id="@+id/etLat"
                             android:layout_width="match_parent" android:layout_height="wrap_content"
                             android:inputType="numberDecimal|numberSigned" />
@@ -164,7 +164,7 @@
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
-                        android:layout_marginTop="8dp" android:layout_marginStart="4dp" android:hint="Longitude">
+                        android:layout_marginTop="8dp" android:layout_marginStart="4dp" android:hint="@string/t_9b4dabc5">
                         <com.google.android.material.textfield.TextInputEditText android:id="@+id/etLng"
                             android:layout_width="match_parent" android:layout_height="wrap_content"
                             android:inputType="numberDecimal|numberSigned" />
@@ -172,7 +172,7 @@
                 </LinearLayout>
                 <Button android:id="@+id/btnLocate" style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp"
-                    android:text="Use my current location" android:textAllCaps="false" />
+                    android:text="@string/t_9b5e2d9c" android:textAllCaps="false" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
         <com.google.android.material.card.MaterialCardView android:layout_width="match_parent"
@@ -181,14 +181,14 @@
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:orientation="vertical" android:padding="16dp">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="4. Farm details" android:textColor="@color/fc_text" android:textSize="17sp"
+                    android:text="@string/t_64306963" android:textColor="@color/fc_text" android:textSize="17sp"
                     android:textStyle="bold" android:fontFamily="serif" />
                 <Spinner android:id="@+id/spType" android:layout_width="match_parent" android:layout_height="48dp"
                     android:layout_marginTop="8dp" />
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp" android:hint="Main crops / livestock (e.g. maize, dairy cows)">
+                    android:layout_marginTop="10dp" android:hint="@string/t_c5786d62">
                     <com.google.android.material.textfield.TextInputEditText android:id="@+id/etProduce"
                         android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:inputType="textCapSentences" />
@@ -196,7 +196,7 @@
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp" android:hint="Farm size (acres)">
+                    android:layout_marginTop="10dp" android:hint="@string/t_3063d143">
                     <com.google.android.material.textfield.TextInputEditText android:id="@+id/etSize"
                         android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:inputType="numberDecimal" />
@@ -206,13 +206,13 @@
                     <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                         android:layout_weight="1" android:orientation="vertical">
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Proof of farming (farm photo or cooperative / farmer document photo)" android:textColor="@color/fc_text" android:textSize="14sp" android:textStyle="bold" />
+                            android:text="@string/t_b8e2ace0" android:textColor="@color/fc_text" android:textSize="14sp" android:textStyle="bold" />
                         <TextView android:id="@+id/tvProof" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Not uploaded" android:textColor="@color/fc_danger" android:textSize="12sp" />
+                            android:text="@string/t_1fec54f9" android:textColor="@color/fc_danger" android:textSize="12sp" />
                     </LinearLayout>
                     <Button android:id="@+id/btnProof" style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="Upload" android:textAllCaps="false" />
+                        android:text="@string/t_91412465" android:textAllCaps="false" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -222,23 +222,23 @@
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:orientation="vertical" android:padding="16dp">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="5. Terms" android:textColor="@color/fc_text" android:textSize="17sp"
+                    android:text="@string/t_7f37e4b8" android:textColor="@color/fc_text" android:textSize="17sp"
                     android:textStyle="bold" android:fontFamily="serif" />
                 <CheckBox android:id="@+id/cbTerms" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp" android:text="I accept FarmConnect's verification and privacy terms"
+                    android:layout_marginTop="6dp" android:text="@string/t_968dc8a0"
                     android:textColor="@color/fc_text" />
                 <TextView android:id="@+id/tvTerms" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:padding="6dp" android:text="Read the terms" android:textColor="@color/fc_primary" android:textStyle="bold" />
+                    android:padding="6dp" android:text="@string/t_c58e94b6" android:textColor="@color/fc_primary" android:textStyle="bold" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
             android:layout_marginTop="16dp" android:layout_marginBottom="24dp" android:orientation="vertical">
             <Button android:id="@+id/btnSubmit" android:layout_width="match_parent" android:layout_height="56dp"
-                android:text="Submit for verification" android:textAllCaps="false" android:textSize="16sp" />
+                android:text="@string/t_4a2c3c4c" android:textAllCaps="false" android:textSize="16sp" />
             <Button android:id="@+id/btnSave" style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp"
-                android:text="Save draft" android:textAllCaps="false" />
+                android:text="@string/t_48ca50ce" android:textAllCaps="false" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

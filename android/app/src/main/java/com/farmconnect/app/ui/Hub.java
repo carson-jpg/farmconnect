@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -50,20 +52,24 @@ public final class Hub {
         List<Link> links = new ArrayList<>();
         if (role.equals("FARMER")) {
             links.addAll(Arrays.asList(
+                    new Link("💹", "Prices", null, open(PricesActivity.class)),
                     new Link("📚", "Learn", null, open(InfoHubActivity.class)),
                     new Link("🌦", "Weather", null, open(WeatherActivity.class)),
                     new Link("📒", "Records", null, open(RecordsActivity.class)),
+                    new Link("⭐", "My reviews", null, () -> a.startActivity(new Intent(a, ReviewsActivity.class).putExtra("sellerId", Session.id()))),
                     new Link("👥", "Groups", null, open(GroupsActivity.class)),
                     new Link("🧰", "Services", null, open(ServicesActivity.class))));
         } else if (staff) {
             links.addAll(Arrays.asList(
                     new Link("📢", "Publish", null, open(InfoHubActivity.class)),
+                    new Link("💹", "Prices", null, open(PricesActivity.class)),
                     new Link("📊", "Analytics", null, open(AnalyticsActivity.class)),
                     new Link("👥", "Groups", null, open(GroupsActivity.class)),
                     new Link("🧰", "Directory", null, open(ServicesActivity.class)),
                     new Link("🌦", "Weather", null, open(WeatherActivity.class))));
         } else {
             links.addAll(Arrays.asList(
+                    new Link("💹", "Prices", null, open(PricesActivity.class)),
                     new Link("📚", "Learn", null, open(InfoHubActivity.class)),
                     new Link("🧰", "Services", null, open(ServicesActivity.class)),
                     new Link("🌦", "Weather", null, open(WeatherActivity.class))));
@@ -71,6 +77,7 @@ public final class Hub {
         links.add(new Link("💬", "Messages", "m", open(MessagesActivity.class)));
         links.add(new Link("🔔", "Alerts", "n", open(NotificationsActivity.class)));
         if (!staff) links.add(new Link("⭐", "Rate us", null, this::rateDialog));
+        links.add(new Link("🌐", "Language", null, () -> com.farmconnect.app.util.I18n.chooseLanguage(a)));
 
         container.removeAllViews();
         for (Link l : links) container.addView(tile(l));
@@ -112,7 +119,7 @@ public final class Hub {
         col.addView(holder, new LinearLayout.LayoutParams(Cards.dp(c, 62), Cards.dp(c, 58)));
 
         TextView label = new TextView(c);
-        label.setText(l.label);
+        label.setText(com.farmconnect.app.util.I18n.t(l.label));
         label.setTextSize(11);
         label.setTextColor(0xFF1C2B1E);
         label.setTypeface(Typeface.DEFAULT_BOLD);
@@ -140,11 +147,11 @@ public final class Hub {
 
     private void rateDialog() {
         List<Forms.Field> f = new ArrayList<>();
-        f.add(Forms.choice("rating", "How do you like FarmConnect?", true, Forms.arr("5", "4", "3", "2", "1"),
+        f.add(Forms.choice("rating", I18n.t("How do you like FarmConnect?"), true, Forms.arr("5", "4", "3", "2", "1"),
                 Forms.arr("★★★★★  Excellent", "★★★★  Good", "★★★  Okay", "★★  Poor", "★  Bad")));
-        f.add(Forms.multi("comment", "Tell us what to improve (optional)", false));
-        Forms.show(a, "Rate FarmConnect", "Send", f, v ->
+        f.add(Forms.multi("comment", I18n.t("Tell us what to improve (optional)"), false));
+        Forms.show(a, I18n.t("Rate FarmConnect"), I18n.t("Send"), f, v ->
                 Ui.watch(a, vm.sendFeedback(Integer.parseInt(v.get("rating")), v.get("comment")), null,
-                        x -> Ui.toast(a, "Thank you for your feedback!")));
+                        x -> Ui.toast(a, I18n.t("Thank you for your feedback!"))));
     }
 }

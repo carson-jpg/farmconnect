@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -58,9 +60,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
         h.b.tvPhotoCount.setText("\uD83D\uDCF7 " + photos);
         h.b.tvVerified.setVisibility(p.farmerVerified ? View.VISIBLE : View.GONE);
         String hidden = null;
-        if (!p.active) hidden = mode == Mode.ADMIN ? "⛔ Taken down by admin" : "⛔ Removed by an administrator";
-        else if (!p.farmerVerified && mode == Mode.FARMER) hidden = "⏳ Hidden from buyers until you are verified";
-        else if (!p.farmerVerified && mode == Mode.ADMIN) hidden = "⏳ Farmer not verified yet (not public)";
+        if (!p.active) hidden = mode == Mode.ADMIN ? I18n.t("⛔ Taken down by admin") : I18n.t("⛔ Removed by an administrator");
+        else if (!p.farmerVerified && mode == Mode.FARMER) hidden = I18n.t("⏳ Hidden from buyers until you are verified");
+        else if (!p.farmerVerified && mode == Mode.ADMIN) hidden = I18n.t("⏳ Farmer not verified yet (not public)");
         h.b.tvHidden.setVisibility(hidden != null ? View.VISIBLE : View.GONE);
         if (hidden != null) h.b.tvHidden.setText(hidden);
 
@@ -73,31 +75,32 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
         if (p.farmName != null) info.append(p.farmName);
         if (p.farmLocation != null && !p.farmLocation.isEmpty()) info.append(" · ").append(p.farmLocation);
         if (p.category != null && !p.category.isEmpty()) info.append(" · ").append(p.category);
+        if (p.sellerReviews > 0) info.append(String.format(java.util.Locale.US, " · ★ %.1f (%d)", p.sellerRating, p.sellerReviews));
         h.b.tvInfo.setText(info.toString());
 
         h.b.tvPrice.setText(Ui.kes(p.price) + (p.unit != null && !p.unit.isEmpty() ? " / " + p.unit : ""));
-        h.b.tvStock.setText(p.quantity > 0 ? p.quantity + " in stock" : "Out of stock");
+        h.b.tvStock.setText(p.quantity > 0 ? p.quantity + I18n.t(" in stock") : I18n.t("Out of stock"));
         h.b.tvStock.setTextColor(p.quantity <= 0 || (mode == Mode.FARMER && p.quantity <= 5) ? 0xFFC62828 : 0xFF2E7D32);
         h.b.btnSecondary.setVisibility(View.VISIBLE);
         h.b.btnPrimary.setEnabled(true);
         switch (mode) {
             case BUYER:
-                h.b.btnPrimary.setText("Add to cart");
+                h.b.btnPrimary.setText(I18n.t("Add to cart"));
                 h.b.btnPrimary.setEnabled(p.quantity > 0);
-                h.b.btnSecondary.setText("\u2661 Save");
+                h.b.btnSecondary.setText(I18n.t("\u2661 Save"));
                 break;
             case WISHLIST:
-                h.b.btnPrimary.setText("Add to cart");
+                h.b.btnPrimary.setText(I18n.t("Add to cart"));
                 h.b.btnPrimary.setEnabled(p.quantity > 0);
-                h.b.btnSecondary.setText("Remove");
+                h.b.btnSecondary.setText(I18n.t("Remove"));
                 break;
             case ADMIN:
-                h.b.btnPrimary.setText(p.active ? "Take down" : "Restore");
+                h.b.btnPrimary.setText(p.active ? I18n.t("Take down") : I18n.t("Restore"));
                 h.b.btnSecondary.setVisibility(View.GONE);
                 break;
             case FARMER:
-                h.b.btnPrimary.setText("Edit");
-                h.b.btnSecondary.setText("Delete");
+                h.b.btnPrimary.setText(I18n.t("Edit"));
+                h.b.btnSecondary.setText(I18n.t("Delete"));
                 h.b.btnSecondary.setTextColor(0xFFC62828);
                 break;
         }

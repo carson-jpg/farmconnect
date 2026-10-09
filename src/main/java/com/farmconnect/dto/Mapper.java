@@ -18,7 +18,8 @@ public final class Mapper {
         String cover = urls.isEmpty() ? null : urls.get(0);
         return new ProductResponse(p.getId(), p.getName(), p.getSummary(), p.getDescription(), p.getCategory(),
                 p.getPrice(), p.getQuantity(), p.getUnit(), cover, urls, p.getFarm().getId(), p.getFarm().getName(),
-                p.getFarm().getLocation(), p.getFarm().getOwner().isVerified(), p.isActive(), p.getFarm().getOwner().getId());
+                p.getFarm().getLocation(), p.getFarm().getOwner().isVerified(), p.isActive(), p.getFarm().getOwner().getId(),
+                p.getFarm().getOwner().getRatingAvg(), p.getFarm().getOwner().getRatingCount());
     }
 
     public static CartItemResponse cartItem(CartItem c) {

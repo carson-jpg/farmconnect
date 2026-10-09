@@ -3,11 +3,11 @@
     android:layout_width="match_parent" android:layout_height="wrap_content"
     android:orientation="vertical" android:padding="20dp">
     <EditText android:id="@+id/etName" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:hint="Farm name" android:inputType="text" />
+        android:hint="@string/t_64117916" android:inputType="text" />
     <EditText android:id="@+id/etLocation" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:hint="Location (e.g. Nakuru)" android:inputType="text" />
+        android:hint="@string/t_6e0936f3" android:inputType="text" />
     <EditText android:id="@+id/etSubCounty" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:clickable="true" android:focusable="false" android:hint="Sub-county (tap to choose)" android:inputType="none" />
+        android:clickable="true" android:focusable="false" android:hint="@string/t_22e5a7f9" android:inputType="none" />
     <EditText android:id="@+id/etDesc" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:hint="Description" android:inputType="textMultiLine" />
+        android:hint="@string/t_b5a7adde" android:inputType="textMultiLine" />
 </LinearLayout>

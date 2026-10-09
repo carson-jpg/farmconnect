@@ -30,7 +30,7 @@ public class Models {
     public static class Product {
         public long id, farmId; public String name, summary, description, category, unit, imageUrl, farmName, farmLocation;
         public List<String> imageUrls;
-        public long farmerId; public double price; public int quantity; public boolean farmerVerified; public boolean active = true;
+        public long farmerId; public double price, sellerRating; public int quantity, sellerReviews; public boolean farmerVerified; public boolean active = true;
     }
     public static class ProductRequest {
         public String name, summary, description, category, unit, imageUrl; public double price; public int quantity; public long farmId;
@@ -181,5 +181,26 @@ public class Models {
         public java.util.Map<String, Long> farmersBySubCounty, verifiedBySubCounty, productsByCategory, groupsByType,
                 membersByGroup, ordersByMonth, postsByType, harvestKgByCrop;
         public java.util.Map<String, Double> salesByMonth;
+    }
+
+    // ================= market prices & seller reviews =================
+    public static class PriceRequest { public String crop, market, unit, date; public Double price; }
+    public static class Price {
+        public long id; public String crop, market, unit, date, postedBy; public double price;
+        public Double previousPrice, changePct; public boolean subscribed;
+    }
+    public static class PricePoint { public long id; public String date, unit, market; public double price; }
+    public static class AlertToggle { public String crop; public boolean subscribed; }
+    public static class ReviewRequest {
+        public long orderId, sellerId; public int rating; public String comment;
+        public ReviewRequest(long orderId, long sellerId, int rating, String comment) {
+            this.orderId = orderId; this.sellerId = sellerId; this.rating = rating; this.comment = comment;
+        }
+    }
+    public static class ReplyRequest { public String reply; public ReplyRequest(String r) { reply = r; } }
+    public static class Review { public long id; public int rating; public String buyerName, comment, reply, createdAt, repliedAt; }
+    public static class SellerReviewSummary {
+        public long sellerId; public String sellerName; public boolean verified; public double average; public int count;
+        public int[] distribution; public List<Review> reviews;
     }
 }

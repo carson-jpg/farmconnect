@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.activity.OnBackPressedCallback;
@@ -19,8 +21,8 @@ public class OrderSuccessActivity extends AppCompatActivity {
 
         int n = 0;
         if (o.items != null) for (com.farmconnect.app.data.Models.OrderItem i : o.items) n += i.quantity;
-        b.tvOrderNo.setText("Order #" + o.id);
-        b.tvItemsLine.setText(n + (n == 1 ? " item" : " items") + " ordered");
+        b.tvOrderNo.setText(I18n.t("Order #") + o.id);
+        b.tvItemsLine.setText(n + (n == 1 ? I18n.t(" item") : I18n.t(" items")) + I18n.t(" ordered"));
         b.tvTotalLine.setText(Ui.kes(o.total));
         b.tvPayLine.setText("💳  " + Ui.paymentLabel(o.paymentMethod));
         b.tvAddrLine.setText("📍  " + o.deliveryAddress);

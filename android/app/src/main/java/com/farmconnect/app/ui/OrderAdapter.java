@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -59,7 +61,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.VH> {
         switch (n) {
             case "CONFIRMED": return "Confirm order";
             case "SHIPPED": return "Mark as shipped";
-            default: return "Mark as delivered";
+            default: return I18n.t("Mark as delivered");
         }
     }
 
@@ -75,12 +77,12 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.VH> {
     @Override public void onBindViewHolder(VH h, int pos) {
         Order o = items.get(pos);
         Context ctx = h.itemView.getContext();
-        h.b.tvHeader.setText("Order #" + o.id);
+        h.b.tvHeader.setText(I18n.t("Order #") + o.id);
         Ui.styleStatus(h.b.tvStatus, o.status);
         h.b.tvDate.setText(Ui.dateTime(o.createdAt));
 
         if (mode != Mode.BUYER) {
-            String who = o.buyerName == null || o.buyerName.isEmpty() ? "Customer" : o.buyerName;
+            String who = o.buyerName == null || o.buyerName.isEmpty() ? I18n.t("Customer") : o.buyerName;
             String phone = o.deliveryPhone != null && !o.deliveryPhone.isEmpty() ? o.deliveryPhone : o.buyerPhone;
             if (phone != null && !phone.isEmpty()) who += " · " + phone;
             h.b.tvBuyer.setText("👤 " + who);
@@ -120,7 +122,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.VH> {
         String actionText = null;
         if (mode == Mode.BUYER) {
             showAction = "PENDING".equals(o.status);
-            actionText = "Cancel order";
+            actionText = I18n.t("Cancel order");
         } else {
             actionText = actionLabel(o.status);
             showAction = actionText != null;

@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import com.farmconnect.app.util.I18n;
+
 import android.os.Bundle;
 import android.view.View;
 import androidx.appcompat.app.AlertDialog;
@@ -20,7 +22,7 @@ public class FarmsActivity extends AppCompatActivity implements FarmAdapter.List
 
     @Override protected void onCreate(Bundle s) {
         super.onCreate(s);
-        setTitle("My farms");
+        setTitle(I18n.t("My farms"));
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         b = ActivityListBinding.inflate(getLayoutInflater());
         setContentView(b.getRoot());
@@ -28,7 +30,7 @@ public class FarmsActivity extends AppCompatActivity implements FarmAdapter.List
         adapter = new FarmAdapter(this);
         b.rv.setLayoutManager(new LinearLayoutManager(this));
         b.rv.setAdapter(adapter);
-        b.tvEmpty.setText("No farms yet. Tap + to add your first farm.");
+        b.tvEmpty.setText(I18n.t("No farms yet. Tap + to add your first farm."));
         b.fab.setVisibility(View.VISIBLE);
         b.fab.setOnClickListener(v -> showDialog(null));
         load();
@@ -51,20 +53,20 @@ public class FarmsActivity extends AppCompatActivity implements FarmAdapter.List
             d.etDesc.setText(ex.description);
             d.etSubCounty.setText(ex.subCounty);
         }
-        d.etSubCounty.setOnClickListener(v -> new AlertDialog.Builder(this).setTitle("Sub-county")
+        d.etSubCounty.setOnClickListener(v -> new AlertDialog.Builder(this).setTitle(I18n.t("Sub-county"))
                 .setItems(Labels.SUB_COUNTIES, (dlg, i) -> d.etSubCounty.setText(Labels.SUB_COUNTIES[i])).show());
         new AlertDialog.Builder(this)
-                .setTitle(ex == null ? "New farm" : "Edit farm")
+                .setTitle(ex == null ? I18n.t("New farm") : I18n.t("Edit farm"))
                 .setView(d.getRoot())
-                .setPositiveButton("Save", (x, y) -> {
+                .setPositiveButton(I18n.t("Save"), (x, y) -> {
                     String name = d.etName.getText().toString().trim();
-                    if (name.isEmpty()) { Ui.toast(this, "Farm name required"); return; }
+                    if (name.isEmpty()) { Ui.toast(this, I18n.t("Farm name required")); return; }
                     FarmRequest r = new FarmRequest(name, d.etLocation.getText().toString().trim(),
                             d.etDesc.getText().toString().trim(), d.etSubCounty.getText().toString().trim());
                     if (ex == null) Ui.watch(this, vm.createFarm(r), b.progress, f -> load());
                     else Ui.watch(this, vm.updateFarm(ex.id, r), b.progress, f -> load());
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(I18n.t("Cancel"), null)
                 .show();
     }
 
@@ -72,13 +74,13 @@ public class FarmsActivity extends AppCompatActivity implements FarmAdapter.List
 
     @Override public void onDelete(Farm f) {
         new AlertDialog.Builder(this)
-                .setTitle("Delete " + f.name + "?")
-                .setMessage("A farm with products cannot be deleted. Remove its products first.")
-                .setPositiveButton("Delete", (x, y) -> Ui.watch(this, vm.deleteFarm(f.id), b.progress, r -> {
-                    Ui.toast(this, "Farm deleted");
+                .setTitle(I18n.t("Delete ") + f.name + "?")
+                .setMessage(I18n.t("A farm with products cannot be deleted. Remove its products first."))
+                .setPositiveButton(I18n.t("Delete"), (x, y) -> Ui.watch(this, vm.deleteFarm(f.id), b.progress, r -> {
+                    Ui.toast(this, I18n.t("Farm deleted"));
                     load();
                 }))
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(I18n.t("Cancel"), null)
                 .show();
     }
 }

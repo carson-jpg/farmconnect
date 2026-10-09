@@ -7,10 +7,10 @@
         android:background="@drawable/bg_dash_header" android:gravity="center_horizontal" android:orientation="vertical"
         android:paddingBottom="64dp" android:paddingTop="56dp">
         <ImageView android:layout_width="96dp" android:layout_height="96dp" android:background="@drawable/bg_success_circle"
-            android:contentDescription="Success" android:padding="26dp" android:src="@drawable/ic_check"
+            android:contentDescription="@string/t_505a83f2" android:padding="26dp" android:src="@drawable/ic_check"
             android:tint="@color/fc_primary" />
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="18dp"
-            android:fontFamily="serif" android:text="Order placed!" android:textColor="#FFFFFF" android:textSize="28sp"
+            android:fontFamily="serif" android:text="@string/t_38dd805c" android:textColor="#FFFFFF" android:textSize="28sp"
             android:textStyle="bold" />
         <TextView android:id="@+id/tvOrderNo" android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_marginTop="4dp" android:textColor="#CFE8B5" android:textSize="15sp" />
@@ -35,17 +35,17 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
     <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center"
-        android:padding="22dp" android:text="The seller will confirm your order shortly. You can follow every step from My orders."
+        android:padding="22dp" android:text="@string/t_7a035da1"
         android:textColor="@color/fc_muted" android:textSize="13sp" />
     <View android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
         android:orientation="vertical" android:padding="18dp">
         <com.google.android.material.button.MaterialButton android:id="@+id/btnTrack" android:layout_width="match_parent"
-            android:layout_height="54dp" android:insetBottom="0dp" android:insetTop="0dp" android:text="Track my order"
+            android:layout_height="54dp" android:insetBottom="0dp" android:insetTop="0dp" android:text="@string/t_d234d1a1"
             android:textAllCaps="false" android:textSize="16sp" android:textStyle="bold" app:cornerRadius="14dp" />
         <com.google.android.material.button.MaterialButton android:id="@+id/btnContinue"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton" android:layout_width="match_parent"
             android:layout_height="54dp" android:layout_marginTop="10dp" android:insetBottom="0dp" android:insetTop="0dp"
-            android:text="Continue shopping" android:textAllCaps="false" android:textSize="16sp" app:cornerRadius="14dp" />
+            android:text="@string/t_300225ee" android:textAllCaps="false" android:textSize="16sp" app:cornerRadius="14dp" />
     </LinearLayout>
 </LinearLayout>

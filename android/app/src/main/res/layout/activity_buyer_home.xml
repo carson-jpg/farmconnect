@@ -17,29 +17,29 @@
                 <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                     android:layout_weight="1" android:orientation="vertical">
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="🌿 Hello," android:textColor="#CFE8B5" android:textSize="14sp" />
+                        android:text="@string/t_d7f55953" android:textColor="#CFE8B5" android:textSize="14sp" />
                     <TextView android:id="@+id/tvGreeting" android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:fontFamily="serif" android:text="Friend"
+                        android:layout_height="wrap_content" android:fontFamily="serif" android:text="@string/t_930a9184"
                         android:textColor="#FFFFFF" android:textSize="26sp" android:textStyle="bold" />
                 </LinearLayout>
                 <ImageButton android:id="@+id/btnWishlist" android:layout_width="42dp" android:layout_height="42dp"
-                    android:background="@drawable/bg_icon_glass" android:contentDescription="Wishlist"
+                    android:background="@drawable/bg_icon_glass" android:contentDescription="@string/t_641254d7"
                     android:padding="10dp" android:src="@drawable/ic_heart" android:tint="#FFFFFF" />
                 <ImageButton android:id="@+id/btnCart" android:layout_width="42dp" android:layout_height="42dp"
                     android:layout_marginStart="8dp" android:background="@drawable/bg_icon_glass"
-                    android:contentDescription="Cart" android:padding="10dp" android:src="@drawable/ic_cart"
+                    android:contentDescription="@string/t_a85eba4c" android:padding="10dp" android:src="@drawable/ic_cart"
                     android:tint="#FFFFFF" />
                 <ImageButton android:id="@+id/btnOrders" android:layout_width="42dp" android:layout_height="42dp"
                     android:layout_marginStart="8dp" android:background="@drawable/bg_icon_glass"
-                    android:contentDescription="My orders" android:padding="10dp" android:src="@drawable/ic_receipt"
+                    android:contentDescription="@string/t_74ecd923" android:padding="10dp" android:src="@drawable/ic_receipt"
                     android:tint="#FFFFFF" />
                 <ImageButton android:id="@+id/btnLogout" android:layout_width="42dp" android:layout_height="42dp"
                     android:layout_marginStart="8dp" android:background="@drawable/bg_icon_glass"
-                    android:contentDescription="Log out" android:padding="10dp" android:src="@drawable/ic_logout"
+                    android:contentDescription="@string/t_4394c8d8" android:padding="10dp" android:src="@drawable/ic_logout"
                     android:tint="#FFFFFF" />
             </LinearLayout>
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:layout_marginTop="10dp" android:text="Fresh produce straight from verified Trans Nzoia farmers."
+                android:layout_marginTop="10dp" android:text="@string/t_9c0990f6"
                 android:textColor="#E6FFFFFF" android:textSize="13sp" />
         </LinearLayout>
 
@@ -51,10 +51,10 @@
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:gravity="center_vertical" android:orientation="horizontal" android:paddingStart="16dp"
                 android:paddingEnd="8dp">
-                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:contentDescription="Search"
+                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:contentDescription="@string/t_13348442"
                     android:src="@drawable/ic_search" android:tint="@color/fc_muted" />
                 <EditText android:id="@+id/etSearch" android:layout_width="0dp" android:layout_height="52dp"
-                    android:layout_weight="1" android:background="@null" android:hint="Search maize, tomatoes, milk..."
+                    android:layout_weight="1" android:background="@null" android:hint="@string/t_b30eeae8"
                     android:imeOptions="actionSearch" android:inputType="text" android:maxLines="1"
                     android:paddingStart="12dp" android:paddingEnd="12dp" android:textSize="15sp" />
             </LinearLayout>
@@ -65,10 +65,10 @@
             android:layout_marginStart="16dp" android:layout_marginEnd="16dp" android:layout_marginTop="14dp"
             android:background="@drawable/bg_chip" android:backgroundTint="#E3F1E0" android:gravity="center_vertical"
             android:orientation="horizontal" android:padding="12dp">
-            <ImageView android:layout_width="26dp" android:layout_height="26dp" android:contentDescription="Verified"
+            <ImageView android:layout_width="26dp" android:layout_height="26dp" android:contentDescription="@string/t_3f68e67d"
                 android:src="@drawable/ic_verified" android:tint="@color/fc_primary" />
             <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="10dp"
-                android:layout_weight="1" android:text="Every seller here is identity-checked and approved by the county before their produce is listed."
+                android:layout_weight="1" android:text="@string/t_5ddbdf55"
                 android:textColor="#1B5E20" android:textSize="12sp" />
         </LinearLayout>
 
@@ -93,7 +93,7 @@
             android:gravity="center_vertical" android:orientation="horizontal" android:paddingStart="20dp"
             android:paddingEnd="20dp" android:paddingTop="6dp">
             <TextView android:id="@+id/tvCount" android:layout_width="0dp" android:layout_height="wrap_content"
-                android:layout_weight="1" android:fontFamily="serif" android:text="Marketplace"
+                android:layout_weight="1" android:fontFamily="serif" android:text="@string/t_675e31b9"
                 android:textColor="@color/fc_text" android:textSize="18sp" android:textStyle="bold" />
             <ProgressBar android:id="@+id/progress" android:layout_width="22dp" android:layout_height="22dp"
                 android:visibility="gone" />
@@ -101,7 +101,7 @@
 
         <TextView android:id="@+id/tvEmpty" android:layout_width="match_parent" android:layout_height="wrap_content"
             android:gravity="center" android:padding="36dp"
-            android:text="No products to show yet.\nNew produce appears here once farmers are verified."
+            android:text="@string/t_d434f4b8"
             android:textColor="@color/fc_muted" android:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView android:id="@+id/rv" android:layout_width="match_parent"

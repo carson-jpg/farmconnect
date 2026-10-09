@@ -87,6 +87,17 @@ public interface ApiService {
     @GET("api/analytics") Call<Analytics> analytics();
     @GET("api/analytics/report.csv") Call<okhttp3.ResponseBody> analyticsCsv();
 
+    // prices & reviews
+    @GET("api/prices") Call<List<Price>> prices(@Query("q") String q);
+    @GET("api/prices/history") Call<List<PricePoint>> priceHistory(@Query("crop") String crop, @Query("market") String market);
+    @POST("api/prices") Call<Price> postPrice(@Body PriceRequest r);
+    @DELETE("api/prices/{id}") Call<Void> deletePrice(@Path("id") long id);
+    @POST("api/prices/alerts/toggle") Call<AlertToggle> togglePriceAlert(@Query("crop") String crop);
+    @POST("api/reviews") Call<Review> createReview(@Body ReviewRequest r);
+    @GET("api/reviews/seller/{id}") Call<SellerReviewSummary> sellerReviews(@Path("id") long id);
+    @POST("api/reviews/{id}/reply") Call<Review> replyReview(@Path("id") long id, @Body ReplyRequest r);
+    @DELETE("api/reviews/{id}") Call<Void> deleteReview(@Path("id") long id);
+
     // admin
     @GET("api/admin/stats") Call<AdminStats> adminStats();
     @GET("api/admin/users") Call<List<UserSummary>> adminUsers(@Query("role") String role, @Query("q") String q);
