@@ -8,5 +8,6 @@ public class FarmApp extends Application {
         super.onCreate();
         Session.init(this);
         com.farmconnect.app.util.I18n.init(this);
+        com.farmconnect.app.push.Push.createChannel(this);
     }
 }

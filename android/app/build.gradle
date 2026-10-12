@@ -2,6 +2,12 @@ plugins {
     id 'com.android.application'
 }
 
+// Push notifications: put the google-services.json from your Firebase project in this folder (app/).
+// Without it the app still builds and runs, only push is off.
+if (file('google-services.json').exists()) {
+    apply plugin: 'com.google.gms.google-services'
+}
+
 android {
     namespace 'com.farmconnect.app'
     compileSdk 34
@@ -35,4 +41,6 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.11.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.11.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
+    implementation platform('com.google.firebase:firebase-bom:33.5.1')
+    implementation 'com.google.firebase:firebase-messaging'
 }

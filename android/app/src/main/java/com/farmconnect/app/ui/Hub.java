@@ -41,6 +41,7 @@ public final class Hub {
     public static Hub attach(AppCompatActivity a, LinearLayout container) {
         Hub h = new Hub(a);
         h.build(container);
+        com.farmconnect.app.push.Push.sync(a);
         return h;
     }
 

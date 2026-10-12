@@ -23,6 +23,7 @@ public class NotificationService {
     private final AppNotificationRepository repo;
     private final UserRepository users;
     private final SmsService sms;
+    private final PushService push;
 
     /** app.sms.notify=true also texts users for important events (new order, order status, verification). */
     @Value("${app.sms.notify:false}") private boolean smsNotify;
@@ -36,7 +37,8 @@ public class NotificationService {
         n.setTitle(title);
         n.setBody(body == null ? null : body.length() > 500 ? body.substring(0, 497) + "..." : body);
         n.setRefId(refId);
-        repo.save(n);
+        AppNotification saved = repo.save(n);
+        push.send(to.getId(), saved.getId(), type, title, n.getBody(), refId);
     }
 
     /** In-app notification and, when enabled, an SMS to the user's phone. */

@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -74,6 +75,59 @@ public class AnalyticsController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=farmconnect-report.csv")
                 .contentType(MediaType.parseMediaType("text/csv")).body(sb.toString());
+    }
+
+    @GetMapping(value = "/report.pdf", produces = "application/pdf")
+    @Transactional(readOnly = true)
+    public ResponseEntity<byte[]> pdf(@AuthenticationPrincipal User me) {
+        byte[] bytes = com.farmconnect.report.ReportPdf.build(compute(), me == null ? "" : me.getName());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=farmconnect-report.pdf")
+                .contentType(MediaType.APPLICATION_PDF).body(bytes);
+    }
+
+    /** Every registered farmer with sub-county and verification status. For officers' follow-up lists. */
+    @GetMapping(value = "/farmers.csv", produces = "text/csv")
+    @Transactional(readOnly = true)
+    public ResponseEntity<String> farmersCsv() {
+        Map<Long, String> sub = new HashMap<>();
+        for (Farm f : farms.findAll()) {
+            if (f.getSubCounty() != null && !f.getSubCounty().isBlank()) sub.putIfAbsent(f.getOwner().getId(), f.getSubCounty());
+        }
+        StringBuilder sb = new StringBuilder("Name,Phone,Sub-county,Verified,Joined\n");
+        users.findAll().stream().filter(u -> u.getRole() == Role.FARMER)
+                .sorted(Comparator.comparing(u -> u.getName() == null ? "" : u.getName().toLowerCase()))
+                .forEach(u -> sb.append(cell(u.getName())).append(',').append(cell(u.getPhone())).append(',')
+                        .append(cell(sub.getOrDefault(u.getId(), UNSPECIFIED))).append(',').append(u.isVerified() ? "Yes" : "No").append(',')
+                        .append(u.getCreatedAt() == null ? "" : u.getCreatedAt().toString().substring(0, 10)).append('\n'));
+        return csvFile("farmconnect-farmers.csv", sb);
+    }
+
+    /** Every order with its status and payment state. */
+    @GetMapping(value = "/orders.csv", produces = "text/csv")
+    @Transactional(readOnly = true)
+    public ResponseEntity<String> ordersCsv() {
+        StringBuilder sb = new StringBuilder("Order,Date,Status,Total (KES),Payment method,Payment status\n");
+        orders.findAll().stream().sorted(Comparator.comparing(CustomerOrder::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder())))
+                .forEach(o -> sb.append(o.getId()).append(',')
+                        .append(o.getCreatedAt() == null ? "" : o.getCreatedAt().toString().substring(0, 10)).append(',')
+                        .append(o.getStatus()).append(',').append(o.getTotal() == null ? "" : o.getTotal().toBigInteger()).append(',')
+                        .append(cell(o.getPaymentMethod())).append(',')
+                        .append(o.getPaymentStatus() == null ? "UNPAID" : o.getPaymentStatus()).append('\n'));
+        return csvFile("farmconnect-orders.csv", sb);
+    }
+
+    private static ResponseEntity<String> csvFile(String name, StringBuilder body) {
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + name)
+                .contentType(MediaType.parseMediaType("text/csv")).body(body.toString());
+    }
+
+    /** Quotes a CSV cell and defuses spreadsheet formulas (a name starting with = + - @ would otherwise run in Excel). */
+    private static String cell(String s) {
+        if (s == null) return "";
+        String t = s.replace("\"", "\"\"");
+        if (!t.isEmpty() && "=+-@\t\r".indexOf(t.charAt(0)) >= 0) t = "'" + t;
+        return "\"" + t + "\"";
     }
 
     private static void row(StringBuilder sb, String section, String item, Object v) {

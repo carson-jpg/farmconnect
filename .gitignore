@@ -21,3 +21,7 @@ android/.idea/
 
 # IDE
 .idea/
+
+# Firebase service-account keys are secret (google-services.json for the app is fine to commit)
+*firebase-adminsdk*.json
+firebase-service-account*.json

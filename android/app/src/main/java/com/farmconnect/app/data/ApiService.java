@@ -63,6 +63,8 @@ public interface ApiService {
     @POST("api/messages") Call<ChatMessage> sendMessage(@Body ChatRequest r);
     @GET("api/messages/contacts") Call<List<Contact>> contacts(@Query("q") String q);
     @GET("api/notifications") Call<List<AppNotification>> notifications();
+    @POST("api/devices") Call<Void> registerDevice(@Body java.util.Map<String, String> body);
+    @DELETE("api/devices") Call<Void> unregisterDevice(@Header("Authorization") String bearer, @Query("token") String token);
     @GET("api/notifications/counts") Call<Counts> counts();
     @POST("api/notifications/read-all") Call<Counts> readAllNotifications();
     @POST("api/notifications/{id}/read") Call<Counts> readNotification(@Path("id") long id);

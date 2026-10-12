@@ -122,6 +122,7 @@ public class Ui {
     }
 
     public static void logout(Activity a) {
+        com.farmconnect.app.push.Push.forget(a);
         Session.clear();
         Intent i = new Intent(a, LoginActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

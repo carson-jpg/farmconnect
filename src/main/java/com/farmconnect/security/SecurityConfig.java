@@ -31,6 +31,7 @@ public class SecurityConfig {
                 .requestMatchers("/error").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/ussd", "/api/sms/inbound").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/payments/callback/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/officer", "/officer/", "/officer/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/files/products/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/farms/mine", "/api/products/mine").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/products/**", "/api/farms/**").permitAll()
