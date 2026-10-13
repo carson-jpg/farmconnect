@@ -53,8 +53,7 @@ public class FarmsActivity extends AppCompatActivity implements FarmAdapter.List
             d.etDesc.setText(ex.description);
             d.etSubCounty.setText(ex.subCounty);
         }
-        d.etSubCounty.setOnClickListener(v -> new AlertDialog.Builder(this).setTitle(I18n.t("Sub-county"))
-                .setItems(Labels.SUB_COUNTIES, (dlg, i) -> d.etSubCounty.setText(Labels.SUB_COUNTIES[i])).show());
+        d.etSubCounty.setOnClickListener(v -> Labels.pickSubCounty(this, s -> d.etSubCounty.setText(s)));
         new AlertDialog.Builder(this)
                 .setTitle(ex == null ? I18n.t("New farm") : I18n.t("Edit farm"))
                 .setView(d.getRoot())

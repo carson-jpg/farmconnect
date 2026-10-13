@@ -47,7 +47,7 @@ public final class Dtos {
     // ---- admin ----
     public record ActiveRequest(boolean active) {}
     public record UserSummary(Long id, String name, String email, String phone, Role role, boolean verified,
-                              boolean enabled, Instant createdAt) {}
+                              boolean enabled, Instant createdAt, String assignedCounty, List<String> assignedSubCounties) {}
     public record AdminStats(long users, long farmers, long verifiedFarmers, long buyers, long officers,
                              long pendingVerifications, long underReview, long rejectedVerifications,
                              long products, long activeProducts, long orders, long pendingOrders,
@@ -61,7 +61,7 @@ public final class Dtos {
     public record OtpVerifyRequest(@NotBlank String phone, @NotBlank String code) {}
     public record RejectRequest(@NotBlank @Size(min = 5, max = 500) String reason) {}
     public record OfficerRequest(@NotBlank String name, @NotBlank @Email String email, String phone,
-                                 @NotBlank @Size(min = 8) String password) {}
+                                 @NotBlank @Size(min = 8) String password, String county, List<String> subCounties) {}
 
     /** What the farmer sees about their own verification. National ID is masked. */
     public record VerificationResponse(VerificationStatus status, String rejectionReason, String fullName,

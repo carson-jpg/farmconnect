@@ -138,6 +138,7 @@ public class Repository {
     public LiveData<Resource<List<Product>>> adminProducts(String q) { return run(api().adminProducts(q == null || q.isEmpty() ? null : q)); }
     public LiveData<Resource<Product>> adminSetProductActive(long id, boolean active) { return run(api().adminSetProductActive(id, new ActiveRequest(active))); }
     public LiveData<Resource<AuthResponse>> createOfficer(OfficerRequest r) { return run(api().createOfficer(r)); }
+    public LiveData<Resource<UserSummary>> assignOfficer(long id, AssignmentRequest r) { return run(api().assignOfficer(id, r)); }
 
     // reviewer
     public LiveData<Resource<List<ReviewSummary>>> reviews(String status) { return run(api().reviews(status)); }

@@ -168,3 +168,14 @@ td .sub { color: var(--grey); font-size: 12px; }
   .card, .kpi { box-shadow: none; border: 1px solid var(--rule); break-inside: avoid; }
   main { padding: 0; max-width: none; }
 }
+
+/* area assignment */
+.banner { background: #e8f5e9; border: 1px solid #b9d9bc; border-left: 4px solid var(--green); border-radius: 12px; padding: 12px 16px; margin-bottom: 18px; }
+.area-box { margin-top: 14px; padding-top: 6px; border-top: 1px dashed var(--rule); }
+.check-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; margin: 8px 0 4px; }
+label.check { display: flex; align-items: center; gap: 8px; margin: 0; padding: 6px 10px; border: 1px solid var(--rule); border-radius: 10px; font-size: 14px; font-weight: 500; color: var(--ink); text-transform: none; letter-spacing: 0; cursor: pointer; background: #fff; }
+label.check:hover { background: var(--pale); }
+label.check input { width: 16px; height: 16px; }
+.actions-row { display: flex; justify-content: flex-end; margin-top: 14px; }
+.warn { color: #b26a00; font-weight: 600; }
+.muted { margin: 6px 0; }

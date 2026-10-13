@@ -18,4 +18,5 @@ public class AdminViewModel extends ViewModel {
     public LiveData<Resource<List<Product>>> products(String q) { return repo.adminProducts(q); }
     public LiveData<Resource<Product>> setProductActive(long id, boolean active) { return repo.adminSetProductActive(id, active); }
     public LiveData<Resource<AuthResponse>> createOfficer(OfficerRequest r) { return repo.createOfficer(r); }
+    public LiveData<Resource<UserSummary>> assignOfficer(long id, AssignmentRequest r) { return repo.assignOfficer(id, r); }
 }

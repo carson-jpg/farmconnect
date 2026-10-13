@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.farmconnect.app.data.Models.AssignmentRequest;
 import com.farmconnect.app.data.Models.OfficerRequest;
 import com.farmconnect.app.data.Models.UserSummary;
 import com.farmconnect.app.databinding.ActivityAdminUsersBinding;
@@ -72,6 +73,46 @@ public class AdminUsersActivity extends AppCompatActivity {
                 .show();
     }
 
+    private String areaText(UserSummary u) {
+        if (u.assignedCounty == null || u.assignedCounty.isEmpty()) return I18n.t("All counties");
+        if (u.assignedSubCounties == null || u.assignedSubCounties.isEmpty()) return u.assignedCounty + " (" + I18n.t("Whole county") + ")";
+        return u.assignedCounty + ": " + android.text.TextUtils.join(", ", u.assignedSubCounties);
+    }
+
+    /** Admin: pick the county an officer works in, then which of its sub-counties (none ticked = the whole county). */
+    private void assignArea(UserSummary u) {
+        String[] counties = new String[Labels.COUNTIES.length + 1];
+        counties[0] = I18n.t("All counties (no restriction)");
+        System.arraycopy(Labels.COUNTIES, 0, counties, 1, Labels.COUNTIES.length);
+        new AlertDialog.Builder(this).setTitle(I18n.t("Area for ") + u.name)
+                .setItems(counties, (d, which) -> {
+                    if (which == 0) { saveArea(u, null, new ArrayList<>()); return; }
+                    String county = Labels.COUNTIES[which - 1];
+                    String[] subs = Labels.SUBS[which - 1];
+                    boolean[] on = new boolean[subs.length];
+                    if (county.equals(u.assignedCounty) && u.assignedSubCounties != null)
+                        for (int i = 0; i < subs.length; i++) on[i] = u.assignedSubCounties.contains(subs[i]);
+                    new AlertDialog.Builder(this).setTitle(county + " · " + I18n.t("Sub-counties"))
+                            .setMultiChoiceItems(subs, on, (dd, i, checked) -> on[i] = checked)
+                            .setPositiveButton(I18n.t("Save"), (dd, w) -> {
+                                List<String> chosen = new ArrayList<>();
+                                for (int i = 0; i < subs.length; i++) if (on[i]) chosen.add(subs[i]);
+                                saveArea(u, county, chosen);
+                            })
+                            .setNegativeButton(I18n.t("Cancel"), null)
+                            .show();
+                })
+                .setNegativeButton(I18n.t("Cancel"), null)
+                .show();
+    }
+
+    private void saveArea(UserSummary u, String county, List<String> subs) {
+        Ui.watch(this, vm.assignOfficer(u.id, new AssignmentRequest(county, subs)), b.progress, x -> {
+            Ui.toast(this, I18n.t("Area saved"));
+            load();
+        });
+    }
+
     private void officerDialog() {
         DialogOfficerBinding d = DialogOfficerBinding.inflate(getLayoutInflater());
         AlertDialog dialog = new AlertDialog.Builder(this)
@@ -120,6 +161,7 @@ public class AdminUsersActivity extends AppCompatActivity {
             h.ib.tvEmail.setText(u.email);
             StringBuilder tags = new StringBuilder(u.role.charAt(0) + u.role.substring(1).toLowerCase());
             if ("FARMER".equals(u.role)) tags.append(u.verified ? I18n.t("  ·  ✓ Verified") : I18n.t("  ·  Not verified"));
+            if ("OFFICER".equals(u.role)) tags.append("  ·  ").append(areaText(u));
             if (!u.enabled) tags.append(I18n.t("  ·  ⛔ Suspended"));
             h.ib.tvTags.setText(tags.toString());
             h.ib.tvTags.setTextColor(u.enabled ? 0xFF2E7D32 : 0xFFC62828);
@@ -128,6 +170,8 @@ public class AdminUsersActivity extends AppCompatActivity {
             h.ib.btnToggle.setText(u.enabled ? I18n.t("Suspend") : I18n.t("Re-activate"));
             h.ib.btnToggle.setTextColor(u.enabled ? 0xFFC62828 : 0xFF2E7D32);
             h.ib.btnToggle.setOnClickListener(v -> toggle(u));
+            // tap an officer to choose the county and sub-counties they cover
+            h.ib.getRoot().setOnClickListener("OFFICER".equals(u.role) ? v -> assignArea(u) : null);
         }
 
         @Override public int getItemCount() { return items.size(); }

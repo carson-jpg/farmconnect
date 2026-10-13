@@ -74,7 +74,7 @@ public class ServicesActivity extends BaseListActivity {
         f.add(Forms.multi("description", I18n.t("About"), false));
         f.add(Forms.phone("phone", I18n.t("Phone"), false));
         f.add(Forms.email("email", I18n.t("Email"), false));
-        f.add(Forms.choice("subCounty", I18n.t("Sub-county"), false, Labels.SUB_COUNTIES, Labels.SUB_COUNTIES));
+        f.add(Forms.choice("subCounty", I18n.t("Sub-county"), false, Labels.SUB_COUNTIES, Labels.SUB_LABELS));
         f.add(Forms.text("location", I18n.t("Town / location"), false));
         Forms.show(this, I18n.t("Add to directory"), I18n.t("Add"), f, v -> {
             ServiceRequest r = new ServiceRequest();

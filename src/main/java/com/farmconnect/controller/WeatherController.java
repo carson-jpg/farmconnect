@@ -3,7 +3,14 @@ package com.farmconnect.controller;
 import com.farmconnect.dto.Community.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.farmconnect.model.Farm;
+import com.farmconnect.model.User;
+import com.farmconnect.repository.FarmRepository;
+import com.farmconnect.repository.FarmerVerificationRepository;
+import com.farmconnect.service.Locations;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -18,19 +25,36 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Real forecast from Open-Meteo (free, no API key) with simple farming advice on top.
- * Default place is Kitale (Trans Nzoia). Results are cached for 30 minutes.
+ * The place follows the logged-in user: their farm's county, or an officer's assigned county (Kitale if unknown).
+ * Results are cached for 30 minutes.
  */
 @RestController
 @RequestMapping("/api/weather")
+@RequiredArgsConstructor
 public class WeatherController {
+    private final FarmRepository farms;
+    private final FarmerVerificationRepository verifications;
     private static final ObjectMapper JSON = new ObjectMapper();
     private static final HttpClient HTTP = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(6)).build();
     private final Map<String, WeatherResponse> cache = new ConcurrentHashMap<>();
 
     @GetMapping
-    public WeatherResponse weather(@RequestParam(defaultValue = "1.0191") double lat,
-                                   @RequestParam(defaultValue = "35.0020") double lon,
-                                   @RequestParam(defaultValue = "Kitale, Trans Nzoia") String place) {
+    public WeatherResponse weather(@RequestParam(required = false) Double lat,
+                                   @RequestParam(required = false) Double lon,
+                                   @RequestParam(required = false) String place,
+                                   @AuthenticationPrincipal User me) {
+        if (lat == null || lon == null) {
+            String county = countyOf(me);
+            if (county == null) county = "Trans Nzoia";                 // nothing known about this user yet
+            double[] at = Locations.townCoords(county);
+            lat = at[0];
+            lon = at[1];
+            if (place == null) {
+                String town = Locations.townOf(county);
+                place = town.equals(county) ? county + " County" : town + ", " + county;
+            }
+        }
+        if (place == null) place = "Your location";
         String key = Math.round(lat * 10) + ":" + Math.round(lon * 10);
         WeatherResponse cached = cache.get(key);
         if (cached != null && cached.updatedAt().isAfter(Instant.now().minusSeconds(1800))) return cached;
@@ -63,6 +87,17 @@ public class WeatherController {
             if (cached != null) return cached;     // stale is better than nothing
             throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Weather service is not reachable right now. Try again later.");
         }
+    }
+
+    /** The county of the user's farm (or verification), or the county an officer was assigned. */
+    private String countyOf(User me) {
+        if (me == null) return null;
+        if (Locations.isCounty(me.getAssignedCounty())) return me.getAssignedCounty();
+        for (Farm f : farms.findByOwnerId(me.getId())) {
+            String c = Locations.countyOf(f.getSubCounty());
+            if (c != null) return c;
+        }
+        return verifications.findByFarmerId(me.getId()).map(v -> Locations.countyOf(v.getSubCounty())).orElse(null);
     }
 
     static List<String> advice(List<WeatherDay> days) {

@@ -40,7 +40,8 @@ public final class Mapper {
 
     public static UserSummary user(User u) {
         return new UserSummary(u.getId(), u.getName(), u.getEmail(), u.getPhone(), u.getRole(), u.isVerified(),
-                u.isEnabled(), u.getCreatedAt());
+                u.isEnabled(), u.getCreatedAt(), u.getAssignedCounty(),
+                u.getAssignedSubCounties() == null ? java.util.List.of() : new java.util.ArrayList<>(new java.util.TreeSet<>(u.getAssignedSubCounties())));
     }
 
     public static VerificationResponse verification(FarmerVerification v) {

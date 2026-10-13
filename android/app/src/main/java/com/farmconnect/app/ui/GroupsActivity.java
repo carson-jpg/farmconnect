@@ -55,7 +55,7 @@ public class GroupsActivity extends BaseListActivity {
         f.add(Forms.text("name", I18n.t("Group name"), true));
         f.add(Forms.choice("type", I18n.t("Type"), true, Labels.GROUP_TYPES, Labels.GROUP_NAMES).value("FARMER_GROUP"));
         f.add(Forms.multi("description", I18n.t("What does the group do?"), false));
-        f.add(Forms.choice("subCounty", I18n.t("Sub-county"), false, Labels.SUB_COUNTIES, Labels.SUB_COUNTIES));
+        f.add(Forms.choice("subCounty", I18n.t("Sub-county"), false, Labels.SUB_COUNTIES, Labels.SUB_LABELS));
         f.add(Forms.text("location", I18n.t("Meeting place / town"), false));
         f.add(Forms.phone("phone", I18n.t("Contact phone"), false));
         Forms.show(this, I18n.t("New group"), I18n.t("Create"), f, v -> {

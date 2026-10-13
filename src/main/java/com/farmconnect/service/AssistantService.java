@@ -55,7 +55,7 @@ public class AssistantService {
         }
         switch (in[1]) {
             case "1": return ussdPrices(in, sw);
-            case "2": return "END " + fit(weatherSummary(sw), USSD_MAX);
+            case "2": return "END " + fit(weatherSummary(sw, phone), USSD_MAX);
             case "3": return ussdTips(in, sw);
             case "4": return "END " + fit(ordersSummary(phone, sw), USSD_MAX);
             case "5": return "END " + fit(noticesSummary(sw), USSD_MAX);
@@ -105,8 +105,8 @@ public class AssistantService {
         switch (cmd) {
             case "BEI": case "BEI:": return smsPrices(arg, true);
             case "PRICE": case "PRICES": return smsPrices(arg, false);
-            case "HALI": return weatherSummary(true);
-            case "WEATHER": return weatherSummary(false);
+            case "HALI": return weatherSummary(true, from);
+            case "WEATHER": return weatherSummary(false, from);
             case "ODA": case "ODAZANGU": return ordersSummary(from, true);
             case "ORDER": case "ORDERS": return ordersSummary(from, false);
             case "KIDOKEZO": case "SHAURI": case "VIDOKEZO": return latestTip(true);
@@ -152,10 +152,11 @@ public class AssistantService {
         return sb.toString();
     }
 
-    private String weatherSummary(boolean sw) {
+    /** The forecast for the caller's own county (Kitale when we do not know the number). */
+    private String weatherSummary(boolean sw, String phone) {
         try {
-            WeatherResponse w = weather.weather(1.0191, 35.0020, "Kitale");
-            StringBuilder sb = new StringBuilder((sw ? "Kitale sasa " : "Kitale now ") + Math.round(w.tempC()) + "C.");
+            WeatherResponse w = weather.weather(null, null, null, findByPhone(phone));
+            StringBuilder sb = new StringBuilder(w.place() + (sw ? " sasa " : " now ") + Math.round(w.tempC()) + "C.");
             for (int i = 0; i < Math.min(3, w.days().size()); i++) {
                 WeatherDay d = w.days().get(i);
                 String label = i == 0 ? (sw ? "Leo" : "Today") : i == 1 ? (sw ? "Kesho" : "Tmrw") : (sw ? "Kesho kutwa" : "Day 3");

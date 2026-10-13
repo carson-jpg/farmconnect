@@ -84,7 +84,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         b.btnMessageSeller.setOnClickListener(v -> startActivity(new android.content.Intent(this, ChatActivity.class)
                 .putExtra("userId", p.farmerId).putExtra("name", p.farmName == null ? "Seller" : p.farmName)));
         b.tvFarm.setText(p.farmName == null ? "" : p.farmName + (p.farmerVerified ? "  ✓" : ""));
-        String loc = p.farmLocation == null || p.farmLocation.isEmpty() ? I18n.t("Trans Nzoia County") : p.farmLocation;
+        String loc = p.farmLocation == null || p.farmLocation.isEmpty() ? I18n.t("Kenya") : p.farmLocation;
         loc += p.sellerReviews > 0 ? String.format(java.util.Locale.US, I18n.t("  ·  ★ %.1f (%d reviews)"), p.sellerRating, p.sellerReviews) : I18n.t("  ·  No reviews yet");
         b.tvFarmLoc.setText(loc);
         android.view.View.OnClickListener openReviews = v -> startActivity(new android.content.Intent(this, ReviewsActivity.class).putExtra("sellerId", p.farmerId));

@@ -109,6 +109,7 @@ public interface ApiService {
     @GET("api/admin/products") Call<List<Product>> adminProducts(@Query("q") String q);
     @POST("api/admin/products/{id}/active") Call<Product> adminSetProductActive(@Path("id") long id, @Body ActiveRequest r);
     @POST("api/admin/officers") Call<AuthResponse> createOfficer(@Body OfficerRequest r);
+    @PUT("api/admin/officers/{id}/assignment") Call<UserSummary> assignOfficer(@Path("id") long id, @Body AssignmentRequest r);
 
     // reviewer (admin / county officer)
     @GET("api/admin/verifications") Call<List<ReviewSummary>> reviews(@Query("status") String status);

@@ -154,6 +154,7 @@ public class GroupController {
         g.setName(r.name().trim());
         g.setType(r.type());
         g.setDescription(r.description());
+        com.farmconnect.service.Locations.requireKnownOrBlank(r.subCounty());
         g.setSubCounty(r.subCounty());
         g.setLocation(r.location());
         g.setContactPhone(r.contactPhone());

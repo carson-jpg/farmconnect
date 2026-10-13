@@ -25,7 +25,7 @@ public class ContentSeeder implements CommandLineRunner {
         User admin = users.findAll().stream().filter(u -> u.getRole() == Role.ADMIN).findFirst().orElse(null);
         if (admin == null) return;
         add(admin, PostType.ANNOUNCEMENT, "GENERAL", "Welcome to FarmConnect",
-                "FarmConnect connects farmers in Trans Nzoia with buyers, county officers and agricultural services.\n\n"
+                "FarmConnect connects farmers across Kenya with buyers, county officers and agricultural services.\n\n"
                         + "• Verify your identity and farm so buyers can see your produce.\n"
                         + "• Keep your farm records in the app: planting, harvest, expenses and income.\n"
                         + "• Join or create a farmer group or cooperative.\n"

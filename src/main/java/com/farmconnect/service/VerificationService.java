@@ -23,7 +23,6 @@ import java.util.regex.Pattern;
 @Service
 @RequiredArgsConstructor
 public class VerificationService {
-    public static final List<String> SUB_COUNTIES = List.of("Cherangany", "Endebess", "Kiminini", "Kwanza", "Saboti");
     private static final Set<String> TYPES = Set.of("CROP", "LIVESTOCK", "POULTRY", "MIXED", "AQUACULTURE", "OTHER");
     private static final Pattern PHONE = Pattern.compile("^(?:\\+?254|0)([17]\\d{8})$");
     private static final Pattern NATIONAL_ID = Pattern.compile("^\\d{7,8}$");
@@ -62,15 +61,17 @@ public class VerificationService {
             v.setNationalIdHash(hash);
         }
         if (notBlank(r.subCounty())) {
-            if (!SUB_COUNTIES.contains(r.subCounty())) throw bad("Choose a sub-county in Trans Nzoia");
+            String county = Locations.countyOf(r.subCounty());
+            if (county == null) throw bad("Choose a sub-county from the list");
             v.setSubCounty(r.subCounty());
+            v.setCounty(county);
         }
         if (r.ward() != null) v.setWard(r.ward().trim());
         if (r.village() != null) v.setVillage(r.village().trim());
         if (r.farmLat() != null && r.farmLng() != null) {
-            // generous box around Trans Nzoia, just a sanity check
-            if (r.farmLat() < 0.6 || r.farmLat() > 1.5 || r.farmLng() < 34.4 || r.farmLng() > 35.6)
-                throw bad("Farm location must be inside Trans Nzoia County");
+            // only a sanity check that the point is in Kenya; reviewers check the exact spot on the map
+            if (r.farmLat() < -4.8 || r.farmLat() > 5.2 || r.farmLng() < 33.8 || r.farmLng() > 42.0)
+                throw bad("Farm location must be inside Kenya");
             v.setFarmLat(r.farmLat());
             v.setFarmLng(r.farmLng());
         }

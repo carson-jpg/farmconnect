@@ -4,7 +4,7 @@
   'use strict';
 
   var TOKEN_KEY = 'fc_token', USER_KEY = 'fc_user';
-  var state = { token: sessionStorage.getItem(TOKEN_KEY), user: null, view: 'overview', menuOpen: false };
+  var state = { token: sessionStorage.getItem(TOKEN_KEY), user: null, view: 'overview', menuOpen: false, scope: null, locations: null };
   try { state.user = JSON.parse(sessionStorage.getItem(USER_KEY) || 'null'); } catch (e) { state.user = null; }
 
   var GREEN = '#2e7d32', LIGHT = '#c8e6c9', AMBER = '#f9a825', BLUE = '#1e88e5';
@@ -139,7 +139,7 @@
     } },
       h('label', { text: 'Email' }), email, h('label', { text: 'Password' }), pass, btn, err);
     return h('div', { class: 'login-wrap' },
-      h('div', { class: 'login-card' }, h('h1', { text: '🌿 FarmConnect' }), h('p', { text: 'County dashboard · Trans Nzoia' }), form));
+      h('div', { class: 'login-card' }, h('h1', { text: '🌿 FarmConnect' }), h('p', { text: 'County dashboard · Kenya' }), form));
   }
 
   // ---------- charts (SVG) ----------
@@ -278,14 +278,57 @@
     draw();
   }
 
+  // ---------- areas: counties and sub-counties ----------
+  function getLocations() {
+    if (state.locations) return Promise.resolve(state.locations);
+    return getJson('/api/locations').then(function (l) { state.locations = l; return l; });
+  }
+  function areaText(u) {
+    if (!u.assignedCounty) return 'All counties (not assigned yet)';
+    var subs = u.assignedSubCounties || [];
+    return u.assignedCounty + ' County' + (subs.length ? ': ' + subs.join(', ') : ' (whole county)');
+  }
+
+  /** County drop-down plus sub-county tick boxes. get() returns {county, subCounties}. */
+  function areaPicker(locs, county, subs) {
+    var sel = h('select', {}, [h('option', { value: '', text: 'All counties (not restricted)' })].concat(
+      locs.map(function (c) { return h('option', { value: c.name, text: c.name }); })));
+    var box = h('div');
+    sel.value = county || '';
+    function draw(chosen) {
+      box.textContent = '';
+      var c = locs.filter(function (x) { return x.name === sel.value; })[0];
+      if (!c) { box.appendChild(h('p', { class: 'muted', text: 'The officer sees every county until you choose one.' })); return; }
+      box.appendChild(h('p', { class: 'muted', text: 'Tick the sub-counties this officer covers. Leave all unticked for the whole county.' }));
+      box.appendChild(h('div', { class: 'check-grid' }, c.subCounties.map(function (s) {
+        var cb = h('input', { type: 'checkbox', value: s });
+        if (chosen.indexOf(s) >= 0) cb.checked = true;
+        return h('label', { class: 'check' }, cb, ' ' + s);
+      })));
+    }
+    sel.addEventListener('change', function () { draw([]); });
+    draw(subs || []);
+    return {
+      el: h('div', {}, h('label', { text: 'County' }), sel, box),
+      get: function () {
+        return { county: sel.value || null,
+          subCounties: Array.prototype.map.call(box.querySelectorAll('input:checked'), function (i) { return i.value; }) };
+      }
+    };
+  }
+
   // ---------- overview ----------
   function overview(box) {
     loading(box);
     var jobs = [getJson('/api/analytics')];
     if (isAdmin()) jobs.push(getJson('/api/admin/stats').catch(function () { return null; }));
     Promise.all(jobs).then(function (res) {
-      var a = res[0], st = res[1], i = a.indicators || {};
+      var a = res[0], st = res[1], i = a.indicators || {}, scoped = !!a.scoped;
       box.textContent = '';
+      if (scoped) {
+        box.appendChild(h('div', { class: 'banner' }, h('b', { text: 'Your area: ' }), a.scopeLabel,
+          h('div', { class: 'muted', text: 'Everything on this dashboard, in the reports and in the verification queue is limited to your assigned area.' })));
+      }
 
       if (st) {
         box.appendChild(h('div', { class: 'section-title', text: 'Marketplace today' }));
@@ -300,35 +343,40 @@
       box.appendChild(h('div', { class: 'section-title', text: 'People' }));
       box.appendChild(h('div', { class: 'kpis' },
         kpi('farmer', '', 'Registered farmers', num(i.registeredFarmers), num(i.verifiedFarmers) + ' verified'),
-        kpi('cart', 'purple', 'Registered buyers', num(i.registeredBuyers)),
-        kpi('pulse', 'blue', 'Active users (30 days)', num(i.activeUsers30d)),
+        scoped ? null : kpi('cart', 'purple', 'Registered buyers', num(i.registeredBuyers)),
+        kpi('pulse', 'blue', scoped ? 'Active farmers (30 days)' : 'Active users (30 days)', num(i.activeUsers30d)),
         kpi('group', '', 'Groups onboarded', num(i.groupsOnboarded), plural(i.groupMembers, 'member')),
-        kpi('officers', 'amber', 'Officers active (30 days)', num(i.officersActive30d) + ' of ' + num(i.officersTotal))));
+        scoped ? null : kpi('officers', 'amber', 'Officers active (30 days)', num(i.officersActive30d) + ' of ' + num(i.officersTotal))));
 
       box.appendChild(h('div', { class: 'section-title', text: 'Programme activity' }));
       box.appendChild(h('div', { class: 'kpis' },
         kpi('products', '', 'Live market listings', num(i.marketListings)),
         kpi('chat', 'blue', 'Farmer–buyer connections', num(i.farmerBuyerConnections)),
-        kpi('book', 'purple', 'Information interactions', num(i.informationInteractions)),
-        kpi('star', 'amber', 'Opportunities accessed', num(i.opportunitiesAccessed)),
-        kpi('reports', '', 'Programmes communicated', num(i.programmesCommunicated)),
+        scoped ? null : kpi('book', 'purple', 'Information interactions', num(i.informationInteractions)),
+        scoped ? null : kpi('star', 'amber', 'Opportunities accessed', num(i.opportunitiesAccessed)),
+        scoped ? null : kpi('reports', '', 'Programmes communicated', num(i.programmesCommunicated)),
         kpi('overview', 'blue', 'Farmers using digital records', num(i.farmersUsingRecords), plural(i.recordsTotal, 'record')),
-        kpi('star', 'amber', 'Farmer satisfaction', i.satisfactionResponses ? Number(i.satisfactionAverage).toFixed(1) + ' / 5' : '-', plural(i.satisfactionResponses, 'vote'))));
+        scoped ? null : kpi('star', 'amber', 'Farmer satisfaction', i.satisfactionResponses ? Number(i.satisfactionAverage).toFixed(1) + ' / 5' : '-', plural(i.satisfactionResponses, 'vote'))));
 
       box.appendChild(h('div', { class: 'section-title', text: 'Charts' }));
       var sub = entries(a.farmersBySubCounty, true, 12).map(function (r) { return [r[0], r[1], (a.verifiedBySubCounty || {})[r[0]] || 0]; });
-      var legend = h('div', { class: 'legend' },
-        h('span', {}, (function () { var d = h('i'); d.style.background = LIGHT; return d; })(), 'Registered'),
-        h('span', {}, (function () { var d = h('i'); d.style.background = GREEN; return d; })(), 'Verified'));
+      function makeLegend() {
+        return h('div', { class: 'legend' },
+          h('span', {}, (function () { var d = h('i'); d.style.background = LIGHT; return d; })(), 'Registered'),
+          h('span', {}, (function () { var d = h('i'); d.style.background = GREEN; return d; })(), 'Verified'));
+      }
+      var counties = entries(a.farmersByCounty, true, 13).map(function (r) { return [r[0], r[1], (a.verifiedByCounty || {})[r[0]] || 0]; });
+      var countyCard = !scoped && counties.length > 1 ? card('Farmers by county', pairBars(counties), makeLegend()) : null;
       box.appendChild(h('div', { class: 'charts' },
-        card('Farmers by sub-county', sub.length ? pairBars(sub) : h('div', { class: 'empty', text: 'No data yet' }), sub.length ? legend : null),
+        countyCard,
+        card('Farmers by sub-county', sub.length ? pairBars(sub) : h('div', { class: 'empty', text: 'No data yet' }), sub.length ? makeLegend() : null),
         chartCard('Live products by category', entries(a.productsByCategory, true, 8), function (r) { return donut(r, 'products'); }),
         chartCard('Orders per month', entries(a.ordersByMonth, false), function (r) { return columns(r); }),
         chartCard('Sales per month (KES)', entries(a.salesByMonth, false), function (r) { return columns(r, { color: AMBER, short: true }); }),
         chartCard('Recorded harvest by crop (kg)', entries(a.harvestKgByCrop, true, 10), function (r) { return hbars(r); }),
         chartCard('Groups by type', entries(a.groupsByType, true, 0, true), function (r) { return donut(r, 'groups'); }),
         chartCard('Largest groups (members)', entries(a.membersByGroup, true, 8), function (r) { return hbars(r, { color: BLUE }); }),
-        chartCard('Information published by type', entries(a.postsByType, true, 0, true), function (r) { return donut(r, 'posts'); })));
+        scoped ? null : chartCard('Information published by type', entries(a.postsByType, true, 0, true), function (r) { return donut(r, 'posts'); })));
     }).catch(function (e) { failed(box, e); });
   }
 
@@ -339,7 +387,8 @@
     var current = 'PENDING', list = h('div');
     var select = h('select', { onchange: function () { current = select.value; load(); } },
       Object.keys(STATUS_LABEL).map(function (k) { return h('option', { value: k, text: STATUS_LABEL[k] }); }));
-    box.appendChild(h('div', { class: 'toolbar' }, h('div', {}, h('label', { text: 'Show' }), select)));
+    box.appendChild(h('div', { class: 'toolbar' }, h('div', {}, h('label', { text: 'Show' }), select),
+      state.scope && !state.scope.all ? h('div', { class: 'muted' }, 'Only farmers in ' + state.scope.label + ' are listed.') : null));
     box.appendChild(list);
     function load() {
       loading(list);
@@ -499,7 +548,7 @@
           var locked = u.role === 'ADMIN';
           return h('tr', {},
             h('td', {}, h('b', { text: u.name || '(no name)' }), h('div', { class: 'sub', text: u.email })), h('td', { text: u.phone || '-' }),
-            h('td', {}, pill(ROLE_LABEL[u.role] || u.role, 'role-' + u.role)),
+            h('td', {}, pill(ROLE_LABEL[u.role] || u.role, 'role-' + u.role), u.role === 'OFFICER' ? h('div', { class: 'sub', text: areaText(u) }) : null),
             h('td', { text: u.role === 'FARMER' ? (u.verified ? '✓ Verified' : 'Not verified') : '-' }),
             h('td', {}, pill(u.enabled ? 'Active' : 'Suspended', u.enabled ? 'st-ok' : 'st-bad')),
             h('td', { text: day(u.createdAt) }),
@@ -517,30 +566,74 @@
   }
 
   function officersView(box) {
-    var f = {
-      name: h('input', { required: true, maxlength: '80', autocomplete: 'off' }),
-      email: h('input', { required: true, type: 'email', autocomplete: 'off' }),
-      phone: h('input', { type: 'tel', placeholder: '07XXXXXXXX', autocomplete: 'off' }),
-      password: h('input', { required: true, type: 'password', minlength: '8', autocomplete: 'new-password', placeholder: 'At least 8 characters' })
-    };
-    var btn = h('button', { class: 'btn', type: 'submit', text: 'Create officer' });
-    var form = h('form', { class: 'card', onsubmit: function (ev) {
-      ev.preventDefault(); btn.disabled = true;
-      api('/api/admin/officers', { method: 'POST', json: { name: f.name.value.trim(), email: f.email.value.trim(), phone: f.phone.value.trim() || null, password: f.password.value } })
-        .then(function () { toast('Officer account created'); form.reset(); refresh(); })
-        .catch(function (e) { toast(e.message, true); })
-        .then(function () { btn.disabled = false; });
-    } },
-      h('h3', { text: 'Add a county agricultural officer' }),
-      h('div', { class: 'form-row' },
-        h('div', {}, h('label', { text: 'Full name' }), f.name), h('div', {}, h('label', { text: 'Email' }), f.email),
-        h('div', {}, h('label', { text: 'Phone' }), f.phone), h('div', {}, h('label', { text: 'Temporary password' }), f.password), btn));
-    var holder = h('div');
-    box.appendChild(form);
-    box.appendChild(h('div', { class: 'section-title', text: 'Officers' }));
-    box.appendChild(holder);
-    function refresh() { holder.textContent = ''; usersView(holder, 'OFFICER'); }
-    refresh();
+    loading(box);
+    getLocations().then(function (locs) {
+      box.textContent = '';
+      var f = {
+        name: h('input', { required: true, maxlength: '80', autocomplete: 'off' }),
+        email: h('input', { required: true, type: 'email', autocomplete: 'off' }),
+        phone: h('input', { type: 'tel', placeholder: '07XXXXXXXX', autocomplete: 'off' }),
+        password: h('input', { required: true, type: 'password', minlength: '8', autocomplete: 'new-password', placeholder: 'At least 8 characters' })
+      };
+      var picker = areaPicker(locs, '', []);
+      var btn = h('button', { class: 'btn', type: 'submit', text: 'Create officer' });
+      var form = h('form', { class: 'card', onsubmit: function (ev) {
+        ev.preventDefault(); btn.disabled = true;
+        var area = picker.get();
+        api('/api/admin/officers', { method: 'POST', json: { name: f.name.value.trim(), email: f.email.value.trim(), phone: f.phone.value.trim() || null,
+            password: f.password.value, county: area.county, subCounties: area.subCounties } })
+          .then(function () { toast('Officer account created'); officersView(box); })
+          .catch(function (e) { toast(e.message, true); })
+          .then(function () { btn.disabled = false; });
+      } },
+        h('h3', { text: 'Add a county agricultural officer' }),
+        h('div', { class: 'form-row' },
+          h('div', {}, h('label', { text: 'Full name' }), f.name), h('div', {}, h('label', { text: 'Email' }), f.email),
+          h('div', {}, h('label', { text: 'Phone' }), f.phone), h('div', {}, h('label', { text: 'Temporary password' }), f.password)),
+        h('div', { class: 'area-box' }, picker.el), h('div', { class: 'actions-row' }, btn));
+      var holder = h('div');
+      box.appendChild(form);
+      box.appendChild(h('div', { class: 'section-title', text: 'Officers and the areas they cover' }));
+      box.appendChild(holder);
+      loadOfficers(holder, locs);
+    }).catch(function (e) { failed(box, e); });
+  }
+
+  function loadOfficers(holder, locs) {
+    loading(holder);
+    getJson('/api/admin/users?role=OFFICER&q=').then(function (rows) {
+      holder.textContent = '';
+      if (!rows.length) { holder.appendChild(emptyBox('No officers yet')); return; }
+      holder.appendChild(table(['Officer', 'Phone', 'Area', 'Account', ''], rows.map(function (u) {
+        return h('tr', {},
+          h('td', {}, h('b', { text: u.name }), h('div', { class: 'sub', text: u.email })), h('td', { text: u.phone || '-' }),
+          h('td', {}, h('span', { class: u.assignedCounty ? '' : 'warn', text: areaText(u) })),
+          h('td', {}, pill(u.enabled ? 'Active' : 'Suspended', u.enabled ? 'st-ok' : 'st-bad')),
+          h('td', { class: 'actions' },
+            h('button', { class: 'btn small secondary', text: 'Assign area', onclick: function () { assignArea(u, locs, function () { loadOfficers(holder, locs); }); } }), ' ',
+            h('button', { class: 'btn small ' + (u.enabled ? 'danger' : ''), text: u.enabled ? 'Suspend' : 'Re-activate', onclick: function () {
+              if (!window.confirm((u.enabled ? 'Suspend ' : 'Re-activate ') + u.name + '?')) return;
+              api('/api/admin/users/' + u.id + '/enabled', { method: 'POST', json: { active: !u.enabled } })
+                .then(function () { toast(u.enabled ? 'Account suspended' : 'Account re-activated'); loadOfficers(holder, locs); })
+                .catch(function (e) { toast(e.message, true); });
+            } })));
+      })));
+    }).catch(function (e) { failed(holder, e); });
+  }
+
+  function assignArea(u, locs, done) {
+    var m = modalShell(); m.modal.textContent = '';
+    var picker = areaPicker(locs, u.assignedCounty || '', u.assignedSubCounties || []);
+    var save = h('button', { class: 'btn', text: 'Save area', onclick: function () {
+      var area = picker.get(); save.disabled = true;
+      api('/api/admin/officers/' + u.id + '/assignment', { method: 'PUT', json: area })
+        .then(function () { toast('Area saved for ' + u.name); m.close(); done(); })
+        .catch(function (e) { toast(e.message, true); save.disabled = false; });
+    } });
+    m.modal.appendChild(h('h2', { text: 'Area for ' + u.name }));
+    m.modal.appendChild(h('p', { class: 'muted', text: 'The officer will only see farmers, verifications, orders and reports for this area.' }));
+    m.modal.appendChild(picker.el);
+    m.modal.appendChild(h('div', { class: 'actions' }, h('button', { class: 'btn secondary', text: 'Cancel', onclick: m.close }), save));
   }
 
   // ---------- administration: products ----------
@@ -648,6 +741,7 @@
     state.view = currentView();
     var frame = h('div', { class: 'frame' + (state.menuOpen ? ' open' : '') });
     var queueBadge = h('span', { class: 'badge hidden', text: '0' });
+    var areaLine = h('div', { text: state.scope ? state.scope.label : 'Kenya' });
 
     var nav = h('nav', { class: 'nav' });
     NAV.forEach(function (g) {
@@ -660,7 +754,7 @@
     });
     var name = state.user ? state.user.name : '';
     var side = h('aside', { class: 'side' },
-      h('div', { class: 'brand' }, h('h1', { text: '🌿 FarmConnect' }), h('div', { text: 'Trans Nzoia County' })),
+      h('div', { class: 'brand' }, h('h1', { text: '🌿 FarmConnect' }), areaLine),
       nav,
       h('div', { class: 'me' }, h('div', { class: 'avatar', text: (name || '?').trim().charAt(0).toUpperCase() }),
         h('div', { class: 'who' }, h('b', { text: name }), h('span', { text: isAdmin() ? 'Administrator' : 'County officer' })),
@@ -678,6 +772,7 @@
     frame.appendChild(h('div', { class: 'content' }, bar, h('main', {}, body)));
     VIEWS[state.view](body);
 
+    getJson('/api/analytics/scope').then(function (sc) { state.scope = sc; areaLine.textContent = sc.label; }).catch(function () { /* optional */ });
     getJson('/api/admin/verifications?status=PENDING').then(function (rows) {
       if (rows.length) { queueBadge.textContent = rows.length; queueBadge.classList.remove('hidden'); }
     }).catch(function () { /* the badge is optional */ });

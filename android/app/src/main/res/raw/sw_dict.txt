@@ -159,7 +159,7 @@ Category (e.g. Vegetables)	Kategoria (mf. Mboga)
 Chat	Gumzo
 Checkout	Malipo
 Choose a farm	Chagua shamba
-Choose a sub-county in Trans Nzoia	Chagua kaunti ndogo ya Trans Nzoia
+Choose a sub-county from the list	Chagua kaunti ndogo kutoka kwenye orodha
 Close	Funga
 Code expired. Request a new one	Msimbo umeisha muda. Omba mpya
 Code sent. Check your SMS	Msimbo umetumwa. Angalia SMS yako
@@ -249,7 +249,7 @@ Farm GPS: %.6f, %.6f	GPS ya shamba: %.6f, %.6f
 Farm GPS: -	GPS ya shamba: -
 Farm deleted	Shamba limefutwa
 Farm location (GPS)	Mahali pa shamba (GPS)
-Farm location must be inside Trans Nzoia County	Mahali pa shamba lazima pawe ndani ya Kaunti ya Trans Nzoia
+Farm location must be inside Kenya	Mahali pa shamba lazima pawe ndani ya Kenya
 Farm name	Jina la shamba
 Farm name required	Jina la shamba linahitajika
 Farm not found	Shamba halikupatikana
@@ -716,7 +716,7 @@ Your rating	Ukadiriaji wako
 Your reply (public, one reply only)	Jibu lako (la hadharani, jibu moja tu)
 Youth group	Kikundi cha vijana
 by 	na 
-farm details only to confirm you are a real farmer in Trans Nzoia County.\n\n	maelezo ya shamba kwa lengo la kuthibitisha kuwa wewe ni mkulima halisi katika Kaunti ya Trans Nzoia.\n\n
+farm details only to confirm you are a real farmer in Kenya.\n\n	maelezo ya shamba kwa lengo la kuthibitisha kuwa wewe ni mkulima halisi nchini Kenya.\n\n
 geo:%f,%f?q=%f,%f(Farm)	geo:%f,%f?q=%f,%f(Farm)
 kg	kg
 • Giving false information can lead to rejection or removal of your account.\n\n	• Kutoa taarifa za uongo kunaweza kusababisha kukataliwa au kuondolewa kwa akaunti yako.\n\n
@@ -770,3 +770,17 @@ kg	kg
 🔕 Stop alerts	🔕 Zima arifa
 🗑 Delete group	🗑 Futa kikundi
 🛡 Review desk	🛡 Dawati la ukaguzi
+Select county	Chagua kaunti
+This farmer is outside your assigned area	Mkulima huyu yuko nje ya eneo ulilopangiwa
+Choose a county first	Chagua kaunti kwanza
+Unknown county	Kaunti haijulikani
+All counties (no restriction)	Kaunti zote (bila kikomo)
+All counties	Kaunti zote
+Whole county	Kaunti nzima
+Sub-counties	Kaunti ndogo
+Area saved	Eneo limehifadhiwa
+Area for 	Eneo la 
+Your area: 	Eneo lako: 
+Farmers by county	Wakulima kwa kaunti
+Only officers can be assigned an area	Maafisa pekee ndio wanaweza kupangiwa eneo
+Kenya	Kenya

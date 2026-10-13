@@ -70,6 +70,10 @@ public class Models {
         public boolean active;
         public ActiveRequest(boolean active) { this.active = active; }
     }
+    public static class AssignmentRequest {
+        public String county; public java.util.List<String> subCounties;
+        public AssignmentRequest(String county, java.util.List<String> subCounties) { this.county = county; this.subCounties = subCounties; }
+    }
     public static class OfficerRequest {
         public String name, email, phone, password;
         public OfficerRequest(String name, String email, String phone, String password) {
@@ -78,6 +82,7 @@ public class Models {
     }
     public static class UserSummary {
         public long id; public String name, email, phone, role, createdAt; public boolean verified, enabled;
+        public String assignedCounty; public java.util.List<String> assignedSubCounties;
     }
     public static class AdminStats {
         public long users, farmers, verifiedFarmers, buyers, officers, pendingVerifications, underReview,
@@ -181,6 +186,8 @@ public class Models {
         public java.util.Map<String, Long> farmersBySubCounty, verifiedBySubCounty, productsByCategory, groupsByType,
                 membersByGroup, ordersByMonth, postsByType, harvestKgByCrop;
         public java.util.Map<String, Double> salesByMonth;
+        public java.util.Map<String, Long> farmersByCounty, verifiedByCounty;
+        public boolean scoped; public String scopeLabel;
     }
 
     // ================= market prices & seller reviews =================

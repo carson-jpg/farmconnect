@@ -69,5 +69,7 @@ public final class Community {
                             Map<String, Long> productsByCategory, Map<String, Long> groupsByType,
                             Map<String, Long> membersByGroup, Map<String, Long> ordersByMonth,
                             Map<String, BigDecimal> salesByMonth, Map<String, Long> postsByType,
-                            Map<String, Long> harvestKgByCrop) {}
+                            Map<String, Long> harvestKgByCrop,
+                            Map<String, Long> farmersByCounty, Map<String, Long> verifiedByCounty,
+                            boolean scoped, String scopeLabel) {}
 }

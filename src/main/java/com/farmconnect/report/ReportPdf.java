@@ -31,9 +31,10 @@ public final class ReportPdf {
     }
 
     private void compose(Analytics a, String by) {
-        header(by);
-        indicators(a.indicators());
-        farmersBySubCounty(a);
+        header(by, a.scopeLabel());
+        indicators(a.indicators(), a.scoped());
+        if (!a.scoped() && a.farmersByCounty().size() > 1) pairChart("Farmers by county", a.farmersByCounty(), a.verifiedByCounty());
+        pairChart("Farmers by sub-county", a.farmersBySubCounty(), a.verifiedBySubCounty());
         bars("Live products by category", a.productsByCategory(), GREEN, false, false, "");
         bars("Orders per month", a.ordersByMonth(), GREEN, true, false, "");
         bars("Sales per month (KES)", toLong(a.salesByMonth()), AMBER, true, false, "KES ");
@@ -52,11 +53,11 @@ public final class ReportPdf {
         }
     }
 
-    private void header(String by) {
+    private void header(String by, String scopeLabel) {
         pdf.rect(0, SimplePdf.H - 92, SimplePdf.W, 92, GREEN);
         pdf.rect(0, SimplePdf.H - 96, SimplePdf.W, 4, AMBER);
         pdf.text(M, SimplePdf.H - 46, 24, true, WHITE, "FarmConnect");
-        pdf.text(M, SimplePdf.H - 66, 11, false, 0xE8F5E9, "County report - Trans Nzoia agriculture programme");
+        pdf.text(M, SimplePdf.H - 66, 11, false, 0xE8F5E9, "County report - " + (scopeLabel == null || scopeLabel.isBlank() ? "All counties" : scopeLabel));
         String when = ZonedDateTime.now(ZoneId.of("Africa/Nairobi")).format(DateTimeFormatter.ofPattern("d MMM yyyy, HH:mm", Locale.US));
         String right = "Generated " + when;
         pdf.text(SimplePdf.W - M - SimplePdf.width(right, 9, false), SimplePdf.H - 46, 9, false, WHITE, right);
@@ -80,9 +81,9 @@ public final class ReportPdf {
         y -= 24;
     }
 
-    private void indicators(Indicators i) {
-        heading("Programme indicators");
-        String[][] items = {
+    private void indicators(Indicators i, boolean scoped) {
+        heading(scoped ? "Indicators for your area" : "Programme indicators");
+        String[][] all = {
                 {"Registered farmers", fmt(i.registeredFarmers())}, {"Verified farmers", fmt(i.verifiedFarmers())},
                 {"Registered buyers", fmt(i.registeredBuyers())}, {"Active users (30 days)", fmt(i.activeUsers30d())},
                 {"Groups onboarded", fmt(i.groupsOnboarded())}, {"Group members", fmt(i.groupMembers())},
@@ -92,6 +93,15 @@ public final class ReportPdf {
                 {"Farmers using digital records", fmt(i.farmersUsingRecords())}, {"Farm records created", fmt(i.recordsTotal())},
                 {"Farmer satisfaction (of 5)", i.satisfactionResponses() == 0 ? "-" : String.format(Locale.US, "%.1f  (%d votes)", i.satisfactionAverage(), i.satisfactionResponses())},
                 {"Messages exchanged", fmt(i.messagesSent())}};
+        // an officer's report only keeps the figures that can be worked out for their own area
+        java.util.Set<String> areaOnly = java.util.Set.of("Registered farmers", "Verified farmers", "Active users (30 days)", "Groups onboarded",
+                "Group members", "Market listings", "Farmer-buyer connections", "Farmers using digital records", "Farm records created");
+        List<String[]> keep = new ArrayList<>();
+        for (String[] it : all) {
+            if (scoped && !areaOnly.contains(it[0])) continue;
+            keep.add(scoped && it[0].equals("Active users (30 days)") ? new String[]{"Active farmers (30 days)", it[1]} : it);
+        }
+        String[][] items = keep.toArray(new String[0][]);
         float gap = 8, cw = (CONTENT_W - 2 * gap) / 3, ch = 46;
         for (int k = 0; k < items.length; k++) {
             int col = k % 3;
@@ -106,16 +116,16 @@ public final class ReportPdf {
         y -= 10;
     }
 
-    private void farmersBySubCounty(Analytics a) {
-        Map<String, Long> reg = top(a.farmersBySubCounty(), 12, false);
+    private void pairChart(String title, Map<String, Long> registered, Map<String, Long> verified) {
+        Map<String, Long> reg = top(registered, 12, false);
         if (reg.isEmpty()) return;
         float rowH = 15;
         ensure(40 + reg.size() * rowH + 20);
-        heading("Farmers by sub-county");
+        heading(title);
         long max = max(reg);
         float labelW = 130, barX = M + labelW + 8, barW = CONTENT_W - labelW - 70;
         for (Map.Entry<String, Long> e : reg.entrySet()) {
-            long ver = a.verifiedBySubCounty().getOrDefault(e.getKey(), 0L);
+            long ver = verified.getOrDefault(e.getKey(), 0L);
             pdf.text(M, y - 8, 9, false, INK, SimplePdf.fit(e.getKey(), 9, false, labelW));
             float w = max == 0 ? 0 : barW * e.getValue() / max;
             pdf.rect(barX, y - 11, Math.max(w, 1), 11, LIGHT);

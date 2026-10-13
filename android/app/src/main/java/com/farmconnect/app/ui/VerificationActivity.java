@@ -29,7 +29,8 @@ import java.util.Locale;
 
 /** Farmer fills in the verification form, uploads photos, verifies phone by OTP, then submits. */
 public class VerificationActivity extends AppCompatActivity {
-    private static final String[] SUB = {"Select sub-county", "Cherangany", "Endebess", "Kiminini", "Kwanza", "Saboti"};
+    private String[] currentSubs = new String[0];
+    private String pendingSub;
     private static final String[] TYPE_LABELS = {"Select type of farming", "Crop farming", "Livestock", "Poultry",
             "Mixed farming", "Aquaculture (fish)", "Other"};
     private static final String[] TYPE_CODES = {null, "CROP", "LIVESTOCK", "POULTRY", "MIXED", "AQUACULTURE", "OTHER"};
@@ -55,7 +56,16 @@ public class VerificationActivity extends AppCompatActivity {
         setContentView(b.getRoot());
         vm = new ViewModelProvider(this).get(VerificationViewModel.class);
 
-        b.spSubCounty.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, SUB));
+        b.spCounty.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, withFirst(I18n.t("Select county"), Labels.COUNTIES)));
+        showSubCounties(null, null);
+        b.spCounty.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+                String county = position > 0 ? Labels.COUNTIES[position - 1] : null;
+                showSubCounties(county, county == null ? null : pendingSub);
+                if (county != null) pendingSub = null;
+            }
+            @Override public void onNothingSelected(android.widget.AdapterView<?> parent) { }
+        });
         b.spType.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, TYPE_LABELS));
 
         b.btnIdFront.setOnClickListener(v -> pick("ID_FRONT"));
@@ -117,6 +127,24 @@ public class VerificationActivity extends AppCompatActivity {
 
     private static String text(android.widget.EditText e) { return e.getText().toString().trim(); }
 
+    private static String[] withFirst(String first, String[] rest) {
+        String[] a = new String[rest.length + 1];
+        a[0] = first;
+        System.arraycopy(rest, 0, a, 1, rest.length);
+        return a;
+    }
+
+    /** Fills the sub-county list for the chosen county, and selects one if asked. */
+    private void showSubCounties(String county, String select) {
+        currentSubs = county == null ? new String[0] : Labels.subCountiesOf(county);
+        b.spSubCounty.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item,
+                withFirst(I18n.t("Select sub-county"), currentSubs)));
+        if (select != null) {
+            int i = Labels.idx(currentSubs, select);
+            if (i >= 0) b.spSubCounty.setSelection(i + 1);
+        }
+    }
+
     private static Double num(android.widget.EditText e) {
         try { return Double.parseDouble(e.getText().toString().trim()); } catch (Exception ex) { return null; }
     }
@@ -127,7 +155,7 @@ public class VerificationActivity extends AppCompatActivity {
         String id = text(b.etNationalId);
         if (!id.isEmpty()) d.nationalId = id;
         int sc = b.spSubCounty.getSelectedItemPosition();
-        if (sc > 0) d.subCounty = SUB[sc];
+        if (sc > 0 && sc <= currentSubs.length) d.subCounty = currentSubs[sc - 1];
         d.ward = text(b.etWard);
         d.village = text(b.etVillage);
         d.farmLat = num(b.etLat);
@@ -144,7 +172,9 @@ public class VerificationActivity extends AppCompatActivity {
         if (v.fullName != null) b.etFullName.setText(v.fullName);
         if (v.maskedNationalId != null) b.tilNationalId.setHelperText(I18n.t("Saved: ") + v.maskedNationalId + I18n.t(" (leave empty to keep)"));
         if (v.phone != null) b.etPhone.setText(v.phone);
-        for (int i = 1; i < SUB.length; i++) if (SUB[i].equals(v.subCounty)) b.spSubCounty.setSelection(i);
+        String county = Labels.countyOf(v.subCounty);
+        int ci = county == null ? -1 : Labels.idx(Labels.COUNTIES, county);
+        if (ci >= 0) { pendingSub = v.subCounty; b.spCounty.setSelection(ci + 1); }
         if (v.ward != null) b.etWard.setText(v.ward);
         if (v.village != null) b.etVillage.setText(v.village);
         if (v.farmLat != null) b.etLat.setText(String.format(Locale.US, "%.6f", v.farmLat));
@@ -196,7 +226,7 @@ public class VerificationActivity extends AppCompatActivity {
 
     private void setEditable(boolean on) {
         View[] views = {b.etFullName, b.etNationalId, b.btnIdFront, b.btnIdBack, b.btnSelfie, b.etPhone, b.btnSendOtp,
-                b.etOtp, b.btnVerifyOtp, b.spSubCounty, b.etWard, b.etVillage, b.etLat, b.etLng, b.btnLocate,
+                b.etOtp, b.btnVerifyOtp, b.spCounty, b.spSubCounty, b.etWard, b.etVillage, b.etLat, b.etLng, b.btnLocate,
                 b.spType, b.etProduce, b.etSize, b.btnProof, b.cbTerms};
         for (View v : views) v.setEnabled(on);
         b.btnSave.setVisibility(on ? View.VISIBLE : View.GONE);
@@ -262,7 +292,7 @@ public class VerificationActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle(I18n.t("Verification & privacy terms"))
                 .setMessage(I18n.t("• We collect your name, National ID number and photos, phone number, farm location and ")
-                        + I18n.t("farm details only to confirm you are a real farmer in Trans Nzoia County.\n\n")
+                        + I18n.t("farm details only to confirm you are a real farmer in Kenya.\n\n")
                         + I18n.t("• Only authorized FarmConnect administrators and County Agricultural Officers can see these details.\n\n")
                         + I18n.t("• Your ID number and photos are never shown to buyers or the public. Buyers only see a ")
                         + I18n.t("\"Verified Farmer\" badge.\n\n")

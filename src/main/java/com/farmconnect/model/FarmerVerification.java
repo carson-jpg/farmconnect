@@ -42,7 +42,7 @@ public class FarmerVerification {
     private Instant otpSentAt;
     private int otpAttempts;
 
-    private String county = "Trans Nzoia";
+    private String county;
     private String subCounty;
     private String ward;
     private String village;

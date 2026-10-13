@@ -3,6 +3,8 @@ package com.farmconnect.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -32,4 +34,11 @@ public class User {
     private double ratingAvg;
     @Column(columnDefinition = "integer default 0 not null")
     private int ratingCount;
+    /** Officers only: the county they work in. Empty = not assigned yet (sees everything until an admin assigns them). */
+    private String assignedCounty;
+    /** Officers only: the sub-counties inside that county. Empty with a county set = the whole county. */
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "officer_sub_counties", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "sub_county")
+    private Set<String> assignedSubCounties = new HashSet<>();
 }

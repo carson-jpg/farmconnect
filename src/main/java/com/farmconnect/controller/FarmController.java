@@ -75,6 +75,7 @@ public class FarmController {
         f.setName(r.name());
         f.setLocation(r.location());
         f.setDescription(r.description());
+        com.farmconnect.service.Locations.requireKnownOrBlank(r.subCounty());
         f.setSubCounty(r.subCounty());
     }
 

@@ -4,7 +4,53 @@ package com.farmconnect.app.ui;
 final class Labels {
     private Labels() {}
 
-    static final String[] SUB_COUNTIES = {"Kwanza", "Endebess", "Saboti", "Kiminini", "Cherangany"};
+    /** Counties the app covers, and their sub-counties. Same list as the server's Locations class (a build check compares them). */
+    static final String[] COUNTIES = {"Bungoma", "Homa Bay", "Kakamega", "Kisumu", "Kitui", "Machakos", "Meru", "Migori", "Nakuru", "Nyeri", "Trans Nzoia", "Uasin Gishu", "West Pokot"};
+    static final String[][] SUBS = {
+        {"Mt. Elgon", "Sirisia", "Kabuchai", "Bumula", "Kanduyi", "Webuye East", "Webuye West", "Kimilili", "Tongaren"},
+        {"Kasipul", "Kabondo Kasipul", "Karachuonyo", "Rangwe", "Homa Bay Town", "Ndhiwa", "Suba North", "Suba South"},
+        {"Lugari", "Likuyani", "Malava", "Lurambi", "Navakholo", "Mumias West", "Mumias East", "Matungu", "Butere", "Khwisero", "Shinyalu", "Ikolomani"},
+        {"Kisumu East", "Kisumu West", "Kisumu Central", "Seme", "Nyando", "Muhoroni", "Nyakach"},
+        {"Mwingi North", "Mwingi West", "Mwingi Central", "Kitui West", "Kitui Rural", "Kitui Central", "Kitui East", "Kitui South"},
+        {"Masinga", "Yatta", "Kangundo", "Matungulu", "Kathiani", "Mavoko", "Machakos Town", "Mwala"},
+        {"Igembe South", "Igembe Central", "Igembe North", "Tigania West", "Tigania East", "North Imenti", "Buuri", "Central Imenti", "South Imenti"},
+        {"Rongo", "Awendo", "Suna East", "Suna West", "Uriri", "Nyatike", "Kuria East", "Kuria West"},
+        {"Nakuru Town East", "Nakuru Town West", "Naivasha", "Gilgil", "Kuresoi North", "Kuresoi South", "Subukia", "Rongai", "Bahati", "Njoro", "Molo"},
+        {"Tetu", "Kieni", "Mathira", "Othaya", "Mukurweini", "Nyeri Town"},
+        {"Cherangany", "Endebess", "Kiminini", "Kwanza", "Saboti"},
+        {"Soy", "Turbo", "Moiben", "Ainabkoi", "Kapseret", "Kesses"},
+        {"Kapenguria", "Sigor", "Kacheliba", "Pokot South"}
+    };
+    static final String[] SUB_COUNTIES, SUB_LABELS;
+    static {
+        int n = 0;
+        for (String[] s : SUBS) n += s.length;
+        SUB_COUNTIES = new String[n];
+        SUB_LABELS = new String[n];
+        int k = 0;
+        for (int c = 0; c < COUNTIES.length; c++) {
+            for (String s : SUBS[c]) { SUB_COUNTIES[k] = s; SUB_LABELS[k] = s + " · " + COUNTIES[c]; k++; }
+        }
+    }
+
+    static String[] subCountiesOf(String county) {
+        int i = idx(COUNTIES, county);
+        return i < 0 ? new String[0] : SUBS[i];
+    }
+
+    /** The county a sub-county belongs to, or null. */
+    static String countyOf(String subCounty) {
+        for (int c = 0; c < COUNTIES.length; c++) if (idx(SUBS[c], subCounty) >= 0) return COUNTIES[c];
+        return null;
+    }
+
+    /** Two steps: choose the county, then one of its sub-counties. */
+    static void pickSubCounty(android.app.Activity a, java.util.function.Consumer<String> done) {
+        new androidx.appcompat.app.AlertDialog.Builder(a).setTitle(com.farmconnect.app.util.I18n.t("Select county"))
+                .setItems(COUNTIES, (d, ci) -> new androidx.appcompat.app.AlertDialog.Builder(a).setTitle(COUNTIES[ci])
+                        .setItems(SUBS[ci], (d2, si) -> done.accept(SUBS[ci][si])).show())
+                .show();
+    }
 
     static final String[] POST_TYPES = {"TIP", "ARTICLE", "ADVISORY", "ANNOUNCEMENT", "PROGRAMME", "TRAINING", "OPPORTUNITY"};
     static final String[] POST_NAMES = {"Farming tip", "Article", "Advisory", "Announcement", "County programme", "Training", "Opportunity"};

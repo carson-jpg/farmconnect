@@ -62,6 +62,7 @@ public class ServiceController {
         s.setServices(r.services());
         s.setPhone(r.phone());
         s.setEmail(r.email());
+        com.farmconnect.service.Locations.requireKnownOrBlank(r.subCounty());
         s.setSubCounty(r.subCounty());
         s.setLocation(r.location());
     }

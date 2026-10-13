@@ -87,7 +87,7 @@ public class AnalyticsActivity extends AppCompatActivity {
         LinearLayout grid = new LinearLayout(this);
         grid.setOrientation(LinearLayout.VERTICAL);
         b.content.addView(grid);
-        tiles(grid, new String[][]{
+        String[][] allTiles = new String[][]{
                 {n(i.registeredFarmers), I18n.t("Registered farmers")}, {n(i.verifiedFarmers), I18n.t("Verified farmers")},
                 {n(i.activeUsers30d), I18n.t("Active users (30 days)")}, {n(i.registeredBuyers), I18n.t("Registered buyers")},
                 {n(i.groupsOnboarded), I18n.t("Groups onboarded")}, {n(i.groupMembers), I18n.t("Group members")},
@@ -96,8 +96,18 @@ public class AnalyticsActivity extends AppCompatActivity {
                 {i.officersActive30d + "/" + i.officersTotal, I18n.t("Officers active (30 days)")}, {n(i.programmesCommunicated), I18n.t("Programmes communicated")},
                 {n(i.farmersUsingRecords), I18n.t("Farmers using digital records")}, {n(i.recordsTotal), I18n.t("Farm records created")},
                 {i.satisfactionResponses == 0 ? "–" : String.format(Locale.US, "%.1f / 5", i.satisfactionAverage), I18n.t("Farmer satisfaction (") + i.satisfactionResponses + ")"},
-                {n(i.messagesSent), I18n.t("Messages exchanged")}});
+                {n(i.messagesSent), I18n.t("Messages exchanged")}};
+        // an officer with an assigned area only gets the figures that can be worked out for that area
+        java.util.List<String[]> keep = new java.util.ArrayList<>();
+        java.util.Set<Integer> platformWide = new java.util.HashSet<>(java.util.Arrays.asList(3, 6, 7, 10, 11, 14, 15));
+        for (int k = 0; k < allTiles.length; k++) if (!a.scoped || !platformWide.contains(k)) keep.add(allTiles[k]);
+        tiles(grid, keep.toArray(new String[0][]));
+        if (a.scoped && a.scopeLabel != null) {
+            b.content.addView(Cards.title(this, I18n.t("Your area: ") + a.scopeLabel), 0);
+        }
 
+        if (!a.scoped && a.farmersByCounty != null && a.farmersByCounty.size() > 1)
+            Cards.bars(this, section(I18n.t("Farmers by county")), a.farmersByCounty, 0xFF2E7D32, null);
         Map<String, Long> farmers = new LinkedHashMap<>(a.farmersBySubCounty);
         Cards.bars(this, section(I18n.t("Farmers by sub-county")), farmers, 0xFF2E7D32, null);
         Cards.bars(this, section(I18n.t("Verified farmers by sub-county")), a.verifiedBySubCounty, 0xFF1B5E20, null);
