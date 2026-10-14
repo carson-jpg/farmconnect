@@ -56,9 +56,18 @@ public class MpesaService {
         return "production".equalsIgnoreCase(env) ? "https://api.safaricom.co.ke" : "https://sandbox.safaricom.co.ke";
     }
 
-    private boolean configured() {
-        return !consumerKey.isBlank() && !consumerSecret.isBlank() && !shortcode.isBlank()
-                && !passkey.isBlank() && !callbackUrl.isBlank() && !callbackSecret.isBlank();
+    private boolean configured() { return missing().isEmpty(); }
+
+    /** Names (never values) of the settings that are still empty, so a mistake is easy to spot. */
+    private java.util.List<String> missing() {
+        java.util.List<String> m = new java.util.ArrayList<>();
+        if (consumerKey.isBlank()) m.add("mpesa.consumer-key");
+        if (consumerSecret.isBlank()) m.add("mpesa.consumer-secret");
+        if (shortcode.isBlank()) m.add("mpesa.shortcode");
+        if (passkey.isBlank()) m.add("mpesa.passkey");
+        if (callbackUrl.isBlank()) m.add("mpesa.callback-url");
+        if (callbackSecret.isBlank()) m.add("mpesa.callback-secret");
+        return m;
     }
 
     /** True only if the secret in the callback URL matches ours. */
@@ -99,7 +108,8 @@ public class MpesaService {
     /** Same as stkPush but also returns the MerchantRequestID (we store both on the payment). */
     public StkResult stkPushFull(String phone254, BigDecimal amount, String accountRef, String desc) {
         if (!configured())
-            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "M-Pesa payments are not set up yet");
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                    "M-Pesa payments are not set up yet. Missing: " + String.join(", ", missing()));
         try {
             String ts = LocalDateTime.now(ZoneId.of("Africa/Nairobi")).format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
             String password = Base64.getEncoder().encodeToString((shortcode + passkey + ts).getBytes(StandardCharsets.UTF_8));
