@@ -23,5 +23,8 @@ public class FarmerViewModel extends ViewModel {
     public LiveData<Resource<Product>> updateProduct(long id, ProductRequest r) { return repo.updateProduct(id, r); }
     public LiveData<Resource<Void>> deleteProduct(long id) { return repo.deleteProduct(id); }
     public LiveData<Resource<List<Order>>> orders() { return repo.farmerOrders(); }
+    public LiveData<Resource<Earnings>> earnings() { return repo.earnings(); }
+    public LiveData<Resource<PayoutAccount>> payoutAccount() { return repo.payoutAccount(); }
+    public LiveData<Resource<PayoutAccount>> setPayoutPhone(String phone) { return repo.setPayoutPhone(phone); }
     public LiveData<Resource<Order>> updateStatus(long id, String s) { return repo.updateStatus(id, s); }
 }

@@ -69,7 +69,16 @@ public class Ui {
         }
     }
 
+    /** Short text for an order's payment state, e.g. "Paid" / "Not paid yet". */
+    public static String payStatusLabel(String s) {
+        if ("PAID".equals(s)) return I18n.t("Paid");
+        if ("PENDING".equals(s)) return I18n.t("Waiting for payment");
+        if ("FAILED".equals(s)) return I18n.t("Payment failed");
+        return I18n.t("Not paid yet");
+    }
+
     public static String paymentLabel(String m) {
+        if ("MPESA_ONLINE".equals(m)) return I18n.t("M-Pesa (paid in the app)");
         if ("MPESA_ON_DELIVERY".equals(m)) return I18n.t("M-Pesa on delivery");
         return I18n.t("Cash on delivery");
     }

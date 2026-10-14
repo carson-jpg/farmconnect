@@ -60,6 +60,11 @@ public class Repository {
     public LiveData<Resource<Order>> placeOrder(String address) { return run(api().placeOrder(new OrderRequest(address))); }
     public LiveData<Resource<Order>> placeOrder(OrderRequest r) { return run(api().placeOrder(r)); }
     public LiveData<Resource<List<Order>>> myOrders() { return run(api().myOrders()); }
+    public LiveData<Resource<PayStatus>> startStk(long orderId, String phone) { return run(api().startStk(orderId, new PhoneRequest(phone))); }
+    public LiveData<Resource<PayStatus>> payStatus(long orderId) { return run(api().payStatus(orderId)); }
+    public LiveData<Resource<Earnings>> earnings() { return run(api().earnings()); }
+    public LiveData<Resource<PayoutAccount>> payoutAccount() { return run(api().payoutAccount()); }
+    public LiveData<Resource<PayoutAccount>> setPayoutPhone(String phone) { return run(api().setPayoutAccount(new PhoneRequest(phone))); }
     public LiveData<Resource<Order>> cancelOrder(long id) { return run(api().cancelOrder(id)); }
     public LiveData<Resource<List<Order>>> farmerOrders() { return run(api().farmerOrders()); }
     public LiveData<Resource<Order>> updateStatus(long id, String s) { return run(api().updateStatus(id, new StatusRequest(s))); }

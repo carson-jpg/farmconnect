@@ -22,5 +22,7 @@ public class BuyerViewModel extends ViewModel {
     public LiveData<Resource<Order>> placeOrder(OrderRequest r) { return repo.placeOrder(r); }
     public LiveData<Resource<Order>> placeOrder(String address) { return repo.placeOrder(address); }
     public LiveData<Resource<List<Order>>> orders() { return repo.myOrders(); }
+    public LiveData<Resource<PayStatus>> startStk(long orderId, String phone) { return repo.startStk(orderId, phone); }
+    public LiveData<Resource<PayStatus>> payStatus(long orderId) { return repo.payStatus(orderId); }
     public LiveData<Resource<Order>> cancelOrder(long id) { return repo.cancelOrder(id); }
 }

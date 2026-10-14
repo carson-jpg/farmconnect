@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="pay_now_mpesa">📲  Lipa sasa kwa M-Pesa (ndani ya programu)</string>
+    <string name="earnings_link">💰  Mapato na malipo yangu</string>
     <string name="app_name">FarmConnect</string>
     <string name="t_0102a7b4">2. Uthibitisho wa simu</string>
     <string name="t_02121ebd">Idhinisha mkulima ili shamba na bidhaa zake zionekane kwa wanunuzi.</string>

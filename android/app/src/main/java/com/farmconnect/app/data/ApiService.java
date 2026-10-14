@@ -38,6 +38,12 @@ public interface ApiService {
     @DELETE("api/wishlist/{pid}") Call<Void> removeWish(@Path("pid") long pid);
 
     @POST("api/orders") Call<Order> placeOrder(@Body OrderRequest r);
+    // pay in the app (M-Pesa prompt) and farmer earnings
+    @POST("api/payments/mpesa/{id}/stk") Call<PayStatus> startStk(@Path("id") long id, @Body PhoneRequest r);
+    @GET("api/payments/{id}") Call<PayStatus> payStatus(@Path("id") long id);
+    @GET("api/payments/farmer/earnings") Call<Earnings> earnings();
+    @GET("api/payments/farmer/account") Call<PayoutAccount> payoutAccount();
+    @PUT("api/payments/farmer/account") Call<PayoutAccount> setPayoutAccount(@Body PhoneRequest r);
     @GET("api/orders") Call<List<Order>> myOrders();
     @PATCH("api/orders/{id}/cancel") Call<Order> cancelOrder(@Path("id") long id);
     @GET("api/orders/farmer") Call<List<Order>> farmerOrders();

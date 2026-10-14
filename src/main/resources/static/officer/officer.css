@@ -179,3 +179,10 @@ label.check input { width: 16px; height: 16px; }
 .actions-row { display: flex; justify-content: flex-end; margin-top: 14px; }
 .warn { color: #b26a00; font-weight: 600; }
 .muted { margin: 6px 0; }
+
+/* payment / allocation / payout states */
+.st-SUCCESS, .st-PAID, .st-SETTLED { background: #2e7d32; }
+.st-FAILED, .st-NEEDS_REVIEW, .st-UNKNOWN { background: #c62828; }
+.st-QUEUED, .st-PROCESSING, .st-RECORDED, .st-ELIGIBLE, .st-SETTLING { background: #1e88e5; }
+.st-ON_HOLD, .st-REVERSED, .st-CANCELLED { background: #78909c; }
+textarea.wide { width: 100%; box-sizing: border-box; font: inherit; padding: 8px; border: 1px solid #b9d0b4; border-radius: 8px; }

@@ -29,6 +29,8 @@ public class CustomerOrder {
     private String mpesaCheckoutRequestId;
     private String mpesaReceipt;
     private Instant updatedAt;
+    /** When the order was marked DELIVERED. Starts the dispute window before the farmer is paid. */
+    private Instant deliveredAt;
     private Instant createdAt;
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();

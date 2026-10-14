@@ -1,4 +1,6 @@
 <resources>
+    <string name="pay_now_mpesa">📲  Pay now with M-Pesa (in the app)</string>
+    <string name="earnings_link">💰  My earnings and payouts</string>
     <string name="app_name">FarmConnect</string>
     <string name="t_0102a7b4">2. Phone verification</string>
     <string name="t_02121ebd">Approve a farmer to make their farm and products visible to buyers.</string>

@@ -24,7 +24,10 @@ public class OrderSuccessActivity extends AppCompatActivity {
         b.tvOrderNo.setText(I18n.t("Order #") + o.id);
         b.tvItemsLine.setText(n + (n == 1 ? I18n.t(" item") : I18n.t(" items")) + I18n.t(" ordered"));
         b.tvTotalLine.setText(Ui.kes(o.total));
-        b.tvPayLine.setText("💳  " + Ui.paymentLabel(o.paymentMethod));
+        String payLine = "💳  " + Ui.paymentLabel(o.paymentMethod);
+        if ("MPESA_ONLINE".equals(o.paymentMethod))
+            payLine += " · " + Ui.payStatusLabel(o.paymentStatus) + ("PAID".equals(o.paymentStatus) && o.mpesaReceipt != null ? " (" + o.mpesaReceipt + ")" : "");
+        b.tvPayLine.setText(payLine);
         b.tvAddrLine.setText("📍  " + o.deliveryAddress);
 
         b.btnTrack.setOnClickListener(v -> {

@@ -10,6 +10,8 @@ import java.util.Optional;
 public interface OrderRepository extends JpaRepository<CustomerOrder, Long> {
     List<CustomerOrder> findByBuyerIdOrderByCreatedAtDesc(Long buyerId);
 
+    List<CustomerOrder> findByPaymentStatus(String paymentStatus);
+
     Optional<CustomerOrder> findByMpesaCheckoutRequestId(String mpesaCheckoutRequestId);
 
     @Query("select distinct o from CustomerOrder o join o.items i where i.product.farm.owner.id = :farmerId order by o.createdAt desc")

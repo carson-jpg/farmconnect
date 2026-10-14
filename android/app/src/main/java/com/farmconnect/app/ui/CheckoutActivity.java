@@ -33,6 +33,9 @@ public class CheckoutActivity extends AppCompatActivity {
         b.btnBack.setOnClickListener(v -> finish());
         b.btnPlace.setEnabled(false);
         b.btnPlace.setOnClickListener(v -> place());
+        b.rgPay.setOnCheckedChangeListener((g, id) -> b.tvPayNote.setText(id == b.rbMpesaNow.getId()
+                ? I18n.t("You will get an M-Pesa prompt on your phone. Enter your PIN to pay. The seller is paid after you receive your order.")
+                : I18n.t("You pay the seller when your order arrives. No money is taken inside the app.")));
         Ui.watch(this, vm.cart(), b.progress, this::showSummary);
     }
 
@@ -77,7 +80,7 @@ public class CheckoutActivity extends AppCompatActivity {
         String note = b.etNote.getText().toString().trim();
         if (!phone.matches("\\+?\\d{9,13}")) { b.tilPhone.setError(I18n.t("Enter a valid phone number")); b.etPhone.requestFocus(); return; }
         if (address.length() < 5) { b.tilAddress.setError(I18n.t("Enter where we should deliver")); b.etAddress.requestFocus(); return; }
-        String pay = b.rbMpesa.isChecked() ? "MPESA_ON_DELIVERY" : "CASH_ON_DELIVERY";
+        String pay = b.rbMpesaNow.isChecked() ? "MPESA_ONLINE" : b.rbMpesa.isChecked() ? "MPESA_ON_DELIVERY" : "CASH_ON_DELIVERY";
 
         b.btnPlace.setEnabled(false);
         vm.placeOrder(new OrderRequest(address, phone, note, pay)).observe(this, res -> {
@@ -92,7 +95,9 @@ public class CheckoutActivity extends AppCompatActivity {
                     break;
                 default:
                     b.progress.setVisibility(View.INVISIBLE);
-                    startActivity(new Intent(this, OrderSuccessActivity.class).putExtra("order", new Gson().toJson(res.data)));
+                    // Paying in the app: go straight to the M-Pesa prompt screen. Otherwise show the order summary.
+                    Class<?> next = "MPESA_ONLINE".equals(pay) ? PayNowActivity.class : OrderSuccessActivity.class;
+                    startActivity(new Intent(this, next).putExtra("order", new Gson().toJson(res.data)).putExtra("phone", phone));
                     finish();
             }
         });

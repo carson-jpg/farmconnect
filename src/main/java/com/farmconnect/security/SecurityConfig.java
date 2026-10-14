@@ -30,7 +30,7 @@ public class SecurityConfig {
                 // "400 Please provide..." or "409 ..." gets turned into 401 and the app says "login again".
                 .requestMatchers("/error").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/ussd", "/api/sms/inbound").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/payments/callback/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/payments/callback/**", "/api/payments/b2c/**", "/api/payments/c2b/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/officer", "/officer/", "/officer/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/files/products/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/farms/mine", "/api/products/mine").authenticated()

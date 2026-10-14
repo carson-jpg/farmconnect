@@ -62,8 +62,17 @@ public class Models {
     public static class OrderItem { public long productId, farmerId; public String productName, imageUrl, farmName, unit; public int quantity; public double price; }
     public static class Order {
         public long id; public long buyerId; public String status, deliveryAddress, createdAt, buyerName, buyerPhone, deliveryPhone, deliveryNote, paymentMethod, updatedAt;
+        /** UNPAID, PENDING (waiting for the buyer's PIN), PAID or FAILED. Only used for orders paid in the app. */
+        public String paymentStatus, mpesaReceipt;
         public double total; public List<OrderItem> items;
     }
+
+    // ---- payments ----
+    public static class PayStatus { public long orderId; public String paymentStatus, receipt; }
+    public static class Earning { public long orderId; public double amountKes, paidKes; public String status, date; }
+    public static class Earnings { public double waitingKes, paidKes; public List<Earning> recent; }
+    /** The farmer's payout number (masked by the server) and whether it is approved. */
+    public static class PayoutAccount { public String phone, status; }
 
     // ---- admin ----
     public static class ActiveRequest {

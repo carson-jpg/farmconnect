@@ -26,6 +26,8 @@
         <activity android:name=".ui.CheckoutActivity" android:theme="@style/Theme.FarmConnect.FarmerDash"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".ui.OrderSuccessActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.PayNowActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.EarningsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.OrderDetailActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.InfoHubActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.PostDetailActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />

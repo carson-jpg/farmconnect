@@ -784,3 +784,49 @@ Your area: 	Eneo lako:
 Farmers by county	Wakulima kwa kaunti
 Only officers can be assigned an area	Maafisa pekee ndio wanaweza kupangiwa eneo
 Kenya	Kenya
+Paid	Imelipwa
+Waiting for payment	Inasubiri malipo
+Payment failed	Malipo hayakufaulu
+Not paid yet	Bado haijalipwa
+M-Pesa (paid in the app)	M-Pesa (imelipwa ndani ya programu)
+Pay now with M-Pesa	Lipa sasa kwa M-Pesa
+You will get an M-Pesa prompt on your phone. Enter your PIN to pay. The seller is paid after you receive your order.	Utapata ombi la M-Pesa kwenye simu yako. Weka PIN yako ili ulipe. Muuzaji analipwa baada ya kupokea oda yako.
+Pay with M-Pesa	Lipa kwa M-Pesa
+Sending the payment request…	Tunatuma ombi la malipo…
+Please wait a moment.	Tafadhali subiri kidogo.
+Check your phone	Angalia simu yako
+An M-Pesa request for 	Ombi la M-Pesa la 
+ was sent to 	 lilitumwa kwa 
+. Enter your M-Pesa PIN to pay. This page updates by itself.	. Weka PIN yako ya M-Pesa ulipe. Ukurasa huu hujisasisha wenyewe.
+I will pay later	Nitalipa baadaye
+The payment was not completed. If money was taken from you it will be returned.	Malipo hayakukamilika. Ikiwa pesa ilitoka kwako itarudishwa.
+Payment not completed	Malipo hayajakamilika
+Try again	Jaribu tena
+View my order	Tazama oda yangu
+Still waiting	Bado tunasubiri
+If you entered your PIN, the payment will show on your order shortly. You can check again.	Ikiwa uliweka PIN, malipo yataonekana kwenye oda yako hivi karibuni. Unaweza kuangalia tena.
+Check again	Angalia tena
+Send a new request	Tuma ombi jipya
+M-Pesa number	Namba ya M-Pesa
+Send the payment request to this number:	Tuma ombi la malipo kwa namba hii:
+Send request	Tuma ombi
+Your order is saved. You can pay from My orders.	Oda yako imehifadhiwa. Unaweza kulipa kupitia Oda zangu.
+My earnings	Mapato yangu
+Sales paid for in the app	Mauzo yaliyolipwa ndani ya programu
+Paid to you	Uliyolipwa
+On the way to you	Yanayokuja kwako
+Recent sales	Mauzo ya hivi karibuni
+Nothing yet. When a buyer pays through FarmConnect, the sale shows here.	Bado hakuna. Mnunuzi akilipa kupitia FarmConnect, mauzo yataonekana hapa.
+Each sale is split automatically. You are paid the farmer share to your M-Pesa after the order is delivered and a short waiting period.	Kila mauzo hugawanywa kiotomatiki. Unalipwa sehemu ya mkulima kwenye M-Pesa baada ya oda kufikishwa na kipindi kifupi cha kusubiri.
+Payout number	Namba ya malipo
+Ready. Your payments go to this M-Pesa number.	Tayari. Malipo yako yanaenda kwa namba hii ya M-Pesa.
+Waiting for approval. Payments are held until it is approved.	Inasubiri idhini. Malipo yatashikiliwa hadi iidhinishwe.
+This number was not approved. Please enter another one.	Namba hii haikuidhinishwa. Tafadhali weka nyingine.
+No payout number yet. Verify your phone, or add one here.	Bado hakuna namba ya malipo. Thibitisha simu yako, au ongeza hapa.
+Change number	Badilisha namba
+New payout number	Namba mpya ya malipo
+A new number must be approved by FarmConnect before we send money to it.	Namba mpya lazima iidhinishwe na FarmConnect kabla hatujatuma pesa.
+Waiting for delivery	Inasubiri kufikishwa
+Being paid out	Inalipwa
+On hold, contact support	Imesitishwa, wasiliana na msaada
+Refunded to the buyer	Imerudishwa kwa mnunuzi

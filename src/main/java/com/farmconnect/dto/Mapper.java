@@ -35,7 +35,8 @@ public final class Mapper {
                             i.getPrice(), p.imageUrl(), p.farmName(), p.unit(), p.farmerId());
                 }).toList(),
                 o.getDeliveryPhone(), o.getDeliveryNote(), o.getPaymentMethod(),
-                o.getUpdatedAt() == null ? o.getCreatedAt() : o.getUpdatedAt(), o.getBuyer().getId());
+                o.getUpdatedAt() == null ? o.getCreatedAt() : o.getUpdatedAt(), o.getBuyer().getId(),
+                o.getPaymentStatus() == null ? "UNPAID" : o.getPaymentStatus(), o.getMpesaReceipt());
     }
 
     public static UserSummary user(User u) {

@@ -122,6 +122,7 @@ public class OrderController {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Wait for the buyer's M-Pesa payment first");
         o.setStatus(r.status());
         o.setUpdatedAt(Instant.now());
+        if (r.status() == OrderStatus.DELIVERED && o.getDeliveredAt() == null) o.setDeliveredAt(o.getUpdatedAt());
         CustomerOrder saved = orders.save(o);
         notifier.notifyAndSms(saved.getBuyer(), "ORDER", "Order #" + saved.getId() + " " + statusText(r.status()),
                 "Your order is now " + r.status().name().toLowerCase() + ".", saved.getId());

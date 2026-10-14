@@ -58,6 +58,7 @@ public class FarmerHomeActivity extends AppCompatActivity {
         View.OnClickListener openOrders = v ->
                 startActivity(new Intent(this, OrdersActivity.class).putExtra("farmer", true));
         b.actOrders.setOnClickListener(openOrders);
+        b.actEarnings.setOnClickListener(v -> startActivity(new Intent(this, EarningsActivity.class)));
         b.tvSeeAll.setOnClickListener(openOrders);
         b.cardLowStock.setOnClickListener(v -> startActivity(new Intent(this, FarmerProductsActivity.class)));
     }

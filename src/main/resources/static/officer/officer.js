@@ -52,6 +52,7 @@
     chat: ['M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'],
     pulse: ['M22 12h-4l-3 9L9 3l-3 9H2'],
     star: ['M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z'],
+    payments: ['M12 1v22', 'M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6'],
     cash: ['M12 1v22', 'M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6'],
     book: ['M4 19.5A2.5 2.5 0 0 1 6.5 17H20', 'M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z'],
     group: ['M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2', 'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z']
@@ -693,7 +694,8 @@
             h('td', {}, h('b', { text: '#' + o.id })), h('td', { text: when(o.createdAt) }),
             h('td', {}, document.createTextNode(o.buyerName || '-'), h('div', { class: 'sub', text: o.buyerPhone || '' })),
             h('td', { class: 'num', text: plural((o.items || []).length, 'item') }), h('td', { class: 'num', text: kes(o.total) }),
-            h('td', { text: (o.paymentMethod || '').replace(/_/g, ' ').toLowerCase() }),
+            h('td', {}, document.createTextNode((o.paymentMethod || '').replace(/_/g, ' ').toLowerCase()),
+              o.paymentMethod === 'MPESA_ONLINE' ? h('div', { class: 'sub', text: String(o.paymentStatus || 'UNPAID').toLowerCase() }) : null),
             h('td', {}, pill(o.status.charAt(0) + o.status.slice(1).toLowerCase(), 'st-' + o.status)),
             h('td', { class: 'actions' }, h('button', { class: 'btn small secondary', text: 'View', onclick: function () { orderDetail(o); } }), ' ', move));
         }, ['Order', 'Placed', 'Buyer', ['Items', 'num'], ['Total', 'num'], 'Payment', 'Status', '']);
@@ -707,7 +709,7 @@
     m.modal.appendChild(h('div', {}, h('h2', { text: 'Order #' + o.id }), pill(o.status.charAt(0) + o.status.slice(1).toLowerCase(), 'st-' + o.status)));
     m.modal.appendChild(h('div', { class: 'facts' },
       fact('Buyer', (o.buyerName || '') + (o.buyerPhone ? ' · ' + o.buyerPhone : '')), fact('Placed', when(o.createdAt)),
-      fact('Deliver to', o.deliveryAddress), fact('Delivery phone', o.deliveryPhone), fact('Payment', (o.paymentMethod || '').replace(/_/g, ' ').toLowerCase()),
+      fact('Deliver to', o.deliveryAddress), fact('Delivery phone', o.deliveryPhone), fact('Payment', (o.paymentMethod || '').replace(/_/g, ' ').toLowerCase() + (o.paymentMethod === 'MPESA_ONLINE' ? ' · ' + String(o.paymentStatus || 'UNPAID').toLowerCase() + (o.mpesaReceipt ? ' (' + o.mpesaReceipt + ')' : '') : '')),
       fact('Note to seller', o.deliveryNote)));
     m.modal.appendChild(table(['Product', 'Farm', ['Qty', 'num'], ['Price', 'num'], ['Subtotal', 'num']], (o.items || []).map(function (i) {
       return h('tr', {}, h('td', { text: i.productName }), h('td', { text: i.farmName || '-' }), h('td', { class: 'num', text: num(i.quantity) + (i.unit ? ' ' + i.unit : '') }),
@@ -717,14 +719,283 @@
     m.modal.appendChild(h('div', { class: 'actions' }, h('button', { class: 'btn secondary', text: 'Close', onclick: m.close })));
   }
 
+  // ---------- administration: payments and payouts ----------
+  function money(v) { return 'KES ' + Number(v || 0).toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function sp(status) { return pill(String(status || '-').replace(/_/g, ' ').toLowerCase(), 'st-' + status); }
+  function ask(msg, def) { return window.prompt(msg, def || ''); }
+  function abtn(text, fn, danger) { return h('button', { class: 'btn small ' + (danger ? 'danger' : 'secondary'), text: text, onclick: fn }); }
+  function post(path, body, done, okMsg) {
+    return api(path, { method: 'POST', json: body || {} })
+      .then(function () { toast(okMsg || 'Done'); if (done) done(); })
+      .catch(function (e) { toast(e.message, true); });
+  }
+  var PAY_BASE = '/api/admin/payments';
+
+  function paymentsView(box) {
+    var TABS = [['attention', 'Needs attention'], ['payments', 'All payments'], ['payouts', 'Payouts'], ['accounts', 'Payout accounts'], ['recon', 'Reconciliation']];
+    var current = 'attention';
+    var summaryBox = h('div'), tabBar = h('div', { class: 'toolbar' }), body = h('div');
+    box.appendChild(summaryBox); box.appendChild(tabBar); box.appendChild(body);
+
+    function reload() { drawSummary(); drawTab(); }
+
+    function drawSummary() {
+      getJson(PAY_BASE + '/summary').then(function (s) {
+        summaryBox.textContent = '';
+        var attention = Number(s.needsReview || 0) + Number(s.payoutsUnknown || 0) + Number(s.payoutsFailed || 0);
+        summaryBox.appendChild(h('div', { class: 'kpis' },
+          kpi('cash', 'amber', 'Collected from buyers', money(s.collectedKes)),
+          kpi('farmer', '', 'Farmers', money(s.farmer.settledKes), money(s.farmer.owedKes) + ' still to pay'),
+          kpi('cash', 'blue', 'County government', money(s.county.settledKes), money(s.county.owedKes) + ' still to pay'),
+          kpi('cash', 'purple', 'FarmConnect', money(s.platform.settledKes), money(s.platform.owedKes) + ' not yet settled'),
+          kpi('pulse', attention ? 'amber' : '', 'Needs attention', num(attention),
+            num(s.needsReview) + ' to review · ' + num(s.payoutsUnknown) + ' unknown · ' + num(s.payoutsFailed) + ' failed')));
+      }).catch(function (e) { failed(summaryBox, e); });
+    }
+
+    function drawTabs() {
+      tabBar.textContent = '';
+      TABS.forEach(function (t) {
+        tabBar.appendChild(h('button', { class: 'btn small' + (t[0] === current ? '' : ' secondary'), text: t[1],
+          onclick: function () { current = t[0]; drawTabs(); drawTab(); } }));
+      });
+    }
+
+    function drawTab() {
+      body.textContent = '';
+      ({ attention: attentionTab, payments: paymentsTab, payouts: payoutsTab, accounts: accountsTab, recon: reconTab })[current](body, reload);
+    }
+
+    drawTabs();
+    reload();
+  }
+
+  // ----- tables -----
+  function paymentRow(p, reload) {
+    var needsReceipt = !p.receipt;
+    var acts = h('td', { class: 'actions' }, abtn('View', function () { paymentDetail(p.id, reload); }));
+    if ((p.status === 'NEEDS_REVIEW' || p.status === 'PENDING') && needsReceipt) {
+      acts.appendChild(document.createTextNode(' '));
+      acts.appendChild(abtn('Confirm receipt', function () {
+        var receipt = ask('M-Pesa receipt number (from the statement):'); if (!receipt) return;
+        var amt = ask('Amount received (KES):'); if (!amt) return;
+        post(PAY_BASE + '/' + p.id + '/confirm', { receipt: receipt.trim(), amountKes: Math.round(Number(amt)) }, reload, 'Payment confirmed and split');
+      }));
+    }
+    if (Number(p.owedToBuyerKes) >= 1) {
+      acts.appendChild(document.createTextNode(' '));
+      acts.appendChild(abtn('Refund ' + money(p.owedToBuyerKes), function () {
+        var phone = ask('Send the refund to which M-Pesa number? (leave empty to use the number that paid)');
+        if (phone === null) return;
+        if (!window.confirm('Refund ' + money(p.owedToBuyerKes) + ' for payment #' + p.id + '?')) return;
+        post(PAY_BASE + '/' + p.id + '/refund-excess', { phone: phone || null }, reload, 'Refund queued');
+      }, true));
+    }
+    return h('tr', {},
+      h('td', {}, h('b', { text: '#' + p.id })), h('td', { text: 'Order #' + p.orderId }),
+      h('td', { text: p.receipt || '-' }), h('td', { class: 'num', text: money(p.amountKes) }),
+      h('td', {}, sp(p.status), p.note ? h('div', { class: 'sub', text: clip(p.note, 80) }) : null),
+      h('td', { text: when(p.createdAt) }), acts);
+  }
+  var PAYMENT_HEADS = ['Payment', 'Order', 'M-Pesa receipt', ['Amount', 'num'], 'Status', 'When', ''];
+
+  function payoutRow(po, reload) {
+    var acts = h('td', { class: 'actions' });
+    if (po.status === 'UNKNOWN' || po.status === 'PROCESSING' || po.status === 'FAILED') {
+      acts.appendChild(abtn('Mark paid', function () {
+        var ref = ask('M-Pesa or bank reference of the money that was sent:'); if (!ref) return;
+        post(PAY_BASE + '/payouts/' + po.id + '/mark-paid', { reference: ref.trim() }, reload, 'Payout marked as paid');
+      }));
+    }
+    if (po.status === 'UNKNOWN' || po.status === 'FAILED') {
+      acts.appendChild(document.createTextNode(' '));
+      acts.appendChild(abtn('Retry', function () {
+        if (po.status === 'UNKNOWN' && !window.confirm('Check the M-Pesa statement first.\n\nPress OK ONLY if NO money was sent for this payout, otherwise the farmer or county would be paid twice.')) return;
+        post(PAY_BASE + '/payouts/' + po.id + '/retry', { confirmNotSent: po.status === 'UNKNOWN' }, reload, 'Payout queued again');
+      }, po.status === 'UNKNOWN'));
+    }
+    return h('tr', {},
+      h('td', {}, h('b', { text: '#' + po.id }), h('div', { class: 'sub', text: po.kind === 'REFUND' ? 'refund' : 'payment #' + po.paymentId })),
+      h('td', {}, document.createTextNode(String(po.beneficiaryType).toLowerCase() + ' ' + (po.beneficiaryType === 'FARMER' || po.beneficiaryType === 'BUYER' ? '#' + po.beneficiaryId : po.beneficiaryId)),
+        h('div', { class: 'sub', text: String(po.accountType).replace(/_/g, ' ').toLowerCase() + ' ' + (po.destination || '') })),
+      h('td', { class: 'num', text: money(po.amountKes) }),
+      h('td', {}, sp(po.status), po.failureReason ? h('div', { class: 'sub', text: clip(po.failureReason, 90) }) : null),
+      h('td', { class: 'num', text: po.attempts }), acts);
+  }
+  var PAYOUT_HEADS = ['Payout', 'To', ['Amount', 'num'], 'Status', ['Tries', 'num'], ''];
+
+  function accountRow(a, reload) {
+    var acts = h('td', { class: 'actions' });
+    if (a.status !== 'VERIFIED') acts.appendChild(abtn('Approve', function () { post(PAY_BASE + '/accounts/' + a.id + '/approve', {}, reload, 'Account approved'); }));
+    if (a.status !== 'REJECTED') {
+      acts.appendChild(document.createTextNode(' '));
+      acts.appendChild(abtn('Reject', function () { post(PAY_BASE + '/accounts/' + a.id + '/reject', {}, reload, 'Account rejected'); }, true));
+    }
+    return h('tr', {},
+      h('td', { text: String(a.beneficiaryType).toLowerCase() + ' ' + a.beneficiaryId }),
+      h('td', { text: String(a.accountType).replace(/_/g, ' ').toLowerCase() }),
+      h('td', { text: (a.reference || '-') + (a.accountNumber ? ' / ' + a.accountNumber : '') }),
+      h('td', {}, sp(a.status)), acts);
+  }
+  var ACCOUNT_HEADS = ['Belongs to', 'Type', 'Number / reference', 'Status', ''];
+
+  // ----- tabs -----
+  function attentionTab(box, reload) {
+    loading(box);
+    Promise.all([getJson(PAY_BASE + '?status=NEEDS_REVIEW'), getJson(PAY_BASE + '/payouts?status=UNKNOWN'),
+      getJson(PAY_BASE + '/payouts?status=FAILED'), getJson(PAY_BASE + '/accounts?status=PENDING'),
+      getJson(PAY_BASE + '?status=SUCCESS')]).then(function (r) {
+      box.textContent = '';
+      var owed = r[4].filter(function (p) { return Number(p.owedToBuyerKes) >= 1; });
+      var any = false;
+      function section(title, rows, rowFor, heads) {
+        if (!rows.length) return; any = true;
+        box.appendChild(h('div', { class: 'section-title', text: title + ' (' + rows.length + ')' }));
+        box.appendChild(table(heads, rows.map(rowFor)));
+      }
+      section('Payments to review', r[0], function (p) { return paymentRow(p, reload); }, PAYMENT_HEADS);
+      section('Money owed back to buyers', owed, function (p) { return paymentRow(p, reload); }, PAYMENT_HEADS);
+      section('Payouts with an unknown result: check the M-Pesa statement', r[1], function (p) { return payoutRow(p, reload); }, PAYOUT_HEADS);
+      section('Failed payouts', r[2], function (p) { return payoutRow(p, reload); }, PAYOUT_HEADS);
+      section('Payout numbers waiting for approval', r[3], function (a) { return accountRow(a, reload); }, ACCOUNT_HEADS);
+      if (!any) box.appendChild(emptyBox('Nothing needs attention right now.'));
+    }).catch(function (e) { failed(box, e); });
+  }
+
+  function listTab(box, reload, statuses, path, rowFor, heads, empty) {
+    var sel = h('select', { onchange: load }, [h('option', { value: '', text: 'All' })].concat(statuses.map(function (s) {
+      return h('option', { value: s, text: s.replace(/_/g, ' ').toLowerCase() }); })));
+    var list = h('div');
+    box.appendChild(h('div', { class: 'toolbar' }, h('div', {}, h('label', { text: 'Status' }), sel)));
+    box.appendChild(list);
+    function load() {
+      loading(list);
+      getJson(path + (sel.value ? (path.indexOf('?') < 0 ? '?' : '&') + 'status=' + sel.value : '')).then(function (rows) {
+        list.textContent = '';
+        if (!rows.length) { list.appendChild(emptyBox(empty)); return; }
+        paged(list, rows, 25, function (x) { return rowFor(x, reload); }, heads);
+      }).catch(function (e) { failed(list, e); });
+    }
+    load();
+  }
+  function paymentsTab(box, reload) {
+    listTab(box, reload, ['PENDING', 'SUCCESS', 'FAILED', 'NEEDS_REVIEW', 'REVERSED'], PAY_BASE, paymentRow, PAYMENT_HEADS, 'No payments yet');
+  }
+  function payoutsTab(box, reload) {
+    listTab(box, reload, ['QUEUED', 'PROCESSING', 'SUCCESS', 'FAILED', 'UNKNOWN', 'CANCELLED'], PAY_BASE + '/payouts', payoutRow, PAYOUT_HEADS, 'No payouts yet');
+  }
+  function accountsTab(box, reload) {
+    var sel = h('select', { onchange: load }, ['PENDING', 'VERIFIED', 'REJECTED'].map(function (s) { return h('option', { value: s, text: s.toLowerCase() }); }));
+    var list = h('div');
+    box.appendChild(h('div', { class: 'toolbar' }, h('div', {}, h('label', { text: 'Status' }), sel)));
+    box.appendChild(list);
+    function load() {
+      loading(list);
+      getJson(PAY_BASE + '/accounts?status=' + sel.value).then(function (rows) {
+        list.textContent = '';
+        if (!rows.length) { list.appendChild(emptyBox('No accounts with this status')); return; }
+        list.appendChild(table(ACCOUNT_HEADS, rows.map(function (a) { return accountRow(a, function () { load(); reload(); }); })));
+      }).catch(function (e) { failed(list, e); });
+    }
+    load();
+  }
+
+  function reconTab(box) {
+    var days = h('select', {}, [['7', 'Last 7 days'], ['30', 'Last 30 days'], ['90', 'Last 90 days']].map(function (d) { return h('option', { value: d[0], text: d[1] }); }));
+    var out = h('div');
+    box.appendChild(h('div', { class: 'toolbar' }, h('div', {}, h('label', { text: 'Check our records for' }), days),
+      h('button', { class: 'btn', text: 'Run check', onclick: run })));
+    box.appendChild(out);
+    function issues(list) {
+      return list.length ? table(['Level', 'What', 'Where', 'Details'], list.map(function (i) {
+        return h('tr', {}, h('td', {}, pill(i.severity.toLowerCase(), i.severity === 'ERROR' ? 'st-bad' : i.severity === 'WARN' ? 'st-PENDING' : 'st-HIDDEN')),
+          h('td', { text: String(i.code).replace(/_/g, ' ').toLowerCase() }), h('td', { text: i.reference }), h('td', { text: i.detail || '' }));
+      })) : emptyBox('No problems found. Everything adds up.');
+    }
+    function run() {
+      loading(out);
+      getJson(PAY_BASE + '/reconciliation?days=' + days.value).then(function (r) {
+        out.textContent = '';
+        out.appendChild(h('p', { class: 'muted', text: num(r.paymentsChecked) + ' payments checked · ' + plural(r.issues.length, 'issue') }));
+        out.appendChild(issues(r.issues));
+      }).catch(function (e) { failed(out, e); });
+    }
+    // compare against the M-Pesa statement
+    var area = h('textarea', { rows: '6', placeholder: 'One payment per line:  RECEIPT,AMOUNT\nSJK1ABC234,1500', class: 'wide' });
+    var cmpOut = h('div');
+    box.appendChild(h('div', { class: 'section-title', text: 'Compare with the M-Pesa statement' }));
+    box.appendChild(area);
+    box.appendChild(h('div', { class: 'toolbar' }, h('button', { class: 'btn secondary', text: 'Compare', onclick: function () {
+      var lines = area.value.split(/\r?\n/).map(function (l) { return l.split(','); }).filter(function (p) { return p.length >= 2 && p[0].trim(); })
+        .map(function (p) { return { receipt: p[0].trim(), amountKes: Math.round(Number(p[1])) }; });
+      if (!lines.length) { toast('Paste at least one line', true); return; }
+      loading(cmpOut);
+      api(PAY_BASE + '/reconciliation/statement', { method: 'POST', json: { lines: lines } }).then(function (r) { return r.json(); })
+        .then(function (list) { cmpOut.textContent = ''; cmpOut.appendChild(issues(list)); }).catch(function (e) { failed(cmpOut, e); });
+    } })));
+    box.appendChild(cmpOut);
+  }
+
+  // ----- one payment in full -----
+  function paymentDetail(id, reload) {
+    var m = modalShell();
+    function load() {
+      getJson(PAY_BASE + '/' + id).then(function (d) {
+        var p = d.payment; m.modal.textContent = '';
+        m.modal.appendChild(h('div', {}, h('h2', { text: 'Payment #' + p.id + ' · Order #' + p.orderId }), sp(p.status)));
+        m.modal.appendChild(h('div', { class: 'facts' },
+          fact('M-Pesa receipt', p.receipt), fact('Paid', money(p.amountKes)), fact('Order total (rounded up)', money(p.expectedKes)),
+          fact('Owed back to buyer', money(p.owedToBuyerKes)), fact('Already refunded', money(p.refundedKes)),
+          fact('Paid from', p.phone), fact('Method', p.provider), fact('Created', when(p.createdAt)), fact('Notes', p.note)));
+
+        m.modal.appendChild(h('div', { class: 'section-title', text: 'Who gets what' }));
+        m.modal.appendChild(d.allocations.length ? table(['Beneficiary', ['Share', 'num'], ['Amount', 'num'], ['Paid', 'num'], 'Status', ''], d.allocations.map(function (a) {
+          var acts = h('td', { class: 'actions' });
+          if (a.status === 'RECORDED' || a.status === 'ELIGIBLE' || a.status === 'SETTLING') acts.appendChild(abtn('Hold', function () {
+            var why = ask('Why hold this money? (e.g. dispute)'); if (why === null) return;
+            post(PAY_BASE + '/allocations/' + a.id + '/hold', { reason: why }, function () { load(); reload(); }, 'Held');
+          }));
+          if (a.status === 'ON_HOLD') acts.appendChild(abtn('Release', function () {
+            post(PAY_BASE + '/allocations/' + a.id + '/release', {}, function () { load(); reload(); }, 'Released');
+          }));
+          return h('tr', {}, h('td', { text: String(a.beneficiaryType).toLowerCase() + (a.beneficiaryType === 'FARMER' ? ' #' + a.beneficiaryId : ' · ' + a.beneficiaryId) }),
+            h('td', { class: 'num', text: (a.basisPoints / 100).toFixed(2) + '%' }), h('td', { class: 'num', text: money(a.amountKes) }),
+            h('td', { class: 'num', text: money(a.settledKes) }), h('td', {}, sp(a.status), a.holdReason ? h('div', { class: 'sub', text: a.holdReason }) : null), acts);
+        })) : emptyBox('Nothing allocated'));
+
+        if (d.payouts.length) {
+          m.modal.appendChild(h('div', { class: 'section-title', text: 'Transfers' }));
+          m.modal.appendChild(table(PAYOUT_HEADS, d.payouts.map(function (po) { return payoutRow(po, function () { load(); reload(); }); })));
+        }
+        m.modal.appendChild(h('div', { class: 'section-title', text: 'Ledger (every movement of money)' }));
+        m.modal.appendChild(table(['When', 'Type', 'Account', 'Side', ['Amount', 'num'], 'Reference'], d.ledger.map(function (e) {
+          return h('tr', {}, h('td', { text: when(e.createdAt) }), h('td', { text: String(e.entryType).toLowerCase() }), h('td', { text: e.account }),
+            h('td', { text: e.direction.toLowerCase() }), h('td', { class: 'num', text: money(e.amountKes) }), h('td', { text: e.reference || '' }));
+        })));
+
+        var foot = h('div', { class: 'actions' });
+        if (p.status === 'SUCCESS') foot.appendChild(abtn('Refund whole payment', function () {
+          var why = ask('Reason for the refund:'); if (why === null) return;
+          var phone = ask('Buyer M-Pesa number to refund to (empty = the number that paid):'); if (phone === null) return;
+          if (!window.confirm('Reverse all three shares and refund the buyer ' + money(p.amountKes) + '?')) return;
+          post(PAY_BASE + '/' + p.id + '/refund', { reason: why, phone: phone || null }, function () { load(); reload(); }, 'Refund queued');
+        }, true));
+        foot.appendChild(document.createTextNode(' '));
+        foot.appendChild(h('button', { class: 'btn secondary', text: 'Close', onclick: m.close }));
+        m.modal.appendChild(foot);
+      }).catch(function (e) { m.modal.textContent = ''; m.modal.appendChild(emptyBox(e.message)); m.modal.appendChild(h('button', { class: 'btn secondary', text: 'Close', onclick: m.close })); });
+    }
+    load();
+  }
+
   // ---------- frame ----------
   var NAV = [
     { group: 'Dashboard', items: [['overview', 'Overview', 'Overview']] },
     { group: 'County work', items: [['verifications', 'Verification', 'Farmer verification'], ['prices', 'Market prices', 'Market price board'], ['reports', 'Reports', 'Reports']] },
-    { group: 'Administration', admin: true, items: [['users', 'Users', 'Users'], ['officers', 'Officers', 'County officers'], ['products', 'Products', 'Product moderation'], ['orders', 'Orders', 'Orders']] }
+    { group: 'Administration', admin: true, items: [['users', 'Users', 'Users'], ['officers', 'Officers', 'County officers'], ['products', 'Products', 'Product moderation'], ['orders', 'Orders', 'Orders'], ['payments', 'Payments', 'Payments & payouts']] }
   ];
-  var VIEWS = { overview: overview, verifications: verifications, prices: prices, reports: reports, users: function (b) { usersView(b); }, officers: officersView, products: productsView, orders: ordersView };
-  var ADMIN_ONLY = { users: 1, officers: 1, products: 1, orders: 1 };
+  var VIEWS = { overview: overview, verifications: verifications, prices: prices, reports: reports, users: function (b) { usersView(b); }, officers: officersView, products: productsView, orders: ordersView, payments: paymentsView };
+  var ADMIN_ONLY = { users: 1, officers: 1, products: 1, orders: 1, payments: 1 };
 
   function currentView() {
     var v = (location.hash || '').replace('#', '');

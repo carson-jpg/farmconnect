@@ -2,6 +2,7 @@ package com.farmconnect.app.ui;
 
 import com.farmconnect.app.util.I18n;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -123,7 +124,11 @@ public class OrderDetailActivity extends AppCompatActivity {
         boolean canRate = mode == OrderAdapter.Mode.BUYER && "DELIVERED".equals(o.status) && !o.items.isEmpty();
         b.btnRate.setVisibility(canRate ? View.VISIBLE : View.GONE);
         b.btnRate.setOnClickListener(v -> rateSellers(o));
-        b.tvPayment.setText("💳 " + Ui.paymentLabel(o.paymentMethod));
+        boolean online = "MPESA_ONLINE".equals(o.paymentMethod);
+        b.tvPayment.setText("💳 " + Ui.paymentLabel(o.paymentMethod)
+                + (online ? " · " + Ui.payStatusLabel(o.paymentStatus) + ("PAID".equals(o.paymentStatus) && o.mpesaReceipt != null ? " (" + o.mpesaReceipt + ")" : "") : ""));
+        // a buyer who has not paid yet can pay now (or retry after a failed attempt)
+        final boolean payNow = mode == OrderAdapter.Mode.BUYER && online && !"PAID".equals(o.paymentStatus) && "PENDING".equals(o.status);
 
         // ---- actions by role
         boolean showAction, showSecondary = false;
@@ -136,6 +141,7 @@ public class OrderDetailActivity extends AppCompatActivity {
             showAction = text != null;
             showSecondary = mode == OrderAdapter.Mode.ADMIN && reached >= 0 && reached < 3;
         }
+        showSecondary = showSecondary || payNow;
         b.actionBar.setVisibility(showAction || showSecondary ? View.VISIBLE : View.GONE);
         b.btnAction.setVisibility(showAction ? View.VISIBLE : View.GONE);
         if (showAction) b.btnAction.setText(text);
@@ -144,7 +150,16 @@ public class OrderDetailActivity extends AppCompatActivity {
             if (mode == OrderAdapter.Mode.BUYER) confirmCancel(this::cancelAsBuyer);
             else advance();
         });
-        b.btnSecondary.setOnClickListener(v -> confirmCancel(() -> run(adminVm.setOrderStatus(order.id, "CANCELLED"))));
+        if (payNow) {
+            b.btnSecondary.setText(I18n.t("Pay now with M-Pesa"));
+            b.btnSecondary.setTextColor(0xFF2E7D32);
+            b.btnSecondary.setOnClickListener(v -> startActivity(new Intent(this, PayNowActivity.class)
+                    .putExtra("order", new Gson().toJson(order)).putExtra("phone", o.deliveryPhone != null ? o.deliveryPhone : o.buyerPhone)));
+        } else {
+            b.btnSecondary.setText(I18n.t("Cancel order"));
+            b.btnSecondary.setTextColor(0xFFC62828);
+            b.btnSecondary.setOnClickListener(v -> confirmCancel(() -> run(adminVm.setOrderStatus(order.id, "CANCELLED"))));
+        }
     }
 
     private void advance() {

@@ -1,13 +1,13 @@
 package com.farmconnect.controller;
 
 import com.farmconnect.model.*;
+import com.farmconnect.payment.model.CallbackLog;
+import com.farmconnect.payment.repository.CallbackLogRepository;
+import com.farmconnect.payment.service.PaymentService;
 import com.farmconnect.repository.OrderRepository;
 import com.farmconnect.service.MpesaService;
-import com.farmconnect.service.NotificationService;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,24 +15,25 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Buyer-facing M-Pesa collection. Money rules (who gets what, duplicate protection, ledger) live in PaymentService;
+ * this class only handles HTTP.
+ */
 @RestController
 @RequestMapping("/api/payments")
 @RequiredArgsConstructor
 public class PaymentController {
-    private static final Logger log = LoggerFactory.getLogger(PaymentController.class);
     private final OrderRepository orders;
     private final MpesaService mpesa;
-    private final NotificationService notifier;
+    private final PaymentService payments;
+    private final CallbackLogRepository callbackLogs;
 
     public record StkRequest(String phone) {}
 
-    /** Buyer: send the M-Pesa payment prompt to the phone. */
+    /** Buyer: send the M-Pesa payment prompt to the phone. The amount is always taken from the order, never from the app. */
     @PostMapping("/mpesa/{orderId}/stk")
     @PreAuthorize("hasRole('BUYER')")
     @Transactional
@@ -47,11 +48,7 @@ public class PaymentController {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "This order is already paid");
 
         String raw = r != null && r.phone() != null && !r.phone().isBlank() ? r.phone() : o.getDeliveryPhone();
-        String checkoutId = mpesa.stkPush(MpesaService.normalizePhone(raw), o.getTotal(), "FC" + o.getId(), "FarmConnect");
-        o.setMpesaCheckoutRequestId(checkoutId);
-        o.setPaymentStatus("PENDING");
-        o.setUpdatedAt(Instant.now());
-        orders.save(o);
+        payments.startStk(o, MpesaService.normalizePhone(raw));
         return status(o);
     }
 
@@ -64,49 +61,14 @@ public class PaymentController {
 
     /** Safaricom calls this. Public, but the URL carries a secret that only Safaricom (via us) knows. */
     @PostMapping("/callback/{secret}")
-    @Transactional
     public Map<String, Object> callback(@PathVariable String secret, @RequestBody JsonNode body) {
         if (!mpesa.callbackSecretOk(secret)) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden");
-        Map<String, Object> ok = Map.of("ResultCode", 0, "ResultDesc", "Accepted");
-
-        JsonNode cb = body.path("Body").path("stkCallback");
-        String checkoutId = cb.path("CheckoutRequestID").asText("");
-        CustomerOrder o = orders.findByMpesaCheckoutRequestId(checkoutId).orElse(null);
-        if (o == null) { log.warn("M-Pesa callback for unknown CheckoutRequestID {}", checkoutId); return ok; }
-        if ("PAID".equals(o.getPaymentStatus())) return ok;   // Safaricom can retry; stay idempotent
-
-        if (cb.path("ResultCode").asInt(-1) == 0) {
-            String receipt = null;
-            BigDecimal paid = null;
-            for (JsonNode it : cb.path("CallbackMetadata").path("Item")) {
-                String n = it.path("Name").asText();
-                if (n.equals("MpesaReceiptNumber")) receipt = it.path("Value").asText();
-                if (n.equals("Amount")) paid = it.path("Value").decimalValue();
-            }
-            BigDecimal due = o.getTotal().setScale(0, RoundingMode.CEILING);
-            if (paid != null && paid.compareTo(due) < 0) {
-                log.error("Order {} underpaid: got {} expected {}. Check manually. Receipt {}", o.getId(), paid, due, receipt);
-                return ok;
-            }
-            o.setPaymentStatus("PAID");
-            o.setMpesaReceipt(receipt);
-            o.setUpdatedAt(Instant.now());
-            orders.save(o);
-            notifier.notifyAndSms(o.getBuyer(), "ORDER", "Payment received for order #" + o.getId(),
-                    "M-Pesa receipt " + receipt + ". Thank you!", o.getId());
-            Map<Long, User> owners = new LinkedHashMap<>();
-            for (OrderItem i : o.getItems()) {
-                User f = i.getProduct().getFarm().getOwner();
-                owners.putIfAbsent(f.getId(), f);
-            }
-            owners.values().forEach(f -> notifier.notifyAndSms(f, "ORDER", "Order #" + o.getId() + " is paid",
-                    "The buyer paid by M-Pesa. You can confirm the order now.", o.getId()));
-        } else {
-            o.setPaymentStatus("FAILED");
-            o.setUpdatedAt(Instant.now());
-            orders.save(o);
-        }
-        return ok;
+        CallbackLog l = new CallbackLog();
+        l.setKind("STK");
+        l.setPayload(body.toString());
+        callbackLogs.save(l);                      // keep the raw message first, whatever happens next
+        payments.onStkCallback(body);              // one transaction; if it fails Safaricom's retry will try again
+        return Map.of("ResultCode", 0, "ResultDesc", "Accepted");
     }
 
     private CustomerOrder mine(Long id, User u) {

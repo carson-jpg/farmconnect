@@ -42,7 +42,8 @@ public final class Dtos {
     public record OrderResponse(Long id, OrderStatus status, BigDecimal total, String deliveryAddress,
                                 Instant createdAt, String buyerName, String buyerPhone,
                                 List<OrderItemResponse> items, String deliveryPhone, String deliveryNote,
-                                String paymentMethod, Instant updatedAt, Long buyerId) {}
+                                String paymentMethod, Instant updatedAt, Long buyerId,
+                                String paymentStatus, String mpesaReceipt) {}
 
     // ---- admin ----
     public record ActiveRequest(boolean active) {}
