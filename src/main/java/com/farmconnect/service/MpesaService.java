@@ -30,15 +30,15 @@ import java.util.Map;
 public class MpesaService {
     private static final Logger log = LoggerFactory.getLogger(MpesaService.class);
 
-    @Value("${mpesa.env:sandbox}") private String env;
-    @Value("${mpesa.consumer-key:}") private String consumerKey;
-    @Value("${mpesa.consumer-secret:}") private String consumerSecret;
-    @Value("${mpesa.shortcode:}") private String shortcode;
-    @Value("${mpesa.party-b:}") private String partyB;
-    @Value("${mpesa.passkey:}") private String passkey;
-    @Value("${mpesa.transaction-type:CustomerPayBillOnline}") private String transactionType;
-    @Value("${mpesa.callback-url:}") private String callbackUrl;
-    @Value("${mpesa.callback-secret:}") private String callbackSecret;
+    @Value("${mpesa.env:${MPESA_ENV:sandbox}}") private String env;
+    @Value("${mpesa.consumer-key:${MPESA_CONSUMER_KEY:}}") private String consumerKey;
+    @Value("${mpesa.consumer-secret:${MPESA_CONSUMER_SECRET:}}") private String consumerSecret;
+    @Value("${mpesa.shortcode:${MPESA_SHORTCODE:}}") private String shortcode;
+    @Value("${mpesa.party-b:${MPESA_PARTYB:}}") private String partyB;
+    @Value("${mpesa.passkey:${MPESA_PASSKEY:}}") private String passkey;
+    @Value("${mpesa.transaction-type:${MPESA_TRANSACTION_TYPE:CustomerPayBillOnline}}") private String transactionType;
+    @Value("${mpesa.callback-url:${MPESA_CALLBACK_URL:}}") private String callbackUrl;
+    @Value("${mpesa.callback-secret:${MPESA_CALLBACK_SECRET:}}") private String callbackSecret;
 
     private final ObjectMapper mapper = new ObjectMapper();
     private final HttpClient http = HttpClient.newHttpClient();
@@ -54,6 +54,13 @@ public class MpesaService {
 
     private String base() {
         return "production".equalsIgnoreCase(env) ? "https://api.safaricom.co.ke" : "https://sandbox.safaricom.co.ke";
+    }
+
+    @jakarta.annotation.PostConstruct
+    void reportConfig() {
+        java.util.List<String> m = missing();
+        if (m.isEmpty()) log.info("M-Pesa: all required settings found (env={}).", env);
+        else log.warn("M-Pesa: payments are OFF. Missing settings: {}. Set them as mpesa.xxx in application.properties, or as MPESA_XXX environment variables / properties.", m);
     }
 
     private boolean configured() { return missing().isEmpty(); }
