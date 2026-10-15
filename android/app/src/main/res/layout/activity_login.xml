@@ -53,6 +53,12 @@
                     android:inputType="textPassword" android:textColor="#FFFFFF" android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <TextView android:id="@+id/tvForgot" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:layout_gravity="end"
+                android:paddingTop="10dp" android:paddingBottom="2dp" android:paddingStart="8dp"
+                android:text="@string/login_forgot" android:textColor="#FFFFFF"
+                android:textSize="13sp" android:textStyle="bold" />
+
             <ProgressBar android:id="@+id/progress" android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:layout_gravity="center_horizontal"
                 android:layout_marginTop="12dp" android:indeterminateTint="#FFFFFF" android:visibility="gone" />
@@ -62,6 +68,18 @@
                 android:layout_marginTop="24dp" android:background="@drawable/bg_btn_primary"
                 android:text="@string/t_99dea780" android:textAllCaps="false" android:textColor="#FFFFFF"
                 android:textSize="18sp" android:textStyle="bold" android:fontFamily="serif" />
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal" android:layout_marginTop="14dp"
+                android:text="@string/login_or" android:textColor="#E6FFFFFF" android:textSize="13sp" />
+
+            <androidx.appcompat.widget.AppCompatButton android:id="@+id/btnGoogle"
+                android:layout_width="match_parent" android:layout_height="56dp"
+                android:layout_marginTop="10dp" android:background="@drawable/bg_btn_google"
+                android:drawableStart="@drawable/ic_google" android:drawablePadding="12dp"
+                android:paddingStart="24dp" android:paddingEnd="24dp"
+                android:text="@string/login_google" android:textAllCaps="false" android:textColor="#1F1F1F"
+                android:textSize="16sp" android:textStyle="bold" />
 
             <TextView android:id="@+id/tvLang" android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal" android:padding="10dp" android:text="@string/t_7afda24d"

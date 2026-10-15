@@ -204,4 +204,16 @@
     <string name="t_f9aae5fd">Watumiaji</string>
     <string name="t_f9f8bd7f">Kijiji / eneo</string>
     <string name="t_fbac13ad">Huna akaunti? Jisajili</string>
+    <string name="login_forgot">Umesahau nenosiri?</string>
+    <string name="login_or">au</string>
+    <string name="login_google">Jisajili / Ingia kwa Google</string>
+    <string name="confirm_password">Thibitisha nenosiri</string>
+    <string name="fp_title">Weka upya nenosiri</string>
+    <string name="fp_sub">Weka barua pepe ya akaunti yako, tutakutumia msimbo wa tarakimu 6.</string>
+    <string name="fp_send">Tuma msimbo</string>
+    <string name="fp_code_hint">Msimbo wa tarakimu 6</string>
+    <string name="fp_new_password">Nenosiri jipya (angalau 6)</string>
+    <string name="fp_confirm_password">Thibitisha nenosiri jipya</string>
+    <string name="fp_reset">Weka upya nenosiri</string>
+    <string name="fp_back">Rudi kuingia</string>
 </resources>

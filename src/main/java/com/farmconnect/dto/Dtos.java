@@ -12,9 +12,15 @@ public final class Dtos {
     private Dtos() {}
 
     public record RegisterRequest(@NotBlank String name, @NotBlank @Email String email, String phone,
-                                  @NotBlank @Size(min = 6) String password, @NotNull Role role) {}
+                                  @NotBlank @Size(min = 6) String password, @NotNull Role role,
+                                  String confirmPassword) {}
     public record LoginRequest(@NotBlank String email, @NotBlank String password) {}
     public record AuthResponse(String token, Long id, String name, String email, Role role) {}
+    public record ForgotRequest(@NotBlank @Email String email) {}
+    public record ResetRequest(@NotBlank @Email String email, @NotBlank String code,
+                               @NotBlank @Size(min = 6) String newPassword) {}
+    /** role is only needed the first time a Google user signs in (to create the account). */
+    public record GoogleRequest(@NotBlank String idToken, Role role) {}
 
     public record FarmRequest(@NotBlank String name, String location, String description, String subCounty) {}
     public record FarmResponse(Long id, String name, String location, String description, Long ownerId,

@@ -830,3 +830,13 @@ Waiting for delivery	Inasubiri kufikishwa
 Being paid out	Inalipwa
 On hold, contact support	Imesitishwa, wasiliana na msaada
 Refunded to the buyer	Imerudishwa kwa mnunuzi
+Passwords do not match	Nenosiri hazilingani
+Enter a valid email	Weka barua pepe sahihi
+Enter the 6-digit code	Weka msimbo wa tarakimu 6
+Password min 6 characters	Nenosiri angalau herufi 6
+If that email is registered, we sent a 6-digit code.	Kama barua pepe hiyo imesajiliwa, tumetuma msimbo wa tarakimu 6.
+Resend code	Tuma msimbo tena
+Password updated. Please log in.	Nenosiri imebadilishwa. Tafadhali ingia.
+Create your account as	Fungua akaunti yako kama
+Google sign-in is not set up yet	Uingiaji kwa Google bado haujawekwa
+Google sign-in failed	Kuingia kwa Google kumeshindwa

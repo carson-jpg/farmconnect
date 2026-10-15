@@ -29,6 +29,11 @@ public class Repository {
     // auth
     public LiveData<Resource<AuthResponse>> login(String e, String p) { return run(api().login(new LoginRequest(e, p))); }
     public LiveData<Resource<AuthResponse>> register(RegisterRequest r) { return run(api().register(r)); }
+    public LiveData<Resource<AuthResponse>> google(String idToken, String role) { return run(api().google(new GoogleRequest(idToken, role))); }
+    public LiveData<Resource<MessageResponse>> forgotPassword(String email) { return run(api().forgotPassword(new ForgotRequest(email))); }
+    public LiveData<Resource<MessageResponse>> resetPassword(String email, String code, String newPassword) {
+        return run(api().resetPassword(new ResetRequest(email, code, newPassword)));
+    }
     // farms
     public LiveData<Resource<List<Farm>>> myFarms() { return run(api().myFarms()); }
     public LiveData<Resource<Farm>> createFarm(FarmRequest r) { return run(api().createFarm(r)); }

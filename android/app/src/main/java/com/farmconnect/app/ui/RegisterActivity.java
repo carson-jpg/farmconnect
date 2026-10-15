@@ -22,9 +22,14 @@ public class RegisterActivity extends AppCompatActivity {
             String email = b.etEmail.getText().toString().trim();
             String phone = b.etPhone.getText().toString().trim();
             String pass = b.etPassword.getText().toString();
+            String confirm = b.etConfirm.getText().toString();
             String role = b.rbFarmer.isChecked() ? "FARMER" : "BUYER";
             if (name.isEmpty() || email.isEmpty() || pass.length() < 6) {
                 Ui.toast(this, I18n.t("Fill all fields (password min 6 characters)"));
+                return;
+            }
+            if (!pass.equals(confirm)) {
+                Ui.toast(this, I18n.t("Passwords do not match"));
                 return;
             }
             Ui.watch(this, vm.register(name, email, phone, pass, role), b.progress, r -> {

@@ -11,6 +11,9 @@ import retrofit2.http.*;
 public interface ApiService {
     @POST("api/auth/register") Call<AuthResponse> register(@Body RegisterRequest r);
     @POST("api/auth/login") Call<AuthResponse> login(@Body LoginRequest r);
+    @POST("api/auth/google") Call<AuthResponse> google(@Body GoogleRequest r);
+    @POST("api/auth/forgot-password") Call<MessageResponse> forgotPassword(@Body ForgotRequest r);
+    @POST("api/auth/reset-password") Call<MessageResponse> resetPassword(@Body ResetRequest r);
 
     @GET("api/farms/mine") Call<List<Farm>> myFarms();
     @POST("api/farms") Call<Farm> createFarm(@Body FarmRequest r);

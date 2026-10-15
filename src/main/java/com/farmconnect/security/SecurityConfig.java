@@ -25,7 +25,8 @@ public class SecurityConfig {
         http.csrf(c -> c.disable())
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(a -> a
-                .requestMatchers("/api/auth/register", "/api/auth/login", "/h2-console/**").permitAll()
+                .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/google",
+                                 "/api/auth/forgot-password", "/api/auth/reset-password", "/h2-console/**").permitAll()
                 // IMPORTANT: Spring forwards every 4xx/5xx to /error. If /error needs a login, a normal
                 // "400 Please provide..." or "409 ..." gets turned into 401 and the app says "login again".
                 .requestMatchers("/error").permitAll()

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "318658309181",
+    "project_id": "farmconnect-43889",
+    "storage_bucket": "farmconnect-43889.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:318658309181:android:411df0bc16fc2af0150e54",
+        "android_client_info": {
+          "package_name": "com.farmconnect.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "318658309181-petebbec4hf2aknkfb2c4im18u4hkpkl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.farmconnect.app",
+            "certificate_hash": "6f6c9f65ef6ecc230574a8ff11966412798975b9"
+          }
+        },
+        {
+          "client_id": "318658309181-ckthmgn0l9okfltvueo10423vf9keh5c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1LMZ0XC2E8KE06dIz76kV3La1Smkf3wE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "318658309181-ckthmgn0l9okfltvueo10423vf9keh5c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

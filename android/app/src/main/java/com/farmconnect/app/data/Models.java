@@ -5,10 +5,27 @@ import java.util.List;
 public class Models {
     public static class AuthResponse { public String token; public long id; public String name, email, role; }
     public static class RegisterRequest {
-        public String name, email, phone, password, role;
+        public String name, email, phone, password, role, confirmPassword;
         public RegisterRequest(String name, String email, String phone, String password, String role) {
             this.name = name; this.email = email; this.phone = phone; this.password = password; this.role = role;
+            this.confirmPassword = password;
         }
+    }
+    public static class MessageResponse { public String message; }
+    public static class ForgotRequest {
+        public String email;
+        public ForgotRequest(String email) { this.email = email; }
+    }
+    public static class ResetRequest {
+        public String email, code, newPassword;
+        public ResetRequest(String email, String code, String newPassword) {
+            this.email = email; this.code = code; this.newPassword = newPassword;
+        }
+    }
+    /** role is null on a returning user; set (FARMER/BUYER) only when creating a brand-new Google account. */
+    public static class GoogleRequest {
+        public String idToken, role;
+        public GoogleRequest(String idToken, String role) { this.idToken = idToken; this.role = role; }
     }
     public static class LoginRequest {
         public String email, password;

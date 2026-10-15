@@ -203,4 +203,18 @@
     <string name="t_f9aae5fd">Users</string>
     <string name="t_f9f8bd7f">Village / location</string>
     <string name="t_fbac13ad">Don\'t have an account? Sign up</string>
+    <string name="login_forgot">Forgot password?</string>
+    <string name="login_or">or</string>
+    <string name="login_google">Sign up / Log in with Google</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="fp_title">Reset password</string>
+    <string name="fp_sub">Enter your account email and we will send you a 6-digit code.</string>
+    <string name="fp_send">Send code</string>
+    <string name="fp_code_hint">6-digit code</string>
+    <string name="fp_new_password">New password (min 6)</string>
+    <string name="fp_confirm_password">Confirm new password</string>
+    <string name="fp_reset">Reset password</string>
+    <string name="fp_back">Back to login</string>
+    <!-- Paste your OAuth 2.0 *Web application* client ID here (Google Cloud Console > APIs & Services > Credentials) -->
+    <string name="google_web_client_id" translatable="false">318658309181-petebbec4hf2aknkfb2c4im18u4hkpkl.apps.googleusercontent.com</string>
 </resources>
