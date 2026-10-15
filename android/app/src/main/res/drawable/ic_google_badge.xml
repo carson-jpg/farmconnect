@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Google "G" on a white disc so the brand colours stay legible on the green button -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="#FFFFFF" />
+            <size android:width="34dp" android:height="34dp" />
+        </shape>
+    </item>
+    <item android:drawable="@drawable/ic_google"
+        android:left="6dp" android:top="6dp" android:right="6dp" android:bottom="6dp" />
+</layer-list>

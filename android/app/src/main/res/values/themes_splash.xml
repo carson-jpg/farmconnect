@@ -1,0 +1,8 @@
+<resources>
+    <!-- Launch theme for LoginActivity: shows the logo on green, then switches to Theme.FarmConnect.Auth -->
+    <style name="Theme.FarmConnect.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/ic_launcher_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash</item>
+        <item name="postSplashScreenTheme">@style/Theme.FarmConnect.Auth</item>
+    </style>
+</resources>

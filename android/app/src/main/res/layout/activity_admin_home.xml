@@ -8,7 +8,10 @@
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
         android:background="@drawable/bg_dash_header" android:gravity="center_vertical" android:orientation="horizontal"
         android:paddingBottom="60dp" android:paddingEnd="16dp" android:paddingStart="16dp" android:paddingTop="20dp">
-        
+        <ImageView android:layout_width="46dp" android:layout_height="46dp"
+            android:layout_marginEnd="12dp" android:background="@drawable/bg_logo_badge"
+            android:contentDescription="@string/app_name" android:padding="6dp"
+            android:src="@drawable/fc_logo_mark" />
         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
             android:orientation="vertical">
             <TextView android:id="@+id/tvTitle" android:layout_width="wrap_content" android:layout_height="wrap_content"

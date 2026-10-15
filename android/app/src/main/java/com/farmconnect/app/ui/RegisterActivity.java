@@ -37,6 +37,11 @@ public class RegisterActivity extends AppCompatActivity {
                 Ui.home(this);
             });
         });
+
+        // Sign up with Google: uses the Buyer/Farmer choice made above for a new account
+        GoogleAuth googleAuth = new GoogleAuth(this, vm, b.progress);
+        b.btnGoogle.setOnClickListener(v -> googleAuth.start(b.rbFarmer.isChecked() ? "FARMER" : "BUYER"));
+
         b.tvLogin.setOnClickListener(v -> finish());
     }
 }

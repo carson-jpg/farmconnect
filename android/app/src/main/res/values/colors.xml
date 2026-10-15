@@ -8,4 +8,5 @@
     <color name="fc_card">#FFFFFF</color>
     <color name="fc_warn_bg">#FFF4D6</color>
     <color name="fc_danger">#C62828</color>
+    <color name="ic_launcher_background">#0B6B35</color>
 </resources>

@@ -207,6 +207,9 @@
     <string name="login_forgot">Umesahau nenosiri?</string>
     <string name="login_or">au</string>
     <string name="login_google">Jisajili / Ingia kwa Google</string>
+    <string name="role_pick_sub">Chagua jinsi utakavyotumia FarmConnect</string>
+    <string name="role_buyer_sub">Nunua mazao mapya moja kwa moja kutoka kwa wakulima</string>
+    <string name="role_farmer_sub">Uza mazao yako moja kwa moja kwa wanunuzi</string>
     <string name="confirm_password">Thibitisha nenosiri</string>
     <string name="fp_title">Weka upya nenosiri</string>
     <string name="fp_sub">Weka barua pepe ya akaunti yako, tutakutumia msimbo wa tarakimu 6.</string>
