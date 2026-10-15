@@ -216,5 +216,5 @@
     <string name="fp_reset">Reset password</string>
     <string name="fp_back">Back to login</string>
     <!-- Paste your OAuth 2.0 *Web application* client ID here (Google Cloud Console > APIs & Services > Credentials) -->
-    <string name="google_web_client_id" translatable="false">318658309181-petebbec4hf2aknkfb2c4im18u4hkpkl.apps.googleusercontent.com</string>
+    <string name="google_web_client_id" translatable="false">318658309181-ckthmgn0l9okfltvueo10423vf9keh5c.apps.googleusercontent.com</string>
 </resources>
