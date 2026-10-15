@@ -117,6 +117,15 @@ public class Ui {
         tv.setBackgroundTintList(ColorStateList.valueOf(verificationColor(status)));
     }
 
+    /** Soft status pill: tinted background with colored text (used on the officer dashboard). */
+    public static void styleVerificationSoft(TextView tv, String status) {
+        int c = verificationColor(status);
+        tv.setText(I18n.t(verificationLabel(status)));
+        tv.setTextColor(c);
+        tv.setBackgroundResource(R.drawable.bg_pill_soft);
+        tv.setBackgroundTintList(ColorStateList.valueOf((c & 0x00FFFFFF) | 0x24000000));
+    }
+
     public static void home(Activity a) {
         String role = Session.role();
         Class<?> target;

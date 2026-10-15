@@ -56,7 +56,7 @@
         <activity android:name=".ui.VerificationActivity" android:theme="@style/Theme.FarmConnect.Farmer"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".ui.ReviewerHomeActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
-        <activity android:name=".ui.ReviewDetailActivity" android:theme="@style/Theme.FarmConnect.Farmer" />
+        <activity android:name=".ui.ReviewDetailActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <service android:name=".push.FarmMessagingService" android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

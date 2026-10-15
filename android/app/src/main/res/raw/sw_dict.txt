@@ -840,3 +840,4 @@ Password updated. Please log in.	Nenosiri imebadilishwa. Tafadhali ingia.
 Create your account as	Fungua akaunti yako kama
 Google sign-in is not set up yet	Uingiaji kwa Google bado haujawekwa
 Google sign-in failed	Kuingia kwa Google kumeshindwa
+Officer	Afisa

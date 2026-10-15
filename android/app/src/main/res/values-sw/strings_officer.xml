@@ -1,0 +1,34 @@
+<resources>
+    <string name="off_welcome">Karibu tena</string>
+    <string name="off_quick_tools">Zana za haraka</string>
+    <string name="off_applications">Maombi ya wakulima</string>
+    <string name="off_empty_sub">Hakuna maombi kwenye orodha hii kwa sasa.</string>
+    <string name="off_stat_total">zinasubiri ukaguzi wako</string>
+    <string name="off_all_clear">Umemaliza yote</string>
+    <string name="off_review_title">Kagua ombi</string>
+    <string name="off_sec_identity">Utambulisho na mawasiliano</string>
+    <string name="off_sec_location">Mahali</string>
+    <string name="off_sec_farm">Maelezo ya shamba</string>
+    <string name="off_sec_review">Matokeo ya ukaguzi</string>
+    <string name="off_sec_docs">Nyaraka</string>
+    <string name="off_docs_hint">Gusa picha ili kuikuza. Hakikisha jina na nambari ya kitambulisho vinalingana.</string>
+    <string name="off_lbl_national_id">Kitambulisho cha Taifa</string>
+    <string name="off_lbl_phone">Simu</string>
+    <string name="off_lbl_account">Akaunti</string>
+    <string name="off_lbl_county">Kaunti</string>
+    <string name="off_lbl_subcounty">Kaunti ndogo</string>
+    <string name="off_lbl_ward">Wadi</string>
+    <string name="off_lbl_village">Kijiji</string>
+    <string name="off_lbl_gps">GPS ya shamba</string>
+    <string name="off_lbl_farming_type">Aina ya kilimo</string>
+    <string name="off_lbl_produce">Zao kuu</string>
+    <string name="off_lbl_size">Ukubwa wa shamba</string>
+    <string name="off_lbl_reviewer">Imekaguliwa na</string>
+    <string name="off_lbl_reason">Sababu ya kukataliwa</string>
+    <string name="off_otp_ok">✓ OTP imethibitishwa</string>
+    <string name="off_otp_no">Haijathibitishwa</string>
+    <string name="off_back">Rudi</string>
+    <string name="off_btn_approve">Idhinisha mkulima</string>
+    <string name="off_not_uploaded_hint">Haijapakiwa</string>
+    <string name="off_submitted">Imewasilishwa</string>
+</resources>

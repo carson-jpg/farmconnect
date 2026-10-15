@@ -1,64 +1,224 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent" android:layout_height="match_parent"
-    android:background="@color/fc_bg" android:orientation="vertical">
+    android:background="@color/fc_bg">
 
-    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:background="@drawable/bg_dash_header" android:gravity="center_vertical"
-        android:orientation="horizontal" android:paddingBottom="26dp" android:paddingStart="20dp"
-        android:paddingEnd="20dp" android:paddingTop="22dp">
-        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
-            android:layout_weight="1" android:orientation="vertical">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="@string/t_596e8613" android:textColor="#CFE8B5" android:textSize="14sp" />
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:fontFamily="serif" android:text="@string/t_69112bd0" android:textColor="#FFFFFF"
-                android:textSize="24sp" android:textStyle="bold" />
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="@string/t_02121ebd"
-                android:textColor="#E6FFFFFF" android:textSize="12sp" />
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:background="@color/fc_bg" android:stateListAnimator="@null"
+        app:elevation="0dp" app:liftOnScroll="false">
+
+        <!-- Scrolls away: header, stat tiles, quick tools -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:background="@drawable/bg_dash_header" android:orientation="vertical"
+                android:paddingBottom="64dp" android:paddingEnd="20dp" android:paddingStart="20dp"
+                android:paddingTop="22dp">
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:gravity="center_vertical" android:orientation="horizontal">
+                    <ImageView android:layout_width="52dp" android:layout_height="52dp"
+                        android:background="@drawable/bg_avatar_header" android:contentDescription="@string/off_welcome"
+                        android:padding="13dp" android:src="@drawable/ic_shield" android:tint="#FFFFFF" />
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_marginStart="14dp" android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="@string/off_welcome" android:textColor="#CFE8B5" android:textSize="13sp" />
+                        <TextView android:id="@+id/tvOfficerName" android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:ellipsize="end" android:fontFamily="serif"
+                            android:maxLines="1" android:textColor="#FFFFFF" android:textSize="22sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                    <ImageButton android:id="@+id/btnLogout" android:layout_width="44dp" android:layout_height="44dp"
+                        android:background="@drawable/bg_icon_glass" android:contentDescription="@string/t_4394c8d8"
+                        android:padding="11dp" android:src="@drawable/ic_logout" android:tint="#FFFFFF" />
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp" android:background="@drawable/bg_pill_header"
+                    android:gravity="center_vertical" android:orientation="horizontal"
+                    android:paddingBottom="6dp" android:paddingEnd="12dp" android:paddingStart="10dp"
+                    android:paddingTop="6dp">
+                    <ImageView android:layout_width="16dp" android:layout_height="16dp"
+                        android:importantForAccessibility="no" android:src="@drawable/ic_verified"
+                        android:tint="#CFE8B5" />
+                    <TextView android:id="@+id/tvRoleBadge" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:layout_marginStart="6dp"
+                        android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" />
+                </LinearLayout>
+
+                <TextView android:id="@+id/tvAttention" android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:layout_marginTop="12dp"
+                    android:textColor="#E6FFFFFF" android:textSize="13sp" />
+            </LinearLayout>
+
+            <!-- Stat tiles overlap the header; tap one to filter the list -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="-46dp" android:orientation="horizontal"
+                android:paddingEnd="10dp" android:paddingStart="10dp">
+
+                <com.google.android.material.card.MaterialCardView android:id="@+id/cardPending"
+                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_margin="4dp"
+                    android:layout_weight="1" android:clickable="true" android:focusable="true"
+                    app:cardBackgroundColor="@color/fc_card" app:cardCornerRadius="18dp" app:cardElevation="3dp"
+                    app:strokeWidth="0dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="vertical" android:padding="12dp">
+                        <View android:layout_width="22dp" android:layout_height="4dp"
+                            android:background="@drawable/bg_pill_soft" android:backgroundTint="#F9A825" />
+                        <TextView android:id="@+id/tvCountPending" android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:layout_marginTop="10dp"
+                            android:fontFamily="serif" android:text="0" android:textColor="@color/fc_text"
+                            android:textSize="24sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:ellipsize="end" android:maxLines="1" android:text="@string/t_2d13df6f"
+                            android:textColor="@color/fc_muted" android:textSize="11sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView android:id="@+id/cardReview"
+                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_margin="4dp"
+                    android:layout_weight="1" android:clickable="true" android:focusable="true"
+                    app:cardBackgroundColor="@color/fc_card" app:cardCornerRadius="18dp" app:cardElevation="3dp"
+                    app:strokeWidth="0dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="vertical" android:padding="12dp">
+                        <View android:layout_width="22dp" android:layout_height="4dp"
+                            android:background="@drawable/bg_pill_soft" android:backgroundTint="#8E24AA" />
+                        <TextView android:id="@+id/tvCountReview" android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:layout_marginTop="10dp"
+                            android:fontFamily="serif" android:text="0" android:textColor="@color/fc_text"
+                            android:textSize="24sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:ellipsize="end" android:maxLines="1" android:text="@string/t_1321a344"
+                            android:textColor="@color/fc_muted" android:textSize="11sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView android:id="@+id/cardVerified"
+                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_margin="4dp"
+                    android:layout_weight="1" android:clickable="true" android:focusable="true"
+                    app:cardBackgroundColor="@color/fc_card" app:cardCornerRadius="18dp" app:cardElevation="3dp"
+                    app:strokeWidth="0dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="vertical" android:padding="12dp">
+                        <View android:layout_width="22dp" android:layout_height="4dp"
+                            android:background="@drawable/bg_pill_soft" android:backgroundTint="#2E7D32" />
+                        <TextView android:id="@+id/tvCountVerified" android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:layout_marginTop="10dp"
+                            android:fontFamily="serif" android:text="0" android:textColor="@color/fc_text"
+                            android:textSize="24sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:ellipsize="end" android:maxLines="1" android:text="@string/t_3f68e67d"
+                            android:textColor="@color/fc_muted" android:textSize="11sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView android:id="@+id/cardRejected"
+                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_margin="4dp"
+                    android:layout_weight="1" android:clickable="true" android:focusable="true"
+                    app:cardBackgroundColor="@color/fc_card" app:cardCornerRadius="18dp" app:cardElevation="3dp"
+                    app:strokeWidth="0dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="vertical" android:padding="12dp">
+                        <View android:layout_width="22dp" android:layout_height="4dp"
+                            android:background="@drawable/bg_pill_soft" android:backgroundTint="#C62828" />
+                        <TextView android:id="@+id/tvCountRejected" android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:layout_marginTop="10dp"
+                            android:fontFamily="serif" android:text="0" android:textColor="@color/fc_text"
+                            android:textSize="24sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:ellipsize="end" android:maxLines="1" android:text="@string/t_d37b1f6c"
+                            android:textColor="@color/fc_muted" android:textSize="11sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- Quick tools -->
+            <com.google.android.material.card.MaterialCardView android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_marginEnd="14dp" android:layout_marginStart="14dp"
+                android:layout_marginTop="10dp" app:cardBackgroundColor="@color/fc_card"
+                app:cardCornerRadius="22dp" app:cardElevation="2dp" app:strokeWidth="0dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:paddingBottom="10dp" android:paddingTop="14dp">
+                    <TextView style="@style/FcSectionTitle" android:layout_marginBottom="8dp"
+                        android:layout_marginStart="16dp" android:text="@string/off_quick_tools" />
+                    <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:clipToPadding="false" android:paddingEnd="10dp" android:paddingStart="10dp"
+                        android:scrollbars="none">
+                        <LinearLayout android:id="@+id/hubContainer" android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:orientation="horizontal" />
+                    </HorizontalScrollView>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
-        <ImageButton android:id="@+id/btnLogout" android:layout_width="44dp" android:layout_height="44dp"
-            android:background="@drawable/bg_icon_glass" android:contentDescription="@string/t_4394c8d8"
-            android:padding="11dp" android:src="@drawable/ic_logout" android:tint="#FFFFFF" />
-    </LinearLayout>
 
+        <!-- Stays pinned while the list scrolls: section title + filters -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:background="@color/fc_bg" android:orientation="vertical">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:gravity="center_vertical" android:orientation="horizontal"
+                android:paddingEnd="20dp" android:paddingStart="20dp" android:paddingTop="16dp">
+                <TextView style="@style/FcSectionTitle" android:layout_width="0dp" android:layout_weight="1"
+                    android:text="@string/off_applications" />
+                <TextView android:id="@+id/tvListCount" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:background="@drawable/bg_pill_soft"
+                    android:backgroundTint="#E3F1E0" android:paddingBottom="3dp" android:paddingEnd="10dp"
+                    android:paddingStart="10dp" android:paddingTop="3dp" android:textColor="#1B5E20"
+                    android:textSize="12sp" android:textStyle="bold" android:visibility="gone" />
+            </LinearLayout>
+            <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:scrollbars="none">
+                <com.google.android.material.chip.ChipGroup android:id="@+id/chipGroup"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:paddingBottom="8dp" android:paddingEnd="16dp" android:paddingStart="16dp"
+                    android:paddingTop="10dp" app:chipSpacingHorizontal="8dp" app:selectionRequired="true"
+                    app:singleLine="true" app:singleSelection="true">
+                    <com.google.android.material.chip.Chip android:id="@+id/chipPending"
+                        style="@style/Widget.FarmConnect.FilterChip" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:checked="true" android:tag="PENDING"
+                        android:text="@string/t_2d13df6f" />
+                    <com.google.android.material.chip.Chip android:id="@+id/chipReview"
+                        style="@style/Widget.FarmConnect.FilterChip" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:tag="UNDER_REVIEW"
+                        android:text="@string/t_1321a344" />
+                    <com.google.android.material.chip.Chip android:id="@+id/chipVerified"
+                        style="@style/Widget.FarmConnect.FilterChip" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:tag="VERIFIED"
+                        android:text="@string/t_3f68e67d" />
+                    <com.google.android.material.chip.Chip android:id="@+id/chipRejected"
+                        style="@style/Widget.FarmConnect.FilterChip" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:tag="REJECTED"
+                        android:text="@string/t_d37b1f6c" />
+                </com.google.android.material.chip.ChipGroup>
+            </HorizontalScrollView>
+            <ProgressBar android:id="@+id/progress" style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent" android:layout_height="3dp"
+                android:indeterminate="true" android:indeterminateTint="#2E7D32" android:visibility="invisible" />
+        </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:clipToPadding="false" android:paddingEnd="12dp" android:paddingStart="12dp" android:paddingTop="12dp"
-        android:scrollbars="none">
-        <LinearLayout android:id="@+id/hubContainer" android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:orientation="horizontal" />
-    </HorizontalScrollView>
-    <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:scrollbars="none">
-        <com.google.android.material.chip.ChipGroup android:id="@+id/chipGroup"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:paddingStart="12dp" android:paddingEnd="12dp" android:paddingTop="8dp"
-            app:selectionRequired="true" app:singleLine="true" app:singleSelection="true">
-            <com.google.android.material.chip.Chip android:id="@+id/chipPending"
-                style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:checked="true" android:tag="PENDING" android:text="@string/t_2d13df6f" />
-            <com.google.android.material.chip.Chip android:id="@+id/chipReview"
-                style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:tag="UNDER_REVIEW" android:text="@string/t_1321a344" />
-            <com.google.android.material.chip.Chip android:id="@+id/chipVerified"
-                style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:tag="VERIFIED" android:text="@string/t_3f68e67d" />
-            <com.google.android.material.chip.Chip android:id="@+id/chipRejected"
-                style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:tag="REJECTED" android:text="@string/t_d37b1f6c" />
-        </com.google.android.material.chip.ChipGroup>
-    </HorizontalScrollView>
-
-    <ProgressBar android:id="@+id/progress" android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal" android:visibility="gone" />
-    <TextView android:id="@+id/tvEmpty" android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal" android:padding="32dp" android:text="@string/t_c658b02e"
-        android:textColor="@color/fc_muted" android:visibility="gone" />
-    <androidx.recyclerview.widget.RecyclerView android:id="@+id/rv" android:layout_width="match_parent"
-        android:layout_height="0dp" android:layout_weight="1" android:clipToPadding="false"
-        android:paddingBottom="24dp" android:paddingStart="6dp" android:paddingEnd="6dp" />
-</LinearLayout>
+    <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <androidx.recyclerview.widget.RecyclerView android:id="@+id/rv" android:layout_width="match_parent"
+            android:layout_height="match_parent" android:clipToPadding="false" android:paddingBottom="28dp"
+            android:paddingEnd="8dp" android:paddingStart="8dp" android:paddingTop="4dp" />
+        <LinearLayout android:id="@+id/emptyState" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:layout_gravity="center" android:gravity="center_horizontal"
+            android:orientation="vertical" android:padding="32dp" android:visibility="gone">
+            <ImageView android:layout_width="84dp" android:layout_height="84dp"
+                android:background="@drawable/bg_avatar" android:importantForAccessibility="no"
+                android:padding="22dp" android:src="@drawable/ic_inbox" android:tint="#2E7D32" />
+            <TextView android:id="@+id/tvEmpty" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:layout_marginTop="16dp" android:fontFamily="serif"
+                android:text="@string/t_c658b02e" android:textColor="@color/fc_text" android:textSize="18sp"
+                android:textStyle="bold" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginTop="4dp" android:gravity="center" android:text="@string/off_empty_sub"
+                android:textColor="@color/fc_muted" android:textSize="13sp" />
+        </LinearLayout>
+    </FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

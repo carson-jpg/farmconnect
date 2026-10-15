@@ -3,6 +3,7 @@ package com.farmconnect.app.ui;
 import com.farmconnect.app.util.I18n;
 
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
 import com.farmconnect.app.data.Models.ReviewSummary;
@@ -32,10 +33,16 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.VH> {
 
     @Override public void onBindViewHolder(VH h, int pos) {
         ReviewSummary r = items.get(pos);
-        h.b.tvName.setText(r.fullName == null || r.fullName.isEmpty() ? I18n.t("(no name)") : r.fullName);
-        h.b.tvLoc.setText((r.subCounty == null ? "" : r.subCounty) + (r.ward == null || r.ward.isEmpty() ? "" : " · " + r.ward));
+        boolean named = r.fullName != null && !r.fullName.isEmpty();
+        h.b.tvName.setText(named ? r.fullName : I18n.t("(no name)"));
+        h.b.tvInitial.setText(Ui.initial(named ? r.fullName : null));
+        String loc = (r.subCounty == null ? "" : r.subCounty) + (r.ward == null || r.ward.isEmpty() ? "" : " · " + r.ward);
+        h.b.tvLoc.setText(loc);
+        h.b.rowLoc.setVisibility(loc.isEmpty() ? View.GONE : View.VISIBLE);
         h.b.tvDate.setText(r.submittedAt == null ? "" : I18n.t("Submitted ") + Ui.dateTime(r.submittedAt));
-        Ui.styleVerification(h.b.tvStatus, r.status);
+        h.b.rowDate.setVisibility(r.submittedAt == null ? View.GONE : View.VISIBLE);
+        Ui.styleVerificationSoft(h.b.tvStatus, r.status);
+        h.b.vAccent.setBackgroundColor(Ui.verificationColor(r.status));
         h.b.getRoot().setOnClickListener(v -> listener.onOpen(r));
     }
 

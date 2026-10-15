@@ -1,0 +1,1507 @@
+diff --git a/android/app/src/main/AndroidManifest.xml b/android/app/src/main/AndroidManifest.xml
+index 83202bf..03fd4dd 100644
+--- a/android/app/src/main/AndroidManifest.xml
++++ b/android/app/src/main/AndroidManifest.xml
+@@ -56,7 +56,7 @@
+         <activity android:name=".ui.VerificationActivity" android:theme="@style/Theme.FarmConnect.Farmer"
+             android:windowSoftInputMode="adjustResize" />
+         <activity android:name=".ui.ReviewerHomeActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+-        <activity android:name=".ui.ReviewDetailActivity" android:theme="@style/Theme.FarmConnect.Farmer" />
++        <activity android:name=".ui.ReviewDetailActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+         <service android:name=".push.FarmMessagingService" android:exported="false">
+             <intent-filter>
+                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
+diff --git a/android/app/src/main/java/com/farmconnect/app/ui/ReviewAdapter.java b/android/app/src/main/java/com/farmconnect/app/ui/ReviewAdapter.java
+index 6018acb..cefaacd 100644
+--- a/android/app/src/main/java/com/farmconnect/app/ui/ReviewAdapter.java
++++ b/android/app/src/main/java/com/farmconnect/app/ui/ReviewAdapter.java
+@@ -3,6 +3,7 @@ package com.farmconnect.app.ui;
+ import com.farmconnect.app.util.I18n;
+ 
+ import android.view.LayoutInflater;
++import android.view.View;
+ import android.view.ViewGroup;
+ import androidx.recyclerview.widget.RecyclerView;
+ import com.farmconnect.app.data.Models.ReviewSummary;
+@@ -32,10 +33,16 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.VH> {
+ 
+     @Override public void onBindViewHolder(VH h, int pos) {
+         ReviewSummary r = items.get(pos);
+-        h.b.tvName.setText(r.fullName == null || r.fullName.isEmpty() ? I18n.t("(no name)") : r.fullName);
+-        h.b.tvLoc.setText((r.subCounty == null ? "" : r.subCounty) + (r.ward == null || r.ward.isEmpty() ? "" : " · " + r.ward));
++        boolean named = r.fullName != null && !r.fullName.isEmpty();
++        h.b.tvName.setText(named ? r.fullName : I18n.t("(no name)"));
++        h.b.tvInitial.setText(Ui.initial(named ? r.fullName : null));
++        String loc = (r.subCounty == null ? "" : r.subCounty) + (r.ward == null || r.ward.isEmpty() ? "" : " · " + r.ward);
++        h.b.tvLoc.setText(loc);
++        h.b.rowLoc.setVisibility(loc.isEmpty() ? View.GONE : View.VISIBLE);
+         h.b.tvDate.setText(r.submittedAt == null ? "" : I18n.t("Submitted ") + Ui.dateTime(r.submittedAt));
+-        Ui.styleVerification(h.b.tvStatus, r.status);
++        h.b.rowDate.setVisibility(r.submittedAt == null ? View.GONE : View.VISIBLE);
++        Ui.styleVerificationSoft(h.b.tvStatus, r.status);
++        h.b.vAccent.setBackgroundColor(Ui.verificationColor(r.status));
+         h.b.getRoot().setOnClickListener(v -> listener.onOpen(r));
+     }
+ 
+diff --git a/android/app/src/main/java/com/farmconnect/app/ui/ReviewDetailActivity.java b/android/app/src/main/java/com/farmconnect/app/ui/ReviewDetailActivity.java
+index 0fa9ab4..18f9959 100644
+--- a/android/app/src/main/java/com/farmconnect/app/ui/ReviewDetailActivity.java
++++ b/android/app/src/main/java/com/farmconnect/app/ui/ReviewDetailActivity.java
+@@ -2,19 +2,31 @@ package com.farmconnect.app.ui;
+ 
+ import com.farmconnect.app.util.I18n;
+ 
++import android.app.Dialog;
+ import android.content.ActivityNotFoundException;
+ import android.content.Intent;
++import android.content.res.ColorStateList;
++import android.graphics.drawable.Drawable;
+ import android.net.Uri;
+ import android.os.Bundle;
++import android.view.Gravity;
++import android.view.GestureDetector;
++import android.view.MotionEvent;
++import android.view.ScaleGestureDetector;
+ import android.view.View;
++import android.view.ViewGroup;
+ import android.widget.EditText;
+-import androidx.appcompat.app.AlertDialog;
++import android.widget.FrameLayout;
++import android.widget.ImageView;
++import android.widget.TextView;
+ import androidx.appcompat.app.AppCompatActivity;
+ import androidx.lifecycle.ViewModelProvider;
++import com.farmconnect.app.R;
+ import com.farmconnect.app.data.Models.ReviewDetail;
+ import com.farmconnect.app.databinding.ActivityReviewDetailBinding;
+ import com.farmconnect.app.util.Ui;
+ import com.farmconnect.app.vm.ReviewViewModel;
++import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+ import java.util.Locale;
+ 
+ /** Reviewer checks the farmer's details and photos, then starts review / approves / rejects. */
+@@ -27,13 +39,12 @@ public class ReviewDetailActivity extends AppCompatActivity {
+ 
+     @Override protected void onCreate(Bundle s) {
+         super.onCreate(s);
+-        setTitle(I18n.t("Review farmer"));
+-        if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+         b = ActivityReviewDetailBinding.inflate(getLayoutInflater());
+         setContentView(b.getRoot());
+         vm = new ViewModelProvider(this).get(ReviewViewModel.class);
+         id = getIntent().getLongExtra("id", -1);
+ 
++        b.btnBack.setOnClickListener(v -> finish());
+         b.btnStart.setOnClickListener(v ->
+                 Ui.watch(this, vm.start(id), b.progress, d -> {
+                     Ui.toast(this, I18n.t("Review started"));
+@@ -43,6 +54,11 @@ public class ReviewDetailActivity extends AppCompatActivity {
+         b.btnReject.setOnClickListener(v -> askReject());
+         b.btnMap.setOnClickListener(v -> openMap());
+ 
++        // Tap any document photo to open it full screen.
++        for (ImageView iv : new ImageView[]{b.ivIdFront, b.ivIdBack, b.ivSelfie, b.ivProof}) {
++            iv.setOnClickListener(v -> showImage((ImageView) v));
++        }
++
+         Ui.watch(this, vm.detail(id), b.progress, this::bind);
+     }
+ 
+@@ -52,25 +68,50 @@ public class ReviewDetailActivity extends AppCompatActivity {
+ 
+     private void bind(ReviewDetail d) {
+         current = d;
++        b.tvInitial.setText(Ui.initial(d.fullName));
+         b.tvFullName.setText(v(d.fullName));
++        b.tvSubmitted.setText(d.submittedAt == null ? "" : getString(R.string.off_submitted) + " " + Ui.dateTime(d.submittedAt));
+         Ui.styleVerification(b.tvStatus, d.status);
+-        b.tvNationalId.setText(I18n.t("National ID: ") + v(d.nationalId));
+-        b.tvPhone.setText(I18n.t("Phone: ") + v(d.phone) + (d.phoneVerified ? I18n.t("  ✓ OTP verified") : I18n.t("  (not verified)")));
+-        b.tvAccount.setText(I18n.t("Account: ") + v(d.accountName) + " · " + v(d.accountEmail));
+-        b.tvLocation.setText(v(d.county) + I18n.t(" County · ") + v(d.subCounty) + I18n.t(" · Ward: ") + v(d.ward) + I18n.t(" · Village: ") + v(d.village));
++
++        b.tvNationalId.setText(v(d.nationalId));
++        b.tvPhone.setText(v(d.phone));
++        int pc = d.phoneVerified ? 0xFF2E7D32 : 0xFFF9A825;
++        b.tvPhoneStatus.setText(d.phoneVerified ? R.string.off_otp_ok : R.string.off_otp_no);
++        b.tvPhoneStatus.setTextColor(d.phoneVerified ? pc : 0xFFB26A00);
++        b.tvPhoneStatus.setBackgroundTintList(ColorStateList.valueOf((pc & 0x00FFFFFF) | 0x26000000));
++        b.tvAccount.setText(v(d.accountName));
++        b.tvAccountEmail.setText(v(d.accountEmail));
++
++        b.tvCounty.setText(v(d.county));
++        b.tvSubCounty.setText(v(d.subCounty));
++        b.tvWard.setText(v(d.ward));
++        b.tvVillage.setText(v(d.village));
+         boolean hasGps = d.farmLat != null && d.farmLng != null;
+-        b.tvGps.setText(hasGps ? String.format(Locale.US, I18n.t("Farm GPS: %.6f, %.6f"), d.farmLat, d.farmLng) : I18n.t("Farm GPS: -"));
++        b.tvGps.setText(hasGps ? String.format(Locale.US, "%.6f, %.6f", d.farmLat, d.farmLng) : "-");
+         b.btnMap.setVisibility(hasGps ? View.VISIBLE : View.GONE);
+-        b.tvFarm.setText(I18n.t("Farming: ") + v(d.farmingType) + " · " + v(d.mainProduce)
+-                + " · " + (d.farmSize == null ? "-" : d.farmSize + I18n.t(" acres")));
+-        b.tvReviewed.setText(d.reviewedByName == null ? "" : I18n.t("Reviewer: ") + d.reviewedByName
++
++        b.tvFarmingType.setText(v(d.farmingType));
++        b.tvProduce.setText(v(d.mainProduce));
++        b.tvFarmSize.setText(d.farmSize == null ? "-" : d.farmSize + I18n.t(" acres"));
++
++        boolean hasReason = d.rejectionReason != null && !d.rejectionReason.isEmpty();
++        boolean hasOutcome = d.reviewedByName != null || hasReason;
++        b.cardOutcome.setVisibility(hasOutcome ? View.VISIBLE : View.GONE);
++        b.tvReviewed.setText(d.reviewedByName == null ? "-" : d.reviewedByName
+                 + (d.reviewedAt == null ? "" : " · " + Ui.dateTime(d.reviewedAt)));
+-        b.tvReason.setText(d.rejectionReason == null ? "" : I18n.t("Rejection reason: ") + d.rejectionReason);
++        b.rowReason.setVisibility(hasReason ? View.VISIBLE : View.GONE);
++        b.tvReason.setText(hasReason ? d.rejectionReason : "");
+ 
+-        b.btnStart.setVisibility("PENDING".equals(d.status) ? View.VISIBLE : View.GONE);
++        boolean pending = "PENDING".equals(d.status);
+         boolean reviewing = "UNDER_REVIEW".equals(d.status);
+-        b.btnApprove.setVisibility(reviewing ? View.VISIBLE : View.GONE);
+-        b.btnReject.setVisibility(reviewing ? View.VISIBLE : View.GONE);
++        b.btnStart.setVisibility(pending ? View.VISIBLE : View.GONE);
++        b.rowDecision.setVisibility(reviewing ? View.VISIBLE : View.GONE);
++        b.actionBar.setVisibility(pending || reviewing ? View.VISIBLE : View.GONE);
++
++        b.tvIdFrontMissing.setVisibility(d.hasIdFront ? View.GONE : View.VISIBLE);
++        b.tvIdBackMissing.setVisibility(d.hasIdBack ? View.GONE : View.VISIBLE);
++        b.tvSelfieMissing.setVisibility(d.hasSelfie ? View.GONE : View.VISIBLE);
++        b.tvProofMissing.setVisibility(d.hasProof ? View.GONE : View.VISIBLE);
+ 
+         if (!imagesLoaded) {
+             imagesLoaded = true;
+@@ -81,9 +122,71 @@ public class ReviewDetailActivity extends AppCompatActivity {
+         }
+     }
+ 
++    /** Full-screen photo viewer: pinch to zoom, drag to pan, double-tap to reset. */
++    private void showImage(ImageView src) {
++        Drawable dr = src.getDrawable();
++        if (dr == null) return;
++        Dialog dlg = new Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
++        FrameLayout root = new FrameLayout(this);
++        root.setBackgroundColor(0xFF000000);
++
++        ImageView iv = new ImageView(this);
++        iv.setImageDrawable(dr);
++        iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
++        root.addView(iv, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
++
++        final float[] st = {1f, 0f, 0f, 0f, 0f}; // scale, translateX, translateY, lastX, lastY
++        ScaleGestureDetector sg = new ScaleGestureDetector(this, new ScaleGestureDetector.SimpleOnScaleGestureListener() {
++            @Override public boolean onScale(ScaleGestureDetector det) {
++                st[0] = Math.max(1f, Math.min(6f, st[0] * det.getScaleFactor()));
++                iv.setScaleX(st[0]);
++                iv.setScaleY(st[0]);
++                return true;
++            }
++        });
++        GestureDetector gd = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
++            @Override public boolean onDoubleTap(MotionEvent e) {
++                st[0] = 1f; st[1] = 0f; st[2] = 0f;
++                iv.setScaleX(1f); iv.setScaleY(1f); iv.setTranslationX(0f); iv.setTranslationY(0f);
++                return true;
++            }
++        });
++        iv.setOnTouchListener((view, e) -> {
++            sg.onTouchEvent(e);
++            gd.onTouchEvent(e);
++            if (e.getPointerCount() == 1 && !sg.isInProgress() && st[0] > 1f) {
++                if (e.getActionMasked() == MotionEvent.ACTION_DOWN) { st[3] = e.getX(); st[4] = e.getY(); }
++                else if (e.getActionMasked() == MotionEvent.ACTION_MOVE) {
++                    st[1] += e.getX() - st[3]; st[2] += e.getY() - st[4];
++                    st[3] = e.getX(); st[4] = e.getY();
++                    iv.setTranslationX(st[1]); iv.setTranslationY(st[2]);
++                }
++            } else if (e.getActionMasked() == MotionEvent.ACTION_POINTER_UP || e.getActionMasked() == MotionEvent.ACTION_UP) {
++                st[3] = e.getX(); st[4] = e.getY();
++            }
++            return true;
++        });
++
++        TextView close = new TextView(this);
++        close.setText("✕");
++        close.setTextColor(0xFFFFFFFF);
++        close.setTextSize(20);
++        close.setGravity(Gravity.CENTER);
++        close.setBackgroundResource(R.drawable.bg_icon_glass);
++        close.setContentDescription(I18n.t("Close"));
++        close.setOnClickListener(x -> dlg.dismiss());
++        int sz = Cards.dp(this, 44), m = Cards.dp(this, 16);
++        FrameLayout.LayoutParams cp = new FrameLayout.LayoutParams(sz, sz, Gravity.TOP | Gravity.END);
++        cp.setMargins(m, m * 2, m, 0);
++        root.addView(close, cp);
++
++        dlg.setContentView(root);
++        dlg.show();
++    }
++
+     private void confirmApprove() {
+         String name = current == null ? "" : v(current.fullName);
+-        new AlertDialog.Builder(this)
++        new MaterialAlertDialogBuilder(this)
+                 .setTitle(I18n.t("Approve this farmer?"))
+                 .setMessage(I18n.t("Confirm that:\n• the name \"") + name + I18n.t("\" and the ID number match the ID photos\n")
+                         + I18n.t("• the selfie matches the ID photo\n• the farm proof and location look genuine"))
+@@ -99,10 +202,17 @@ public class ReviewDetailActivity extends AppCompatActivity {
+     private void askReject() {
+         EditText reason = new EditText(this);
+         reason.setHint(I18n.t("Reason shown to the farmer (min 5 characters)"));
+-        reason.setPadding(48, 32, 48, 32);
+-        new AlertDialog.Builder(this)
++        reason.setMinLines(3);
++        reason.setGravity(Gravity.TOP | Gravity.START);
++        reason.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE
++                | android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
++        FrameLayout box = new FrameLayout(this);
++        int pad = Cards.dp(this, 20);
++        box.setPadding(pad, Cards.dp(this, 8), pad, 0);
++        box.addView(reason, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
++        new MaterialAlertDialogBuilder(this)
+                 .setTitle(I18n.t("Reject verification"))
+-                .setView(reason)
++                .setView(box)
+                 .setPositiveButton(I18n.t("Reject"), (x, y) -> {
+                     String r = reason.getText().toString().trim();
+                     if (r.length() < 5) { Ui.toast(this, I18n.t("Please give a reason")); return; }
+@@ -117,7 +227,7 @@ public class ReviewDetailActivity extends AppCompatActivity {
+ 
+     private void openMap() {
+         if (current == null || current.farmLat == null || current.farmLng == null) return;
+-        String uri = String.format(Locale.US, I18n.t("geo:%f,%f?q=%f,%f(Farm)"), current.farmLat, current.farmLng,
++        String uri = String.format(Locale.US, "geo:%f,%f?q=%f,%f(Farm)", current.farmLat, current.farmLng,
+                 current.farmLat, current.farmLng);
+         try {
+             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(uri)));
+@@ -125,4 +235,4 @@ public class ReviewDetailActivity extends AppCompatActivity {
+             Ui.toast(this, I18n.t("No maps app installed"));
+         }
+     }
+-}
+\ No newline at end of file
++}
+diff --git a/android/app/src/main/java/com/farmconnect/app/ui/ReviewerHomeActivity.java b/android/app/src/main/java/com/farmconnect/app/ui/ReviewerHomeActivity.java
+index d4de58c..925e6c2 100644
+--- a/android/app/src/main/java/com/farmconnect/app/ui/ReviewerHomeActivity.java
++++ b/android/app/src/main/java/com/farmconnect/app/ui/ReviewerHomeActivity.java
+@@ -5,17 +5,24 @@ import android.os.Bundle;
+ import android.view.Menu;
+ import android.view.MenuItem;
+ import android.view.View;
++import android.widget.TextView;
+ import androidx.appcompat.app.AppCompatActivity;
++import androidx.lifecycle.LiveData;
++import androidx.lifecycle.Observer;
+ import androidx.lifecycle.ViewModelProvider;
+ import androidx.recyclerview.widget.LinearLayoutManager;
+ import com.farmconnect.app.R;
+ import com.farmconnect.app.data.Models.ReviewSummary;
++import com.farmconnect.app.data.Resource;
++import com.farmconnect.app.data.Session;
+ import com.farmconnect.app.databinding.ActivityReviewListBinding;
++import com.farmconnect.app.util.I18n;
+ import com.farmconnect.app.util.Ui;
+ import com.farmconnect.app.vm.ReviewViewModel;
+ import com.google.android.material.chip.Chip;
++import java.util.List;
+ 
+-/** Home screen for ADMIN and County Agricultural Officer accounts. */
++/** Home screen for ADMIN and County Agricultural Officer accounts: stats, quick tools and the verification queue. */
+ public class ReviewerHomeActivity extends AppCompatActivity implements ReviewAdapter.Listener {
+     private Hub hub;
+     private ActivityReviewListBinding b;
+@@ -29,31 +36,74 @@ public class ReviewerHomeActivity extends AppCompatActivity implements ReviewAda
+         setContentView(b.getRoot());
+         hub = Hub.attach(this, b.hubContainer);
+         vm = new ViewModelProvider(this).get(ReviewViewModel.class);
++
++        String name = Session.name();
++        b.tvOfficerName.setText(name == null || name.trim().isEmpty() ? I18n.t("Officer") : name.trim());
++        b.tvRoleBadge.setText(Labels.roleName(Session.role()));
++
+         b.btnLogout.setOnClickListener(v -> Ui.logout(this));
+         adapter = new ReviewAdapter(this);
+         b.rv.setLayoutManager(new LinearLayoutManager(this));
+         b.rv.setAdapter(adapter);
++
+         b.chipGroup.setOnCheckedStateChangeListener((group, ids) -> {
+             if (ids.isEmpty()) return;
+             Chip c = group.findViewById(ids.get(0));
+             status = String.valueOf(c.getTag());
+             load();
+         });
++
++        // The stat tiles double as filters.
++        b.cardPending.setOnClickListener(v -> b.chipPending.setChecked(true));
++        b.cardReview.setOnClickListener(v -> b.chipReview.setChecked(true));
++        b.cardVerified.setOnClickListener(v -> b.chipVerified.setChecked(true));
++        b.cardRejected.setOnClickListener(v -> b.chipRejected.setChecked(true));
+     }
+ 
+     @Override protected void onResume() {
+         super.onResume();
+         if (hub != null) hub.refresh();
+         load();
++        loadCounts();
+     }
+ 
+     private void load() {
+         Ui.watch(this, vm.list(status), b.progress, list -> {
+             adapter.set(list);
+-            b.tvEmpty.setVisibility(list.isEmpty() ? View.VISIBLE : View.GONE);
++            boolean empty = list == null || list.isEmpty();
++            b.emptyState.setVisibility(empty ? View.VISIBLE : View.GONE);
++            b.tvListCount.setVisibility(empty ? View.GONE : View.VISIBLE);
++            b.tvListCount.setText(String.valueOf(list == null ? 0 : list.size()));
+         });
+     }
+ 
++    /** Reads the size of each queue once, for the stat tiles. */
++    private void loadCounts() {
++        count("PENDING", b.tvCountPending, true);
++        count("UNDER_REVIEW", b.tvCountReview, false);
++        count("VERIFIED", b.tvCountVerified, false);
++        count("REJECTED", b.tvCountRejected, false);
++    }
++
++    private void count(String st, TextView target, boolean isPending) {
++        LiveData<Resource<List<ReviewSummary>>> ld = vm.list(st);
++        ld.observe(this, new Observer<Resource<List<ReviewSummary>>>() {
++            @Override public void onChanged(Resource<List<ReviewSummary>> r) {
++                if (r.status == Resource.Status.LOADING) return;
++                ld.removeObserver(this);
++                if (r.status != Resource.Status.SUCCESS || r.data == null) return;
++                target.setText(String.valueOf(r.data.size()));
++                if (isPending) showAttention(r.data.size());
++            }
++        });
++    }
++
++    private void showAttention(int pending) {
++        b.tvAttention.setText(pending > 0
++                ? pending + " " + getString(R.string.off_stat_total)
++                : getString(R.string.off_all_clear));
++    }
++
+     @Override public void onOpen(ReviewSummary r) {
+         startActivity(new Intent(this, ReviewDetailActivity.class).putExtra("id", r.id));
+     }
+@@ -67,4 +117,4 @@ public class ReviewerHomeActivity extends AppCompatActivity implements ReviewAda
+         if (i.getItemId() == R.id.action_logout) Ui.logout(this);
+         return true;
+     }
+-}
+\ No newline at end of file
++}
+diff --git a/android/app/src/main/java/com/farmconnect/app/util/Ui.java b/android/app/src/main/java/com/farmconnect/app/util/Ui.java
+index 9bc8cda..433d9c5 100644
+--- a/android/app/src/main/java/com/farmconnect/app/util/Ui.java
++++ b/android/app/src/main/java/com/farmconnect/app/util/Ui.java
+@@ -117,6 +117,15 @@ public class Ui {
+         tv.setBackgroundTintList(ColorStateList.valueOf(verificationColor(status)));
+     }
+ 
++    /** Soft status pill: tinted background with colored text (used on the officer dashboard). */
++    public static void styleVerificationSoft(TextView tv, String status) {
++        int c = verificationColor(status);
++        tv.setText(I18n.t(verificationLabel(status)));
++        tv.setTextColor(c);
++        tv.setBackgroundResource(R.drawable.bg_pill_soft);
++        tv.setBackgroundTintList(ColorStateList.valueOf((c & 0x00FFFFFF) | 0x24000000));
++    }
++
+     public static void home(Activity a) {
+         String role = Session.role();
+         Class<?> target;
+diff --git a/android/app/src/main/res/color/chip_bg.xml b/android/app/src/main/res/color/chip_bg.xml
+new file mode 100644
+index 0000000..98ccd86
+--- /dev/null
++++ b/android/app/src/main/res/color/chip_bg.xml
+@@ -0,0 +1,5 @@
++<?xml version="1.0" encoding="utf-8"?>
++<selector xmlns:android="http://schemas.android.com/apk/res/android">
++    <item android:color="#2E7D32" android:state_checked="true" />
++    <item android:color="#FFFFFF" />
++</selector>
+diff --git a/android/app/src/main/res/color/chip_stroke.xml b/android/app/src/main/res/color/chip_stroke.xml
+new file mode 100644
+index 0000000..4337549
+--- /dev/null
++++ b/android/app/src/main/res/color/chip_stroke.xml
+@@ -0,0 +1,5 @@
++<?xml version="1.0" encoding="utf-8"?>
++<selector xmlns:android="http://schemas.android.com/apk/res/android">
++    <item android:color="#2E7D32" android:state_checked="true" />
++    <item android:color="#D5E0D3" />
++</selector>
+diff --git a/android/app/src/main/res/color/chip_text.xml b/android/app/src/main/res/color/chip_text.xml
+new file mode 100644
+index 0000000..0aa0e18
+--- /dev/null
++++ b/android/app/src/main/res/color/chip_text.xml
+@@ -0,0 +1,5 @@
++<?xml version="1.0" encoding="utf-8"?>
++<selector xmlns:android="http://schemas.android.com/apk/res/android">
++    <item android:color="#FFFFFF" android:state_checked="true" />
++    <item android:color="#1C2B1E" />
++</selector>
+diff --git a/android/app/src/main/res/drawable/bg_action_bar.xml b/android/app/src/main/res/drawable/bg_action_bar.xml
+new file mode 100644
+index 0000000..32842c8
+--- /dev/null
++++ b/android/app/src/main/res/drawable/bg_action_bar.xml
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="utf-8"?>
++<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
++    <solid android:color="#FFFFFF" />
++    <stroke android:width="1dp" android:color="#E3EBE0" />
++    <corners android:topLeftRadius="24dp" android:topRightRadius="24dp" />
++</shape>
+diff --git a/android/app/src/main/res/drawable/bg_avatar.xml b/android/app/src/main/res/drawable/bg_avatar.xml
+new file mode 100644
+index 0000000..b233479
+--- /dev/null
++++ b/android/app/src/main/res/drawable/bg_avatar.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
++    <gradient android:angle="315" android:startColor="#E3F1E0" android:endColor="#C8E6C9" />
++</shape>
+diff --git a/android/app/src/main/res/drawable/bg_avatar_header.xml b/android/app/src/main/res/drawable/bg_avatar_header.xml
+new file mode 100644
+index 0000000..aeefc3a
+--- /dev/null
++++ b/android/app/src/main/res/drawable/bg_avatar_header.xml
+@@ -0,0 +1,5 @@
++<?xml version="1.0" encoding="utf-8"?>
++<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
++    <solid android:color="#33FFFFFF" />
++    <stroke android:width="2dp" android:color="#80FFFFFF" />
++</shape>
+diff --git a/android/app/src/main/res/drawable/bg_dash_header_detail.xml b/android/app/src/main/res/drawable/bg_dash_header_detail.xml
+new file mode 100644
+index 0000000..2762f0c
+--- /dev/null
++++ b/android/app/src/main/res/drawable/bg_dash_header_detail.xml
+@@ -0,0 +1,5 @@
++<?xml version="1.0" encoding="utf-8"?>
++<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
++    <gradient android:angle="315" android:startColor="#1B3A1F" android:endColor="#2F7A36" />
++    <corners android:bottomLeftRadius="32dp" android:bottomRightRadius="32dp" />
++</shape>
+diff --git a/android/app/src/main/res/drawable/bg_icon_tile.xml b/android/app/src/main/res/drawable/bg_icon_tile.xml
+new file mode 100644
+index 0000000..e67b010
+--- /dev/null
++++ b/android/app/src/main/res/drawable/bg_icon_tile.xml
+@@ -0,0 +1,5 @@
++<?xml version="1.0" encoding="utf-8"?>
++<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
++    <solid android:color="#E3F1E0" />
++    <corners android:radius="12dp" />
++</shape>
+diff --git a/android/app/src/main/res/drawable/bg_pill_header.xml b/android/app/src/main/res/drawable/bg_pill_header.xml
+new file mode 100644
+index 0000000..5485ba7
+--- /dev/null
++++ b/android/app/src/main/res/drawable/bg_pill_header.xml
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="utf-8"?>
++<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
++    <solid android:color="#26FFFFFF" />
++    <stroke android:width="1dp" android:color="#59FFFFFF" />
++    <corners android:radius="20dp" />
++</shape>
+diff --git a/android/app/src/main/res/drawable/bg_pill_soft.xml b/android/app/src/main/res/drawable/bg_pill_soft.xml
+new file mode 100644
+index 0000000..e14c3d7
+--- /dev/null
++++ b/android/app/src/main/res/drawable/bg_pill_soft.xml
+@@ -0,0 +1,5 @@
++<?xml version="1.0" encoding="utf-8"?>
++<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
++    <solid android:color="#FFFFFF" />
++    <corners android:radius="20dp" />
++</shape>
+diff --git a/android/app/src/main/res/drawable/ic_chevron_right.xml b/android/app/src/main/res/drawable/ic_chevron_right.xml
+new file mode 100644
+index 0000000..7cfff4d
+--- /dev/null
++++ b/android/app/src/main/res/drawable/ic_chevron_right.xml
+@@ -0,0 +1,5 @@
++<?xml version="1.0" encoding="utf-8"?>
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
++    <path android:fillColor="#FF000000" android:pathData="M10,6L8.59,7.41 13.17,12l-4.58,4.59L10,18l6,-6z" />
++</vector>
+diff --git a/android/app/src/main/res/drawable/ic_farm.xml b/android/app/src/main/res/drawable/ic_farm.xml
+new file mode 100644
+index 0000000..2191eb3
+--- /dev/null
++++ b/android/app/src/main/res/drawable/ic_farm.xml
+@@ -0,0 +1,5 @@
++<?xml version="1.0" encoding="utf-8"?>
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
++    <path android:fillColor="#FF000000" android:pathData="M12,3L2,12h3v8h5v-6h4v6h5v-8h3L12,3z" />
++</vector>
+diff --git a/android/app/src/main/res/drawable/ic_id_card.xml b/android/app/src/main/res/drawable/ic_id_card.xml
+new file mode 100644
+index 0000000..7c41825
+--- /dev/null
++++ b/android/app/src/main/res/drawable/ic_id_card.xml
+@@ -0,0 +1,5 @@
++<?xml version="1.0" encoding="utf-8"?>
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
++    <path android:fillColor="#FF000000" android:pathData="M20,4H4c-1.11,0 -1.99,0.89 -1.99,2L2,18c0,1.11 0.89,2 2,2h16c1.11,0 2,-0.89 2,-2V6c0,-1.11 -0.89,-2 -2,-2zM20,18H4v-6h16v6zM20,8H4V6h16v2z" />
++</vector>
+diff --git a/android/app/src/main/res/drawable/ic_inbox.xml b/android/app/src/main/res/drawable/ic_inbox.xml
+new file mode 100644
+index 0000000..a3143ed
+--- /dev/null
++++ b/android/app/src/main/res/drawable/ic_inbox.xml
+@@ -0,0 +1,5 @@
++<?xml version="1.0" encoding="utf-8"?>
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
++    <path android:fillColor="#FF000000" android:pathData="M19,3H4.99c-1.11,0 -1.98,0.89 -1.98,2L3,19c0,1.1 0.88,2 1.99,2H19c1.1,0 2,-0.9 2,-2V5c0,-1.11 -0.9,-2 -2,-2zM19,15h-4c0,1.66 -1.35,3 -3,3s-3,-1.34 -3,-3H4.99V5H19v10z" />
++</vector>
+diff --git a/android/app/src/main/res/drawable/ic_map.xml b/android/app/src/main/res/drawable/ic_map.xml
+new file mode 100644
+index 0000000..0da920d
+--- /dev/null
++++ b/android/app/src/main/res/drawable/ic_map.xml
+@@ -0,0 +1,5 @@
++<?xml version="1.0" encoding="utf-8"?>
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
++    <path android:fillColor="#FF000000" android:pathData="M20.5,3l-0.16,0.03L15,5.1 9,3 3.36,4.9c-0.21,0.07 -0.36,0.25 -0.36,0.48V20.5c0,0.28 0.22,0.5 0.5,0.5l0.16,-0.03L9,18.9l6,2.1 5.64,-1.9c0.21,-0.07 0.36,-0.25 0.36,-0.48V3.5c0,-0.28 -0.22,-0.5 -0.5,-0.5zM15,19l-6,-2.11V5l6,2.11V19z" />
++</vector>
+diff --git a/android/app/src/main/res/drawable/ic_pin.xml b/android/app/src/main/res/drawable/ic_pin.xml
+new file mode 100644
+index 0000000..8dee2f1
+--- /dev/null
++++ b/android/app/src/main/res/drawable/ic_pin.xml
+@@ -0,0 +1,5 @@
++<?xml version="1.0" encoding="utf-8"?>
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
++    <path android:fillColor="#FF000000" android:pathData="M12,2C8.13,2 5,5.13 5,9c0,5.25 7,13 7,13s7,-7.75 7,-13c0,-3.87 -3.13,-7 -7,-7zM12,11.5c-1.38,0 -2.5,-1.12 -2.5,-2.5s1.12,-2.5 2.5,-2.5 2.5,1.12 2.5,2.5 -1.12,2.5 -2.5,2.5z" />
++</vector>
+diff --git a/android/app/src/main/res/drawable/ic_shield.xml b/android/app/src/main/res/drawable/ic_shield.xml
+new file mode 100644
+index 0000000..484130d
+--- /dev/null
++++ b/android/app/src/main/res/drawable/ic_shield.xml
+@@ -0,0 +1,5 @@
++<?xml version="1.0" encoding="utf-8"?>
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
++    <path android:fillColor="#FF000000" android:pathData="M12,1L3,5v6c0,5.55 3.84,10.74 9,12 5.16,-1.26 9,-6.45 9,-12V5l-9,-4zM10,17l-4,-4 1.41,-1.41L10,14.17l6.59,-6.59L18,9l-8,8z" />
++</vector>
+diff --git a/android/app/src/main/res/drawable/ic_visibility.xml b/android/app/src/main/res/drawable/ic_visibility.xml
+new file mode 100644
+index 0000000..d9db3fb
+--- /dev/null
++++ b/android/app/src/main/res/drawable/ic_visibility.xml
+@@ -0,0 +1,5 @@
++<?xml version="1.0" encoding="utf-8"?>
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
++    <path android:fillColor="#FF000000" android:pathData="M12,4.5C7,4.5 2.73,7.61 1,12c1.73,4.39 6,7.5 11,7.5s9.27,-3.11 11,-7.5c-1.73,-4.39 -6,-7.5 -11,-7.5zM12,17c-2.76,0 -5,-2.24 -5,-5s2.24,-5 5,-5 5,2.24 5,5 -2.24,5 -5,5zM12,9c-1.66,0 -3,1.34 -3,3s1.34,3 3,3 3,-1.34 3,-3 -1.34,-3 -3,-3z" />
++</vector>
+diff --git a/android/app/src/main/res/layout/activity_review_detail.xml b/android/app/src/main/res/layout/activity_review_detail.xml
+index c95aacd..6a91c76 100644
+--- a/android/app/src/main/res/layout/activity_review_detail.xml
++++ b/android/app/src/main/res/layout/activity_review_detail.xml
+@@ -1,90 +1,317 @@
+ <?xml version="1.0" encoding="utf-8"?>
+-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
++<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:app="http://schemas.android.com/apk/res-auto"
+     android:layout_width="match_parent" android:layout_height="match_parent"
+-    android:background="@color/fc_bg" android:fillViewport="true">
++    android:background="@color/fc_bg" android:orientation="vertical">
++
++    <ScrollView android:layout_width="match_parent" android:layout_height="0dp"
++        android:layout_weight="1" android:fillViewport="true" android:scrollbars="none">
+     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+-        android:orientation="vertical" android:padding="16dp">
++        android:orientation="vertical" android:paddingBottom="24dp">
++
++        <!-- Header -->
++        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
++            android:background="@drawable/bg_dash_header_detail" android:orientation="vertical"
++            android:paddingBottom="40dp" android:paddingEnd="20dp" android:paddingStart="16dp"
++            android:paddingTop="16dp">
++            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
++                android:gravity="center_vertical" android:orientation="horizontal">
++                <ImageButton android:id="@+id/btnBack" android:layout_width="44dp" android:layout_height="44dp"
++                    android:background="@drawable/bg_icon_glass" android:contentDescription="@string/off_back"
++                    android:padding="11dp" android:src="@drawable/ic_back" android:tint="#FFFFFF" />
++                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
++                    android:layout_marginStart="14dp" android:layout_weight="1" android:fontFamily="serif"
++                    android:text="@string/off_review_title" android:textColor="#FFFFFF" android:textSize="18sp"
++                    android:textStyle="bold" />
++            </LinearLayout>
++
++            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
++                android:layout_marginStart="4dp" android:layout_marginTop="22dp" android:gravity="center_vertical"
++                android:orientation="horizontal">
++                <TextView android:id="@+id/tvInitial" android:layout_width="64dp" android:layout_height="64dp"
++                    android:background="@drawable/bg_avatar_header" android:fontFamily="serif" android:gravity="center"
++                    android:textColor="#FFFFFF" android:textSize="26sp" android:textStyle="bold" />
++                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
++                    android:layout_marginStart="16dp" android:layout_weight="1" android:orientation="vertical">
++                    <TextView android:id="@+id/tvFullName" android:layout_width="wrap_content"
++                        android:layout_height="wrap_content" android:fontFamily="serif" android:maxLines="2"
++                        android:textColor="#FFFFFF" android:textSize="22sp" android:textStyle="bold" />
++                    <TextView android:id="@+id/tvSubmitted" android:layout_width="wrap_content"
++                        android:layout_height="wrap_content" android:layout_marginTop="2dp"
++                        android:textColor="#CFE8B5" android:textSize="12sp" />
++                    <TextView android:id="@+id/tvStatus" android:layout_width="wrap_content"
++                        android:layout_height="wrap_content" android:layout_marginTop="8dp"
++                        android:paddingBottom="4dp" android:paddingEnd="12dp" android:paddingStart="12dp"
++                        android:paddingTop="4dp" android:textColor="#FFFFFF" android:textSize="12sp"
++                        android:textStyle="bold" />
++                </LinearLayout>
++            </LinearLayout>
++        </LinearLayout>
+ 
+-        <ProgressBar android:id="@+id/progress" android:layout_width="wrap_content" android:layout_height="wrap_content"
+-            android:layout_gravity="center_horizontal" android:visibility="gone" />
++        <ProgressBar android:id="@+id/progress" style="?android:attr/progressBarStyleHorizontal"
++            android:layout_width="match_parent" android:layout_height="3dp" android:layout_marginTop="-3dp"
++            android:indeterminate="true" android:indeterminateTint="#FFFFFF" android:visibility="invisible" />
+ 
+         <com.google.android.material.card.MaterialCardView android:layout_width="match_parent"
+-            android:layout_height="wrap_content" app:cardBackgroundColor="@color/fc_card"
+-            app:cardCornerRadius="18dp" app:cardElevation="2dp" app:strokeWidth="0dp">
++            android:layout_height="wrap_content" android:layout_marginEnd="14dp" android:layout_marginStart="14dp"
++            android:layout_marginTop="-24dp" app:cardBackgroundColor="@color/fc_card" app:cardCornerRadius="22dp"
++            app:cardElevation="3dp" app:strokeWidth="0dp">
++            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
++                android:orientation="vertical" android:padding="18dp">
++                <TextView style="@style/FcSectionTitle" android:text="@string/off_sec_identity" />
++                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
++                    android:layout_marginTop="14dp" android:orientation="horizontal">
++                    <ImageView android:layout_width="36dp" android:layout_height="36dp"
++                        android:background="@drawable/bg_icon_tile" android:importantForAccessibility="no"
++                        android:padding="9dp" android:src="@drawable/ic_id_card" android:tint="#2E7D32" />
++                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
++                        android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
++                        <TextView style="@style/FcInfoLabel" android:text="@string/off_lbl_national_id" />
++                        <TextView android:id="@+id/tvNationalId" style="@style/FcInfoValue" />
++                    </LinearLayout>
++                </LinearLayout>
++                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
++                    android:layout_marginTop="14dp" android:orientation="horizontal">
++                    <ImageView android:layout_width="36dp" android:layout_height="36dp"
++                        android:background="@drawable/bg_icon_tile" android:importantForAccessibility="no"
++                        android:padding="9dp" android:src="@drawable/ic_phone" android:tint="#2E7D32" />
++                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
++                        android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
++                        <TextView style="@style/FcInfoLabel" android:text="@string/off_lbl_phone" />
++                        <TextView android:id="@+id/tvPhone" style="@style/FcInfoValue" />
++                    </LinearLayout>
++                    <TextView android:id="@+id/tvPhoneStatus" android:layout_width="wrap_content"
++                        android:layout_height="wrap_content" android:layout_gravity="center_vertical"
++                        android:background="@drawable/bg_pill_soft" android:paddingBottom="4dp"
++                        android:paddingEnd="10dp" android:paddingStart="10dp" android:paddingTop="4dp"
++                        android:textSize="11sp" android:textStyle="bold" />
++                </LinearLayout>
++                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
++                    android:layout_marginTop="14dp" android:orientation="horizontal">
++                    <ImageView android:layout_width="36dp" android:layout_height="36dp"
++                        android:background="@drawable/bg_icon_tile" android:importantForAccessibility="no"
++                        android:padding="9dp" android:src="@drawable/ic_person" android:tint="#2E7D32" />
++                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
++                        android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
++                        <TextView style="@style/FcInfoLabel" android:text="@string/off_lbl_account" />
++                        <TextView android:id="@+id/tvAccount" style="@style/FcInfoValue" />
++                        <TextView android:id="@+id/tvAccountEmail" android:layout_width="match_parent"
++                            android:layout_height="wrap_content" android:textColor="@color/fc_muted"
++                            android:textSize="13sp" />
++                    </LinearLayout>
++                </LinearLayout>
++            </LinearLayout>
++        </com.google.android.material.card.MaterialCardView>
++
++        <com.google.android.material.card.MaterialCardView  android:layout_width="match_parent"
++            android:layout_height="wrap_content" android:layout_marginEnd="14dp" android:layout_marginStart="14dp"
++            android:layout_marginTop="12dp" app:cardBackgroundColor="@color/fc_card" app:cardCornerRadius="22dp"
++            app:cardElevation="2dp" app:strokeWidth="0dp">
+             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+-                android:orientation="vertical" android:padding="16dp">
++                android:orientation="vertical" android:padding="18dp">
++                <TextView style="@style/FcSectionTitle" android:text="@string/off_sec_location" />
++                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
++                    android:layout_marginTop="14dp" android:orientation="horizontal">
++                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
++                        android:layout_weight="1" android:orientation="vertical">
++                        <TextView style="@style/FcInfoLabel" android:text="@string/off_lbl_county" />
++                        <TextView android:id="@+id/tvCounty" style="@style/FcInfoValue" />
++                    </LinearLayout>
++                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
++                        android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
++                        <TextView style="@style/FcInfoLabel" android:text="@string/off_lbl_subcounty" />
++                        <TextView android:id="@+id/tvSubCounty" style="@style/FcInfoValue" />
++                    </LinearLayout>
++                </LinearLayout>
++                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
++                    android:layout_marginTop="14dp" android:orientation="horizontal">
++                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
++                        android:layout_weight="1" android:orientation="vertical">
++                        <TextView style="@style/FcInfoLabel" android:text="@string/off_lbl_ward" />
++                        <TextView android:id="@+id/tvWard" style="@style/FcInfoValue" />
++                    </LinearLayout>
++                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
++                        android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
++                        <TextView style="@style/FcInfoLabel" android:text="@string/off_lbl_village" />
++                        <TextView android:id="@+id/tvVillage" style="@style/FcInfoValue" />
++                    </LinearLayout>
++                </LinearLayout>
+                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+-                    android:gravity="center_vertical" android:orientation="horizontal">
+-                    <TextView android:id="@+id/tvFullName" android:layout_width="0dp" android:layout_height="wrap_content"
+-                        android:layout_weight="1" android:textColor="@color/fc_text" android:textSize="20sp"
+-                        android:textStyle="bold" android:fontFamily="serif" />
+-                    <TextView android:id="@+id/tvStatus" android:layout_width="wrap_content" android:layout_height="wrap_content"
+-                        android:paddingStart="10dp" android:paddingEnd="10dp" android:paddingTop="4dp" android:paddingBottom="4dp"
+-                        android:textColor="#FFFFFF" android:textSize="11sp" android:textStyle="bold" />
++                    android:layout_marginTop="14dp" android:orientation="horizontal">
++                    <ImageView android:layout_width="36dp" android:layout_height="36dp"
++                        android:background="@drawable/bg_icon_tile" android:importantForAccessibility="no"
++                        android:padding="9dp" android:src="@drawable/ic_pin" android:tint="#2E7D32" />
++                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
++                        android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
++                        <TextView style="@style/FcInfoLabel" android:text="@string/off_lbl_gps" />
++                        <TextView android:id="@+id/tvGps" style="@style/FcInfoValue" />
++                    </LinearLayout>
+                 </LinearLayout>
+-                <TextView android:id="@+id/tvNationalId" android:layout_width="match_parent" android:layout_height="wrap_content"
+-                    android:layout_marginTop="6dp" android:textColor="@color/fc_text" android:textSize="14sp" />
+-                <TextView android:id="@+id/tvPhone" android:layout_width="match_parent" android:layout_height="wrap_content"
+-                    android:layout_marginTop="6dp" android:textColor="@color/fc_text" android:textSize="14sp" />
+-                <TextView android:id="@+id/tvAccount" android:layout_width="match_parent" android:layout_height="wrap_content"
+-                    android:layout_marginTop="6dp" android:textColor="@color/fc_text" android:textSize="14sp" />
+-                <TextView android:id="@+id/tvLocation" android:layout_width="match_parent" android:layout_height="wrap_content"
+-                    android:layout_marginTop="6dp" android:textColor="@color/fc_text" android:textSize="14sp" />
+-                <TextView android:id="@+id/tvGps" android:layout_width="match_parent" android:layout_height="wrap_content"
+-                    android:layout_marginTop="6dp" android:textColor="@color/fc_text" android:textSize="14sp" />
+                 <Button android:id="@+id/btnMap" style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+-                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+-                    android:text="@string/t_d5075adc" android:textAllCaps="false" />
+-                <TextView android:id="@+id/tvFarm" android:layout_width="match_parent" android:layout_height="wrap_content"
+-                    android:layout_marginTop="6dp" android:textColor="@color/fc_text" android:textSize="14sp" />
+-                <TextView android:id="@+id/tvReviewed" android:layout_width="match_parent" android:layout_height="wrap_content"
+-                    android:layout_marginTop="6dp" android:textColor="@color/fc_text" android:textSize="14sp" />
+-                <TextView android:id="@+id/tvReason" android:layout_width="match_parent" android:layout_height="wrap_content"
+-                    android:layout_marginTop="6dp" android:textColor="@color/fc_text" android:textSize="14sp" />
++                    android:layout_width="match_parent" android:layout_height="52dp" android:layout_marginTop="14dp"
++                    android:text="@string/t_d5075adc" android:textAllCaps="false" android:textColor="#2E7D32"
++                    app:cornerRadius="14dp" app:icon="@drawable/ic_map" app:iconGravity="textStart"
++                    app:iconTint="#2E7D32" app:strokeColor="#2E7D32" />
+             </LinearLayout>
+         </com.google.android.material.card.MaterialCardView>
+ 
+-        <com.google.android.material.card.MaterialCardView android:layout_width="match_parent"
+-            android:layout_height="wrap_content" android:layout_marginTop="12dp"
+-            app:cardBackgroundColor="@color/fc_card" app:cardCornerRadius="18dp" app:cardElevation="2dp" app:strokeWidth="0dp">
++        <com.google.android.material.card.MaterialCardView  android:layout_width="match_parent"
++            android:layout_height="wrap_content" android:layout_marginEnd="14dp" android:layout_marginStart="14dp"
++            android:layout_marginTop="12dp" app:cardBackgroundColor="@color/fc_card" app:cardCornerRadius="22dp"
++            app:cardElevation="2dp" app:strokeWidth="0dp">
+             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+-                android:orientation="vertical" android:padding="16dp">
+-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+-                    android:text="@string/t_87c02a58" android:textColor="@color/fc_text"
+-                    android:textSize="15sp" android:textStyle="bold" />
+-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+-                    android:layout_marginTop="14dp" android:text="@string/t_62ea4160" android:textColor="@color/fc_muted" android:textSize="12sp" />
+-                <ImageView android:id="@+id/ivIdFront" android:layout_width="match_parent" android:layout_height="220dp"
+-                    android:layout_marginTop="4dp" android:background="#EEF2EC" android:contentDescription="@string/t_62ea4160"
+-                    android:scaleType="fitCenter" />
+-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+-                    android:layout_marginTop="14dp" android:text="@string/t_3ed50ed8" android:textColor="@color/fc_muted" android:textSize="12sp" />
+-                <ImageView android:id="@+id/ivIdBack" android:layout_width="match_parent" android:layout_height="220dp"
+-                    android:layout_marginTop="4dp" android:background="#EEF2EC" android:contentDescription="@string/t_3ed50ed8"
+-                    android:scaleType="fitCenter" />
+-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+-                    android:layout_marginTop="14dp" android:text="@string/t_3864935d" android:textColor="@color/fc_muted" android:textSize="12sp" />
+-                <ImageView android:id="@+id/ivSelfie" android:layout_width="match_parent" android:layout_height="220dp"
+-                    android:layout_marginTop="4dp" android:background="#EEF2EC" android:contentDescription="@string/t_3864935d"
+-                    android:scaleType="fitCenter" />
++                android:orientation="vertical" android:padding="18dp">
++                <TextView style="@style/FcSectionTitle" android:text="@string/off_sec_farm" />
++                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
++                    android:layout_marginTop="14dp" android:orientation="horizontal">
++                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
++                        android:layout_weight="1" android:orientation="vertical">
++                        <TextView style="@style/FcInfoLabel" android:text="@string/off_lbl_farming_type" />
++                        <TextView android:id="@+id/tvFarmingType" style="@style/FcInfoValue" />
++                    </LinearLayout>
++                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
++                        android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
++                        <TextView style="@style/FcInfoLabel" android:text="@string/off_lbl_produce" />
++                        <TextView android:id="@+id/tvProduce" style="@style/FcInfoValue" />
++                    </LinearLayout>
++                </LinearLayout>
++                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
++                    android:layout_marginTop="14dp" android:orientation="horizontal">
++                    <ImageView android:layout_width="36dp" android:layout_height="36dp"
++                        android:background="@drawable/bg_icon_tile" android:importantForAccessibility="no"
++                        android:padding="9dp" android:src="@drawable/ic_farm" android:tint="#2E7D32" />
++                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
++                        android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
++                        <TextView style="@style/FcInfoLabel" android:text="@string/off_lbl_size" />
++                        <TextView android:id="@+id/tvFarmSize" style="@style/FcInfoValue" />
++                    </LinearLayout>
++                </LinearLayout>
++            </LinearLayout>
++        </com.google.android.material.card.MaterialCardView>
++
++        <com.google.android.material.card.MaterialCardView android:id="@+id/cardOutcome" android:visibility="gone" android:layout_width="match_parent"
++            android:layout_height="wrap_content" android:layout_marginEnd="14dp" android:layout_marginStart="14dp"
++            android:layout_marginTop="12dp" app:cardBackgroundColor="@color/fc_card" app:cardCornerRadius="22dp"
++            app:cardElevation="2dp" app:strokeWidth="0dp">
++            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
++                android:orientation="vertical" android:padding="18dp">
++                <TextView style="@style/FcSectionTitle" android:text="@string/off_sec_review" />
++                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
++                    android:layout_marginTop="14dp" android:orientation="horizontal">
++                    <ImageView android:layout_width="36dp" android:layout_height="36dp"
++                        android:background="@drawable/bg_icon_tile" android:importantForAccessibility="no"
++                        android:padding="9dp" android:src="@drawable/ic_verified" android:tint="#2E7D32" />
++                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
++                        android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
++                        <TextView style="@style/FcInfoLabel" android:text="@string/off_lbl_reviewer" />
++                        <TextView android:id="@+id/tvReviewed" style="@style/FcInfoValue" />
++                    </LinearLayout>
++                </LinearLayout>
++                <LinearLayout android:id="@+id/rowReason" android:layout_width="match_parent"
++                    android:layout_height="wrap_content" android:layout_marginTop="14dp"
++                    android:background="@drawable/bg_pill_soft" android:backgroundTint="#FDECEA"
++                    android:orientation="vertical" android:padding="14dp" android:visibility="gone">
++                    <TextView style="@style/FcInfoLabel" android:text="@string/off_lbl_reason"
++                        android:textColor="#C62828" />
++                    <TextView android:id="@+id/tvReason" style="@style/FcInfoValue" android:textColor="#8E1C1C"
++                        android:textStyle="normal" />
++                </LinearLayout>
++            </LinearLayout>
++        </com.google.android.material.card.MaterialCardView>
++
++        <com.google.android.material.card.MaterialCardView  android:layout_width="match_parent"
++            android:layout_height="wrap_content" android:layout_marginEnd="14dp" android:layout_marginStart="14dp"
++            android:layout_marginTop="12dp" app:cardBackgroundColor="@color/fc_card" app:cardCornerRadius="22dp"
++            app:cardElevation="2dp" app:strokeWidth="0dp">
++            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
++                android:orientation="vertical" android:padding="18dp">
++                <TextView style="@style/FcSectionTitle" android:text="@string/off_sec_docs" />
+                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+-                    android:layout_marginTop="14dp" android:text="@string/t_25a4250c" android:textColor="@color/fc_muted" android:textSize="12sp" />
+-                <ImageView android:id="@+id/ivProof" android:layout_width="match_parent" android:layout_height="220dp"
+-                    android:layout_marginTop="4dp" android:background="#EEF2EC" android:contentDescription="@string/t_25a4250c"
+-                    android:scaleType="fitCenter" />
++                    android:layout_marginTop="4dp" android:text="@string/off_docs_hint"
++                    android:textColor="@color/fc_muted" android:textSize="12sp" />
++                <TextView style="@style/FcInfoLabel" android:layout_marginTop="14dp" android:text="@string/t_62ea4160" />
++                <com.google.android.material.card.MaterialCardView android:layout_width="match_parent"
++                    android:layout_height="wrap_content" android:layout_marginTop="6dp"
++                    app:cardBackgroundColor="#F1F5EF" app:cardCornerRadius="14dp" app:cardElevation="0dp"
++                    app:strokeColor="#E3EBE0" app:strokeWidth="1dp">
++                    <FrameLayout android:layout_width="match_parent" android:layout_height="210dp">
++                        <ImageView android:id="@+id/ivIdFront" android:layout_width="match_parent"
++                            android:layout_height="match_parent" android:contentDescription="@string/t_62ea4160"
++                            android:scaleType="fitCenter" />
++                        <TextView android:id="@+id/tvIdFrontMissing" android:layout_width="wrap_content"
++                            android:layout_height="wrap_content" android:layout_gravity="center"
++                            android:text="@string/t_1fec54f9" android:textColor="@color/fc_muted" android:textSize="13sp" />
++                    </FrameLayout>
++                </com.google.android.material.card.MaterialCardView>
++                <TextView style="@style/FcInfoLabel" android:layout_marginTop="14dp" android:text="@string/t_3ed50ed8" />
++                <com.google.android.material.card.MaterialCardView android:layout_width="match_parent"
++                    android:layout_height="wrap_content" android:layout_marginTop="6dp"
++                    app:cardBackgroundColor="#F1F5EF" app:cardCornerRadius="14dp" app:cardElevation="0dp"
++                    app:strokeColor="#E3EBE0" app:strokeWidth="1dp">
++                    <FrameLayout android:layout_width="match_parent" android:layout_height="210dp">
++                        <ImageView android:id="@+id/ivIdBack" android:layout_width="match_parent"
++                            android:layout_height="match_parent" android:contentDescription="@string/t_3ed50ed8"
++                            android:scaleType="fitCenter" />
++                        <TextView android:id="@+id/tvIdBackMissing" android:layout_width="wrap_content"
++                            android:layout_height="wrap_content" android:layout_gravity="center"
++                            android:text="@string/t_1fec54f9" android:textColor="@color/fc_muted" android:textSize="13sp" />
++                    </FrameLayout>
++                </com.google.android.material.card.MaterialCardView>
++                <TextView style="@style/FcInfoLabel" android:layout_marginTop="14dp" android:text="@string/t_3864935d" />
++                <com.google.android.material.card.MaterialCardView android:layout_width="match_parent"
++                    android:layout_height="wrap_content" android:layout_marginTop="6dp"
++                    app:cardBackgroundColor="#F1F5EF" app:cardCornerRadius="14dp" app:cardElevation="0dp"
++                    app:strokeColor="#E3EBE0" app:strokeWidth="1dp">
++                    <FrameLayout android:layout_width="match_parent" android:layout_height="210dp">
++                        <ImageView android:id="@+id/ivSelfie" android:layout_width="match_parent"
++                            android:layout_height="match_parent" android:contentDescription="@string/t_3864935d"
++                            android:scaleType="fitCenter" />
++                        <TextView android:id="@+id/tvSelfieMissing" android:layout_width="wrap_content"
++                            android:layout_height="wrap_content" android:layout_gravity="center"
++                            android:text="@string/t_1fec54f9" android:textColor="@color/fc_muted" android:textSize="13sp" />
++                    </FrameLayout>
++                </com.google.android.material.card.MaterialCardView>
++                <TextView style="@style/FcInfoLabel" android:layout_marginTop="14dp" android:text="@string/t_25a4250c" />
++                <com.google.android.material.card.MaterialCardView android:layout_width="match_parent"
++                    android:layout_height="wrap_content" android:layout_marginTop="6dp"
++                    app:cardBackgroundColor="#F1F5EF" app:cardCornerRadius="14dp" app:cardElevation="0dp"
++                    app:strokeColor="#E3EBE0" app:strokeWidth="1dp">
++                    <FrameLayout android:layout_width="match_parent" android:layout_height="210dp">
++                        <ImageView android:id="@+id/ivProof" android:layout_width="match_parent"
++                            android:layout_height="match_parent" android:contentDescription="@string/t_25a4250c"
++                            android:scaleType="fitCenter" />
++                        <TextView android:id="@+id/tvProofMissing" android:layout_width="wrap_content"
++                            android:layout_height="wrap_content" android:layout_gravity="center"
++                            android:text="@string/t_1fec54f9" android:textColor="@color/fc_muted" android:textSize="13sp" />
++                    </FrameLayout>
++                </com.google.android.material.card.MaterialCardView>
+             </LinearLayout>
+         </com.google.android.material.card.MaterialCardView>
+ 
+-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+-            android:layout_marginTop="16dp" android:layout_marginBottom="24dp" android:orientation="vertical">
+-            <Button android:id="@+id/btnStart" android:layout_width="match_parent" android:layout_height="56dp"
+-                android:text="@string/t_5a1960c3" android:textAllCaps="false" android:visibility="gone" />
+-            <Button android:id="@+id/btnApprove" android:layout_width="match_parent" android:layout_height="56dp"
+-                android:text="@string/t_b6e5a7d6" android:textAllCaps="false" android:visibility="gone" />
++    </LinearLayout>
++    </ScrollView>
++
++    <!-- Pinned actions -->
++    <LinearLayout android:id="@+id/actionBar" android:layout_width="match_parent"
++        android:layout_height="wrap_content" android:background="@drawable/bg_action_bar"
++        android:elevation="8dp" android:orientation="vertical" android:padding="16dp"
++        android:visibility="gone">
++        <Button android:id="@+id/btnStart" android:layout_width="match_parent" android:layout_height="56dp"
++            android:text="@string/t_5a1960c3" android:textAllCaps="false" android:textSize="15sp"
++            android:textStyle="bold" android:visibility="gone" app:backgroundTint="#2E7D32"
++            app:cornerRadius="16dp" app:icon="@drawable/ic_visibility" app:iconGravity="textStart" />
++        <LinearLayout android:id="@+id/rowDecision" android:layout_width="match_parent"
++            android:layout_height="wrap_content" android:orientation="horizontal" android:visibility="gone">
+             <Button android:id="@+id/btnReject" style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+-                android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp"
+-                android:text="@string/t_d98ac127" android:textAllCaps="false" android:textColor="@color/fc_danger" android:visibility="gone" />
++                android:layout_width="0dp" android:layout_height="56dp" android:layout_weight="1"
++                android:text="@string/t_d98ac127" android:textAllCaps="false" android:textColor="@color/fc_danger"
++                android:textSize="15sp" android:textStyle="bold" app:cornerRadius="16dp"
++                app:strokeColor="@color/fc_danger" />
++            <Button android:id="@+id/btnApprove" android:layout_width="0dp" android:layout_height="56dp"
++                android:layout_marginStart="10dp" android:layout_weight="1.6" android:text="@string/off_btn_approve"
++                android:textAllCaps="false" android:textSize="15sp" android:textStyle="bold"
++                app:backgroundTint="#2E7D32" app:cornerRadius="16dp" app:icon="@drawable/ic_check"
++                app:iconGravity="textStart" />
+         </LinearLayout>
+     </LinearLayout>
+-</ScrollView>
+\ No newline at end of file
++</LinearLayout>
+diff --git a/android/app/src/main/res/layout/activity_review_list.xml b/android/app/src/main/res/layout/activity_review_list.xml
+index f48d10b..831376f 100644
+--- a/android/app/src/main/res/layout/activity_review_list.xml
++++ b/android/app/src/main/res/layout/activity_review_list.xml
+@@ -1,64 +1,224 @@
+ <?xml version="1.0" encoding="utf-8"?>
+-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
++<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:app="http://schemas.android.com/apk/res-auto"
+     android:layout_width="match_parent" android:layout_height="match_parent"
+-    android:background="@color/fc_bg" android:orientation="vertical">
++    android:background="@color/fc_bg">
+ 
+-    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+-        android:background="@drawable/bg_dash_header" android:gravity="center_vertical"
+-        android:orientation="horizontal" android:paddingBottom="26dp" android:paddingStart="20dp"
+-        android:paddingEnd="20dp" android:paddingTop="22dp">
+-        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+-            android:layout_weight="1" android:orientation="vertical">
+-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+-                android:text="@string/t_596e8613" android:textColor="#CFE8B5" android:textSize="14sp" />
+-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+-                android:fontFamily="serif" android:text="@string/t_69112bd0" android:textColor="#FFFFFF"
+-                android:textSize="24sp" android:textStyle="bold" />
+-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+-                android:layout_marginTop="4dp"
+-                android:text="@string/t_02121ebd"
+-                android:textColor="#E6FFFFFF" android:textSize="12sp" />
+-        </LinearLayout>
+-        <ImageButton android:id="@+id/btnLogout" android:layout_width="44dp" android:layout_height="44dp"
+-            android:background="@drawable/bg_icon_glass" android:contentDescription="@string/t_4394c8d8"
+-            android:padding="11dp" android:src="@drawable/ic_logout" android:tint="#FFFFFF" />
+-    </LinearLayout>
++    <com.google.android.material.appbar.AppBarLayout
++        android:layout_width="match_parent" android:layout_height="wrap_content"
++        android:background="@color/fc_bg" android:stateListAnimator="@null"
++        app:elevation="0dp" app:liftOnScroll="false">
++
++        <!-- Scrolls away: header, stat tiles, quick tools -->
++        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
++            android:orientation="vertical" app:layout_scrollFlags="scroll|exitUntilCollapsed">
++
++            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
++                android:background="@drawable/bg_dash_header" android:orientation="vertical"
++                android:paddingBottom="64dp" android:paddingEnd="20dp" android:paddingStart="20dp"
++                android:paddingTop="22dp">
++
++                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
++                    android:gravity="center_vertical" android:orientation="horizontal">
++                    <ImageView android:layout_width="52dp" android:layout_height="52dp"
++                        android:background="@drawable/bg_avatar_header" android:contentDescription="@string/off_welcome"
++                        android:padding="13dp" android:src="@drawable/ic_shield" android:tint="#FFFFFF" />
++                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
++                        android:layout_marginStart="14dp" android:layout_weight="1" android:orientation="vertical">
++                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
++                            android:text="@string/off_welcome" android:textColor="#CFE8B5" android:textSize="13sp" />
++                        <TextView android:id="@+id/tvOfficerName" android:layout_width="wrap_content"
++                            android:layout_height="wrap_content" android:ellipsize="end" android:fontFamily="serif"
++                            android:maxLines="1" android:textColor="#FFFFFF" android:textSize="22sp"
++                            android:textStyle="bold" />
++                    </LinearLayout>
++                    <ImageButton android:id="@+id/btnLogout" android:layout_width="44dp" android:layout_height="44dp"
++                        android:background="@drawable/bg_icon_glass" android:contentDescription="@string/t_4394c8d8"
++                        android:padding="11dp" android:src="@drawable/ic_logout" android:tint="#FFFFFF" />
++                </LinearLayout>
++
++                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
++                    android:layout_marginTop="14dp" android:background="@drawable/bg_pill_header"
++                    android:gravity="center_vertical" android:orientation="horizontal"
++                    android:paddingBottom="6dp" android:paddingEnd="12dp" android:paddingStart="10dp"
++                    android:paddingTop="6dp">
++                    <ImageView android:layout_width="16dp" android:layout_height="16dp"
++                        android:importantForAccessibility="no" android:src="@drawable/ic_verified"
++                        android:tint="#CFE8B5" />
++                    <TextView android:id="@+id/tvRoleBadge" android:layout_width="wrap_content"
++                        android:layout_height="wrap_content" android:layout_marginStart="6dp"
++                        android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" />
++                </LinearLayout>
++
++                <TextView android:id="@+id/tvAttention" android:layout_width="match_parent"
++                    android:layout_height="wrap_content" android:layout_marginTop="12dp"
++                    android:textColor="#E6FFFFFF" android:textSize="13sp" />
++            </LinearLayout>
+ 
++            <!-- Stat tiles overlap the header; tap one to filter the list -->
++            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
++                android:layout_marginTop="-46dp" android:orientation="horizontal"
++                android:paddingEnd="10dp" android:paddingStart="10dp">
+ 
+-    <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content"
+-        android:clipToPadding="false" android:paddingEnd="12dp" android:paddingStart="12dp" android:paddingTop="12dp"
+-        android:scrollbars="none">
+-        <LinearLayout android:id="@+id/hubContainer" android:layout_width="wrap_content" android:layout_height="wrap_content"
+-            android:orientation="horizontal" />
+-    </HorizontalScrollView>
+-    <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content"
+-        android:scrollbars="none">
+-        <com.google.android.material.chip.ChipGroup android:id="@+id/chipGroup"
+-            android:layout_width="wrap_content" android:layout_height="wrap_content"
+-            android:paddingStart="12dp" android:paddingEnd="12dp" android:paddingTop="8dp"
+-            app:selectionRequired="true" app:singleLine="true" app:singleSelection="true">
+-            <com.google.android.material.chip.Chip android:id="@+id/chipPending"
+-                style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content"
+-                android:layout_height="wrap_content" android:checked="true" android:tag="PENDING" android:text="@string/t_2d13df6f" />
+-            <com.google.android.material.chip.Chip android:id="@+id/chipReview"
+-                style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content"
+-                android:layout_height="wrap_content" android:tag="UNDER_REVIEW" android:text="@string/t_1321a344" />
+-            <com.google.android.material.chip.Chip android:id="@+id/chipVerified"
+-                style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content"
+-                android:layout_height="wrap_content" android:tag="VERIFIED" android:text="@string/t_3f68e67d" />
+-            <com.google.android.material.chip.Chip android:id="@+id/chipRejected"
+-                style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content"
+-                android:layout_height="wrap_content" android:tag="REJECTED" android:text="@string/t_d37b1f6c" />
+-        </com.google.android.material.chip.ChipGroup>
+-    </HorizontalScrollView>
++                <com.google.android.material.card.MaterialCardView android:id="@+id/cardPending"
++                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_margin="4dp"
++                    android:layout_weight="1" android:clickable="true" android:focusable="true"
++                    app:cardBackgroundColor="@color/fc_card" app:cardCornerRadius="18dp" app:cardElevation="3dp"
++                    app:strokeWidth="0dp">
++                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
++                        android:orientation="vertical" android:padding="12dp">
++                        <View android:layout_width="22dp" android:layout_height="4dp"
++                            android:background="@drawable/bg_pill_soft" android:backgroundTint="#F9A825" />
++                        <TextView android:id="@+id/tvCountPending" android:layout_width="wrap_content"
++                            android:layout_height="wrap_content" android:layout_marginTop="10dp"
++                            android:fontFamily="serif" android:text="0" android:textColor="@color/fc_text"
++                            android:textSize="24sp" android:textStyle="bold" />
++                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
++                            android:ellipsize="end" android:maxLines="1" android:text="@string/t_2d13df6f"
++                            android:textColor="@color/fc_muted" android:textSize="11sp" />
++                    </LinearLayout>
++                </com.google.android.material.card.MaterialCardView>
+ 
+-    <ProgressBar android:id="@+id/progress" android:layout_width="wrap_content" android:layout_height="wrap_content"
+-        android:layout_gravity="center_horizontal" android:visibility="gone" />
+-    <TextView android:id="@+id/tvEmpty" android:layout_width="wrap_content" android:layout_height="wrap_content"
+-        android:layout_gravity="center_horizontal" android:padding="32dp" android:text="@string/t_c658b02e"
+-        android:textColor="@color/fc_muted" android:visibility="gone" />
+-    <androidx.recyclerview.widget.RecyclerView android:id="@+id/rv" android:layout_width="match_parent"
+-        android:layout_height="0dp" android:layout_weight="1" android:clipToPadding="false"
+-        android:paddingBottom="24dp" android:paddingStart="6dp" android:paddingEnd="6dp" />
+-</LinearLayout>
+\ No newline at end of file
++                <com.google.android.material.card.MaterialCardView android:id="@+id/cardReview"
++                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_margin="4dp"
++                    android:layout_weight="1" android:clickable="true" android:focusable="true"
++                    app:cardBackgroundColor="@color/fc_card" app:cardCornerRadius="18dp" app:cardElevation="3dp"
++                    app:strokeWidth="0dp">
++                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
++                        android:orientation="vertical" android:padding="12dp">
++                        <View android:layout_width="22dp" android:layout_height="4dp"
++                            android:background="@drawable/bg_pill_soft" android:backgroundTint="#8E24AA" />
++                        <TextView android:id="@+id/tvCountReview" android:layout_width="wrap_content"
++                            android:layout_height="wrap_content" android:layout_marginTop="10dp"
++                            android:fontFamily="serif" android:text="0" android:textColor="@color/fc_text"
++                            android:textSize="24sp" android:textStyle="bold" />
++                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
++                            android:ellipsize="end" android:maxLines="1" android:text="@string/t_1321a344"
++                            android:textColor="@color/fc_muted" android:textSize="11sp" />
++                    </LinearLayout>
++                </com.google.android.material.card.MaterialCardView>
++
++                <com.google.android.material.card.MaterialCardView android:id="@+id/cardVerified"
++                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_margin="4dp"
++                    android:layout_weight="1" android:clickable="true" android:focusable="true"
++                    app:cardBackgroundColor="@color/fc_card" app:cardCornerRadius="18dp" app:cardElevation="3dp"
++                    app:strokeWidth="0dp">
++                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
++                        android:orientation="vertical" android:padding="12dp">
++                        <View android:layout_width="22dp" android:layout_height="4dp"
++                            android:background="@drawable/bg_pill_soft" android:backgroundTint="#2E7D32" />
++                        <TextView android:id="@+id/tvCountVerified" android:layout_width="wrap_content"
++                            android:layout_height="wrap_content" android:layout_marginTop="10dp"
++                            android:fontFamily="serif" android:text="0" android:textColor="@color/fc_text"
++                            android:textSize="24sp" android:textStyle="bold" />
++                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
++                            android:ellipsize="end" android:maxLines="1" android:text="@string/t_3f68e67d"
++                            android:textColor="@color/fc_muted" android:textSize="11sp" />
++                    </LinearLayout>
++                </com.google.android.material.card.MaterialCardView>
++
++                <com.google.android.material.card.MaterialCardView android:id="@+id/cardRejected"
++                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_margin="4dp"
++                    android:layout_weight="1" android:clickable="true" android:focusable="true"
++                    app:cardBackgroundColor="@color/fc_card" app:cardCornerRadius="18dp" app:cardElevation="3dp"
++                    app:strokeWidth="0dp">
++                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
++                        android:orientation="vertical" android:padding="12dp">
++                        <View android:layout_width="22dp" android:layout_height="4dp"
++                            android:background="@drawable/bg_pill_soft" android:backgroundTint="#C62828" />
++                        <TextView android:id="@+id/tvCountRejected" android:layout_width="wrap_content"
++                            android:layout_height="wrap_content" android:layout_marginTop="10dp"
++                            android:fontFamily="serif" android:text="0" android:textColor="@color/fc_text"
++                            android:textSize="24sp" android:textStyle="bold" />
++                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
++                            android:ellipsize="end" android:maxLines="1" android:text="@string/t_d37b1f6c"
++                            android:textColor="@color/fc_muted" android:textSize="11sp" />
++                    </LinearLayout>
++                </com.google.android.material.card.MaterialCardView>
++            </LinearLayout>
++
++            <!-- Quick tools -->
++            <com.google.android.material.card.MaterialCardView android:layout_width="match_parent"
++                android:layout_height="wrap_content" android:layout_marginEnd="14dp" android:layout_marginStart="14dp"
++                android:layout_marginTop="10dp" app:cardBackgroundColor="@color/fc_card"
++                app:cardCornerRadius="22dp" app:cardElevation="2dp" app:strokeWidth="0dp">
++                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
++                    android:orientation="vertical" android:paddingBottom="10dp" android:paddingTop="14dp">
++                    <TextView style="@style/FcSectionTitle" android:layout_marginBottom="8dp"
++                        android:layout_marginStart="16dp" android:text="@string/off_quick_tools" />
++                    <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content"
++                        android:clipToPadding="false" android:paddingEnd="10dp" android:paddingStart="10dp"
++                        android:scrollbars="none">
++                        <LinearLayout android:id="@+id/hubContainer" android:layout_width="wrap_content"
++                            android:layout_height="wrap_content" android:orientation="horizontal" />
++                    </HorizontalScrollView>
++                </LinearLayout>
++            </com.google.android.material.card.MaterialCardView>
++        </LinearLayout>
++
++        <!-- Stays pinned while the list scrolls: section title + filters -->
++        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
++            android:background="@color/fc_bg" android:orientation="vertical">
++            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
++                android:gravity="center_vertical" android:orientation="horizontal"
++                android:paddingEnd="20dp" android:paddingStart="20dp" android:paddingTop="16dp">
++                <TextView style="@style/FcSectionTitle" android:layout_width="0dp" android:layout_weight="1"
++                    android:text="@string/off_applications" />
++                <TextView android:id="@+id/tvListCount" android:layout_width="wrap_content"
++                    android:layout_height="wrap_content" android:background="@drawable/bg_pill_soft"
++                    android:backgroundTint="#E3F1E0" android:paddingBottom="3dp" android:paddingEnd="10dp"
++                    android:paddingStart="10dp" android:paddingTop="3dp" android:textColor="#1B5E20"
++                    android:textSize="12sp" android:textStyle="bold" android:visibility="gone" />
++            </LinearLayout>
++            <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content"
++                android:scrollbars="none">
++                <com.google.android.material.chip.ChipGroup android:id="@+id/chipGroup"
++                    android:layout_width="wrap_content" android:layout_height="wrap_content"
++                    android:paddingBottom="8dp" android:paddingEnd="16dp" android:paddingStart="16dp"
++                    android:paddingTop="10dp" app:chipSpacingHorizontal="8dp" app:selectionRequired="true"
++                    app:singleLine="true" app:singleSelection="true">
++                    <com.google.android.material.chip.Chip android:id="@+id/chipPending"
++                        style="@style/Widget.FarmConnect.FilterChip" android:layout_width="wrap_content"
++                        android:layout_height="wrap_content" android:checked="true" android:tag="PENDING"
++                        android:text="@string/t_2d13df6f" />
++                    <com.google.android.material.chip.Chip android:id="@+id/chipReview"
++                        style="@style/Widget.FarmConnect.FilterChip" android:layout_width="wrap_content"
++                        android:layout_height="wrap_content" android:tag="UNDER_REVIEW"
++                        android:text="@string/t_1321a344" />
++                    <com.google.android.material.chip.Chip android:id="@+id/chipVerified"
++                        style="@style/Widget.FarmConnect.FilterChip" android:layout_width="wrap_content"
++                        android:layout_height="wrap_content" android:tag="VERIFIED"
++                        android:text="@string/t_3f68e67d" />
++                    <com.google.android.material.chip.Chip android:id="@+id/chipRejected"
++                        style="@style/Widget.FarmConnect.FilterChip" android:layout_width="wrap_content"
++                        android:layout_height="wrap_content" android:tag="REJECTED"
++                        android:text="@string/t_d37b1f6c" />
++                </com.google.android.material.chip.ChipGroup>
++            </HorizontalScrollView>
++            <ProgressBar android:id="@+id/progress" style="?android:attr/progressBarStyleHorizontal"
++                android:layout_width="match_parent" android:layout_height="3dp"
++                android:indeterminate="true" android:indeterminateTint="#2E7D32" android:visibility="invisible" />
++        </LinearLayout>
++    </com.google.android.material.appbar.AppBarLayout>
++
++    <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent"
++        app:layout_behavior="@string/appbar_scrolling_view_behavior">
++        <androidx.recyclerview.widget.RecyclerView android:id="@+id/rv" android:layout_width="match_parent"
++            android:layout_height="match_parent" android:clipToPadding="false" android:paddingBottom="28dp"
++            android:paddingEnd="8dp" android:paddingStart="8dp" android:paddingTop="4dp" />
++        <LinearLayout android:id="@+id/emptyState" android:layout_width="match_parent"
++            android:layout_height="wrap_content" android:layout_gravity="center" android:gravity="center_horizontal"
++            android:orientation="vertical" android:padding="32dp" android:visibility="gone">
++            <ImageView android:layout_width="84dp" android:layout_height="84dp"
++                android:background="@drawable/bg_avatar" android:importantForAccessibility="no"
++                android:padding="22dp" android:src="@drawable/ic_inbox" android:tint="#2E7D32" />
++            <TextView android:id="@+id/tvEmpty" android:layout_width="wrap_content"
++                android:layout_height="wrap_content" android:layout_marginTop="16dp" android:fontFamily="serif"
++                android:text="@string/t_c658b02e" android:textColor="@color/fc_text" android:textSize="18sp"
++                android:textStyle="bold" />
++            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
++                android:layout_marginTop="4dp" android:gravity="center" android:text="@string/off_empty_sub"
++                android:textColor="@color/fc_muted" android:textSize="13sp" />
++        </LinearLayout>
++    </FrameLayout>
++</androidx.coordinatorlayout.widget.CoordinatorLayout>
+diff --git a/android/app/src/main/res/layout/item_review.xml b/android/app/src/main/res/layout/item_review.xml
+index ee29aa7..cec51b3 100644
+--- a/android/app/src/main/res/layout/item_review.xml
++++ b/android/app/src/main/res/layout/item_review.xml
+@@ -2,21 +2,64 @@
+ <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:app="http://schemas.android.com/apk/res-auto"
+     android:layout_width="match_parent" android:layout_height="wrap_content"
+-    android:layout_margin="8dp" android:clickable="true" android:focusable="true"
+-    app:cardBackgroundColor="@color/fc_card" app:cardCornerRadius="18dp" app:cardElevation="2dp" app:strokeWidth="0dp">
++    android:layout_marginBottom="6dp" android:layout_marginEnd="6dp" android:layout_marginStart="6dp"
++    android:layout_marginTop="6dp" android:clickable="true" android:focusable="true"
++    android:foreground="?attr/selectableItemBackground"
++    app:cardBackgroundColor="@color/fc_card" app:cardCornerRadius="20dp" app:cardElevation="1dp"
++    app:strokeColor="#E3EBE0" app:strokeWidth="1dp">
+     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+-        android:gravity="center_vertical" android:orientation="horizontal" android:padding="16dp">
++        android:orientation="horizontal">
++
++        <!-- status accent -->
++        <View android:id="@+id/vAccent" android:layout_width="5dp" android:layout_height="match_parent"
++            android:background="#F9A825" />
++
+         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+-            android:layout_weight="1" android:orientation="vertical">
+-            <TextView android:id="@+id/tvName" android:layout_width="wrap_content" android:layout_height="wrap_content"
+-                android:textColor="@color/fc_text" android:textSize="17sp" android:textStyle="bold" android:fontFamily="serif" />
+-            <TextView android:id="@+id/tvLoc" android:layout_width="wrap_content" android:layout_height="wrap_content"
+-                android:textColor="@color/fc_muted" android:textSize="13sp" />
+-            <TextView android:id="@+id/tvDate" android:layout_width="wrap_content" android:layout_height="wrap_content"
+-                android:textColor="@color/fc_muted" android:textSize="12sp" />
++            android:layout_weight="1" android:gravity="center_vertical" android:orientation="horizontal"
++            android:padding="14dp">
++
++            <TextView android:id="@+id/tvInitial" android:layout_width="48dp" android:layout_height="48dp"
++                android:background="@drawable/bg_avatar" android:fontFamily="serif" android:gravity="center"
++                android:textColor="#1B5E20" android:textSize="20sp" android:textStyle="bold" />
++
++            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
++                android:layout_marginStart="14dp" android:layout_weight="1" android:orientation="vertical">
++                <TextView android:id="@+id/tvName" android:layout_width="wrap_content"
++                    android:layout_height="wrap_content" android:ellipsize="end" android:maxLines="1"
++                    android:textColor="@color/fc_text" android:textSize="16sp" android:textStyle="bold" />
++                <LinearLayout android:id="@+id/rowLoc" android:layout_width="wrap_content"
++                    android:layout_height="wrap_content" android:layout_marginTop="4dp"
++                    android:gravity="center_vertical" android:orientation="horizontal">
++                    <ImageView android:layout_width="14dp" android:layout_height="14dp"
++                        android:importantForAccessibility="no" android:src="@drawable/ic_pin"
++                        android:tint="@color/fc_muted" />
++                    <TextView android:id="@+id/tvLoc" android:layout_width="wrap_content"
++                        android:layout_height="wrap_content" android:layout_marginStart="5dp"
++                        android:ellipsize="end" android:maxLines="1" android:textColor="@color/fc_muted"
++                        android:textSize="13sp" />
++                </LinearLayout>
++                <LinearLayout android:id="@+id/rowDate" android:layout_width="wrap_content"
++                    android:layout_height="wrap_content" android:layout_marginTop="3dp"
++                    android:gravity="center_vertical" android:orientation="horizontal">
++                    <ImageView android:layout_width="14dp" android:layout_height="14dp"
++                        android:importantForAccessibility="no" android:src="@drawable/ic_clock"
++                        android:tint="@color/fc_muted" />
++                    <TextView android:id="@+id/tvDate" android:layout_width="wrap_content"
++                        android:layout_height="wrap_content" android:layout_marginStart="5dp"
++                        android:textColor="@color/fc_muted" android:textSize="12sp" />
++                </LinearLayout>
++            </LinearLayout>
++
++            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
++                android:layout_marginStart="8dp" android:gravity="center_horizontal" android:orientation="vertical">
++                <TextView android:id="@+id/tvStatus" android:layout_width="wrap_content"
++                    android:layout_height="wrap_content" android:paddingBottom="4dp" android:paddingEnd="10dp"
++                    android:paddingStart="10dp" android:paddingTop="4dp" android:textSize="11sp"
++                    android:textStyle="bold" />
++                <ImageView android:layout_width="22dp" android:layout_height="22dp"
++                    android:layout_marginTop="8dp" android:importantForAccessibility="no"
++                    android:src="@drawable/ic_chevron_right" android:tint="#A5B3A7" />
++            </LinearLayout>
+         </LinearLayout>
+-        <TextView android:id="@+id/tvStatus" android:layout_width="wrap_content" android:layout_height="wrap_content"
+-            android:paddingStart="10dp" android:paddingEnd="10dp" android:paddingTop="4dp" android:paddingBottom="4dp"
+-            android:textColor="#FFFFFF" android:textSize="11sp" android:textStyle="bold" />
+     </LinearLayout>
+-</com.google.android.material.card.MaterialCardView>
+\ No newline at end of file
++</com.google.android.material.card.MaterialCardView>
+diff --git a/android/app/src/main/res/raw/sw_dict.txt b/android/app/src/main/res/raw/sw_dict.txt
+index caa6208..6686e26 100644
+--- a/android/app/src/main/res/raw/sw_dict.txt
++++ b/android/app/src/main/res/raw/sw_dict.txt
+@@ -840,3 +840,4 @@ Password updated. Please log in.	Nenosiri imebadilishwa. Tafadhali ingia.
+ Create your account as	Fungua akaunti yako kama
+ Google sign-in is not set up yet	Uingiaji kwa Google bado haujawekwa
+ Google sign-in failed	Kuingia kwa Google kumeshindwa
++Officer	Afisa
+diff --git a/android/app/src/main/res/values-sw/strings_officer.xml b/android/app/src/main/res/values-sw/strings_officer.xml
+new file mode 100644
+index 0000000..6138702
+--- /dev/null
++++ b/android/app/src/main/res/values-sw/strings_officer.xml
+@@ -0,0 +1,34 @@
++<resources>
++    <string name="off_welcome">Karibu tena</string>
++    <string name="off_quick_tools">Zana za haraka</string>
++    <string name="off_applications">Maombi ya wakulima</string>
++    <string name="off_empty_sub">Hakuna maombi kwenye orodha hii kwa sasa.</string>
++    <string name="off_stat_total">zinasubiri ukaguzi wako</string>
++    <string name="off_all_clear">Umemaliza yote</string>
++    <string name="off_review_title">Kagua ombi</string>
++    <string name="off_sec_identity">Utambulisho na mawasiliano</string>
++    <string name="off_sec_location">Mahali</string>
++    <string name="off_sec_farm">Maelezo ya shamba</string>
++    <string name="off_sec_review">Matokeo ya ukaguzi</string>
++    <string name="off_sec_docs">Nyaraka</string>
++    <string name="off_docs_hint">Gusa picha ili kuikuza. Hakikisha jina na nambari ya kitambulisho vinalingana.</string>
++    <string name="off_lbl_national_id">Kitambulisho cha Taifa</string>
++    <string name="off_lbl_phone">Simu</string>
++    <string name="off_lbl_account">Akaunti</string>
++    <string name="off_lbl_county">Kaunti</string>
++    <string name="off_lbl_subcounty">Kaunti ndogo</string>
++    <string name="off_lbl_ward">Wadi</string>
++    <string name="off_lbl_village">Kijiji</string>
++    <string name="off_lbl_gps">GPS ya shamba</string>
++    <string name="off_lbl_farming_type">Aina ya kilimo</string>
++    <string name="off_lbl_produce">Zao kuu</string>
++    <string name="off_lbl_size">Ukubwa wa shamba</string>
++    <string name="off_lbl_reviewer">Imekaguliwa na</string>
++    <string name="off_lbl_reason">Sababu ya kukataliwa</string>
++    <string name="off_otp_ok">✓ OTP imethibitishwa</string>
++    <string name="off_otp_no">Haijathibitishwa</string>
++    <string name="off_back">Rudi</string>
++    <string name="off_btn_approve">Idhinisha mkulima</string>
++    <string name="off_not_uploaded_hint">Haijapakiwa</string>
++    <string name="off_submitted">Imewasilishwa</string>
++</resources>
+diff --git a/android/app/src/main/res/values/strings_officer.xml b/android/app/src/main/res/values/strings_officer.xml
+new file mode 100644
+index 0000000..6bb2d3e
+--- /dev/null
++++ b/android/app/src/main/res/values/strings_officer.xml
+@@ -0,0 +1,34 @@
++<resources>
++    <string name="off_welcome">Welcome back</string>
++    <string name="off_quick_tools">Quick tools</string>
++    <string name="off_applications">Farmer applications</string>
++    <string name="off_empty_sub">No applications in this list right now.</string>
++    <string name="off_stat_total">waiting for your review</string>
++    <string name="off_all_clear">You are all caught up</string>
++    <string name="off_review_title">Review application</string>
++    <string name="off_sec_identity">Identity &amp; contact</string>
++    <string name="off_sec_location">Location</string>
++    <string name="off_sec_farm">Farm details</string>
++    <string name="off_sec_review">Review outcome</string>
++    <string name="off_sec_docs">Documents</string>
++    <string name="off_docs_hint">Tap a photo to enlarge it. Check that the name and ID number match.</string>
++    <string name="off_lbl_national_id">National ID</string>
++    <string name="off_lbl_phone">Phone</string>
++    <string name="off_lbl_account">Account</string>
++    <string name="off_lbl_county">County</string>
++    <string name="off_lbl_subcounty">Sub-county</string>
++    <string name="off_lbl_ward">Ward</string>
++    <string name="off_lbl_village">Village</string>
++    <string name="off_lbl_gps">Farm GPS</string>
++    <string name="off_lbl_farming_type">Farming type</string>
++    <string name="off_lbl_produce">Main produce</string>
++    <string name="off_lbl_size">Farm size</string>
++    <string name="off_lbl_reviewer">Reviewed by</string>
++    <string name="off_lbl_reason">Rejection reason</string>
++    <string name="off_otp_ok">✓ OTP verified</string>
++    <string name="off_otp_no">Not verified</string>
++    <string name="off_back">Back</string>
++    <string name="off_btn_approve">Approve farmer</string>
++    <string name="off_not_uploaded_hint">Not uploaded</string>
++    <string name="off_submitted">Submitted</string>
++</resources>
+diff --git a/android/app/src/main/res/values/styles_officer.xml b/android/app/src/main/res/values/styles_officer.xml
+new file mode 100644
+index 0000000..2d81be5
+--- /dev/null
++++ b/android/app/src/main/res/values/styles_officer.xml
+@@ -0,0 +1,36 @@
++<resources>
++    <style name="Widget.FarmConnect.FilterChip" parent="Widget.MaterialComponents.Chip.Choice">
++        <item name="chipBackgroundColor">@color/chip_bg</item>
++        <item name="chipStrokeColor">@color/chip_stroke</item>
++        <item name="chipStrokeWidth">1dp</item>
++        <item name="android:textColor">@color/chip_text</item>
++        <item name="android:textSize">13sp</item>
++        <item name="checkedIconVisible">false</item>
++        <item name="chipIconVisible">false</item>
++        <item name="rippleColor">#332E7D32</item>
++        <item name="chipMinHeight">38dp</item>
++        <item name="chipCornerRadius">19dp</item>
++    </style>
++    <style name="FcInfoLabel">
++        <item name="android:layout_width">wrap_content</item>
++        <item name="android:layout_height">wrap_content</item>
++        <item name="android:textColor">@color/fc_muted</item>
++        <item name="android:textSize">12sp</item>
++    </style>
++    <style name="FcInfoValue">
++        <item name="android:layout_width">match_parent</item>
++        <item name="android:layout_height">wrap_content</item>
++        <item name="android:layout_marginTop">2dp</item>
++        <item name="android:textColor">@color/fc_text</item>
++        <item name="android:textSize">15sp</item>
++        <item name="android:textStyle">bold</item>
++    </style>
++    <style name="FcSectionTitle">
++        <item name="android:layout_width">wrap_content</item>
++        <item name="android:layout_height">wrap_content</item>
++        <item name="android:textColor">@color/fc_text</item>
++        <item name="android:textSize">16sp</item>
++        <item name="android:textStyle">bold</item>
++        <item name="android:fontFamily">serif</item>
++    </style>
++</resources>

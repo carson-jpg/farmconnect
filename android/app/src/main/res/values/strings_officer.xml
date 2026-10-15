@@ -1,0 +1,34 @@
+<resources>
+    <string name="off_welcome">Welcome back</string>
+    <string name="off_quick_tools">Quick tools</string>
+    <string name="off_applications">Farmer applications</string>
+    <string name="off_empty_sub">No applications in this list right now.</string>
+    <string name="off_stat_total">waiting for your review</string>
+    <string name="off_all_clear">You are all caught up</string>
+    <string name="off_review_title">Review application</string>
+    <string name="off_sec_identity">Identity &amp; contact</string>
+    <string name="off_sec_location">Location</string>
+    <string name="off_sec_farm">Farm details</string>
+    <string name="off_sec_review">Review outcome</string>
+    <string name="off_sec_docs">Documents</string>
+    <string name="off_docs_hint">Tap a photo to enlarge it. Check that the name and ID number match.</string>
+    <string name="off_lbl_national_id">National ID</string>
+    <string name="off_lbl_phone">Phone</string>
+    <string name="off_lbl_account">Account</string>
+    <string name="off_lbl_county">County</string>
+    <string name="off_lbl_subcounty">Sub-county</string>
+    <string name="off_lbl_ward">Ward</string>
+    <string name="off_lbl_village">Village</string>
+    <string name="off_lbl_gps">Farm GPS</string>
+    <string name="off_lbl_farming_type">Farming type</string>
+    <string name="off_lbl_produce">Main produce</string>
+    <string name="off_lbl_size">Farm size</string>
+    <string name="off_lbl_reviewer">Reviewed by</string>
+    <string name="off_lbl_reason">Rejection reason</string>
+    <string name="off_otp_ok">✓ OTP verified</string>
+    <string name="off_otp_no">Not verified</string>
+    <string name="off_back">Back</string>
+    <string name="off_btn_approve">Approve farmer</string>
+    <string name="off_not_uploaded_hint">Not uploaded</string>
+    <string name="off_submitted">Submitted</string>
+</resources>

@@ -2,21 +2,64 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent" android:layout_height="wrap_content"
-    android:layout_margin="8dp" android:clickable="true" android:focusable="true"
-    app:cardBackgroundColor="@color/fc_card" app:cardCornerRadius="18dp" app:cardElevation="2dp" app:strokeWidth="0dp">
+    android:layout_marginBottom="6dp" android:layout_marginEnd="6dp" android:layout_marginStart="6dp"
+    android:layout_marginTop="6dp" android:clickable="true" android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    app:cardBackgroundColor="@color/fc_card" app:cardCornerRadius="20dp" app:cardElevation="1dp"
+    app:strokeColor="#E3EBE0" app:strokeWidth="1dp">
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:gravity="center_vertical" android:orientation="horizontal" android:padding="16dp">
+        android:orientation="horizontal">
+
+        <!-- status accent -->
+        <View android:id="@+id/vAccent" android:layout_width="5dp" android:layout_height="match_parent"
+            android:background="#F9A825" />
+
         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
-            android:layout_weight="1" android:orientation="vertical">
-            <TextView android:id="@+id/tvName" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:textColor="@color/fc_text" android:textSize="17sp" android:textStyle="bold" android:fontFamily="serif" />
-            <TextView android:id="@+id/tvLoc" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:textColor="@color/fc_muted" android:textSize="13sp" />
-            <TextView android:id="@+id/tvDate" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:textColor="@color/fc_muted" android:textSize="12sp" />
+            android:layout_weight="1" android:gravity="center_vertical" android:orientation="horizontal"
+            android:padding="14dp">
+
+            <TextView android:id="@+id/tvInitial" android:layout_width="48dp" android:layout_height="48dp"
+                android:background="@drawable/bg_avatar" android:fontFamily="serif" android:gravity="center"
+                android:textColor="#1B5E20" android:textSize="20sp" android:textStyle="bold" />
+
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_marginStart="14dp" android:layout_weight="1" android:orientation="vertical">
+                <TextView android:id="@+id/tvName" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:ellipsize="end" android:maxLines="1"
+                    android:textColor="@color/fc_text" android:textSize="16sp" android:textStyle="bold" />
+                <LinearLayout android:id="@+id/rowLoc" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:layout_marginTop="4dp"
+                    android:gravity="center_vertical" android:orientation="horizontal">
+                    <ImageView android:layout_width="14dp" android:layout_height="14dp"
+                        android:importantForAccessibility="no" android:src="@drawable/ic_pin"
+                        android:tint="@color/fc_muted" />
+                    <TextView android:id="@+id/tvLoc" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:layout_marginStart="5dp"
+                        android:ellipsize="end" android:maxLines="1" android:textColor="@color/fc_muted"
+                        android:textSize="13sp" />
+                </LinearLayout>
+                <LinearLayout android:id="@+id/rowDate" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:layout_marginTop="3dp"
+                    android:gravity="center_vertical" android:orientation="horizontal">
+                    <ImageView android:layout_width="14dp" android:layout_height="14dp"
+                        android:importantForAccessibility="no" android:src="@drawable/ic_clock"
+                        android:tint="@color/fc_muted" />
+                    <TextView android:id="@+id/tvDate" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:layout_marginStart="5dp"
+                        android:textColor="@color/fc_muted" android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginStart="8dp" android:gravity="center_horizontal" android:orientation="vertical">
+                <TextView android:id="@+id/tvStatus" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:paddingBottom="4dp" android:paddingEnd="10dp"
+                    android:paddingStart="10dp" android:paddingTop="4dp" android:textSize="11sp"
+                    android:textStyle="bold" />
+                <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                    android:layout_marginTop="8dp" android:importantForAccessibility="no"
+                    android:src="@drawable/ic_chevron_right" android:tint="#A5B3A7" />
+            </LinearLayout>
         </LinearLayout>
-        <TextView android:id="@+id/tvStatus" android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:paddingStart="10dp" android:paddingEnd="10dp" android:paddingTop="4dp" android:paddingBottom="4dp"
-            android:textColor="#FFFFFF" android:textSize="11sp" android:textStyle="bold" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
