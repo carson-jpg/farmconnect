@@ -49,6 +49,8 @@
         <activity android:name=".ui.ReviewsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.AdminHomeActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.AdminUsersActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.SecurityActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.CountyAdminsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.AdminProductsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.WishlistActivity" />
         <activity android:name=".ui.OrdersActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />

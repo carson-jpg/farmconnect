@@ -1,0 +1,21 @@
+Date,Region,Product,Salesperson,Units Sold,Unit Price,Revenue
+2024-01-15,Nairobi,Bread,Alice,22,50,1100
+2024-02-03,Kisumu,Milk,Brian,35,60,2100
+2024-02-18,Mombasa,Soap,Cynthia,8,80,640
+2024-03-07,Nakuru,Sugar,David,14,120,1680
+2024-03-22,Nairobi,Cooking Oil,Esther,6,250,1500
+2024-04-11,Kisumu,Bread,Alice,40,50,2000
+2024-04-29,Mombasa,Milk,Brian,18,60,1080
+2024-05-14,Nakuru,Soap,Cynthia,25,80,2000
+2024-06-02,Nairobi,Sugar,David,11,120,1320
+2024-06-20,Kisumu,Cooking Oil,Esther,4,250,1000
+2024-07-08,Mombasa,Bread,Alice,30,50,1500
+2024-07-25,Nakuru,Milk,Brian,45,60,2700
+2024-08-13,Nairobi,Soap,Cynthia,12,80,960
+2024-08-30,Kisumu,Sugar,David,20,120,2400
+2024-09-17,Mombasa,Cooking Oil,Esther,7,250,1750
+2024-10-05,Nakuru,Bread,Alice,28,50,1400
+2024-10-23,Nairobi,Milk,Brian,33,60,1980
+2024-11-10,Kisumu,Soap,Cynthia,15,80,1200
+2024-11-28,Mombasa,Sugar,David,9,120,1080
+2024-12-16,Nakuru,Cooking Oil,Esther,5,250,1250

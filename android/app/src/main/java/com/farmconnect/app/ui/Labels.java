@@ -155,6 +155,7 @@ final class Labels {
             case "BUYER": return "🛒";
             case "OFFICER": return "🏛";
             case "ADMIN": return "🛡";
+            case "COUNTY_ADMIN": return "🗺";
             default: return "👤";
         }
     }
@@ -163,13 +164,14 @@ final class Labels {
         if (r == null) return "";
         switch (r) {
             case "OFFICER": return com.farmconnect.app.util.I18n.t("County officer");
-            case "ADMIN": return com.farmconnect.app.util.I18n.t("Administrator");
+            case "ADMIN": return com.farmconnect.app.util.I18n.t("Super admin");
+            case "COUNTY_ADMIN": return com.farmconnect.app.util.I18n.t("County admin");
             default: return com.farmconnect.app.util.I18n.t(r.charAt(0) + r.substring(1).toLowerCase());
         }
     }
 
     static boolean isStaff() {
         String r = com.farmconnect.app.data.Session.role();
-        return "ADMIN".equals(r) || "OFFICER".equals(r);
+        return "ADMIN".equals(r) || "COUNTY_ADMIN".equals(r) || "OFFICER".equals(r);
     }
 }

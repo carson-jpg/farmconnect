@@ -48,6 +48,17 @@ public class CommunityViewModel extends ViewModel {
     public LiveData<Resource<Price>> postPrice(PriceRequest r) { return repo.postPrice(r); }
     public LiveData<Resource<Void>> deletePrice(long id) { return repo.deletePrice(id); }
     public LiveData<Resource<AlertToggle>> togglePriceAlert(String crop) { return repo.togglePriceAlert(crop); }
+    public LiveData<Resource<AlertInfo>> setPriceTarget(String crop, Double price, String direction) { return repo.setPriceTarget(crop, price, direction); }
+    public LiveData<Resource<AuthResponse>> changePassword(String current, String next) { return repo.changePassword(current, next); }
+    public LiveData<Resource<SecuritySummary>> securitySummary() { return repo.securitySummary(); }
+    public LiveData<Resource<List<AuditEntry>>> securityAudit(String action, String q) { return repo.securityAudit(action, q); }
+    public LiveData<Resource<List<LockInfo>>> securityLocks() { return repo.securityLocks(); }
+    public LiveData<Resource<Cleared>> unlock(String email, String ip) { return repo.unlock(email, ip); }
+    public LiveData<Resource<MessageResponse>> forceLogout(long id) { return repo.forceLogout(id); }
+    public LiveData<Resource<TempPassword>> adminResetPassword(long id) { return repo.adminResetPassword(id); }
+    public LiveData<Resource<List<UserSummary>>> countyAdmins() { return repo.countyAdmins(); }
+    public LiveData<Resource<UserSummary>> createCountyAdmin(CountyAdminRequest r) { return repo.createCountyAdmin(r); }
+    public LiveData<Resource<UserSummary>> setCountyAdminCounty(long id, String county) { return repo.setCountyAdminCounty(id, county); }
     public LiveData<Resource<Review>> createReview(long orderId, long sellerId, int rating, String comment) { return repo.createReview(orderId, sellerId, rating, comment); }
     public LiveData<Resource<SellerReviewSummary>> sellerReviews(long id) { return repo.sellerReviews(id); }
     public LiveData<Resource<Review>> replyReview(long id, String text) { return repo.replyReview(id, text); }

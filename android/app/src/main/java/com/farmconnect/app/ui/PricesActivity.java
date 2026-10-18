@@ -45,6 +45,8 @@ public class PricesActivity extends BaseListActivity {
                 if (p.previousPrice != null) meta.append(I18n.t("  ·  was ")).append(Ui.kes(p.previousPrice));
                 if (multiple && firstOfCrop) meta.append(I18n.t("  ·  💚 Lowest in county"));
                 if (multiple && lastOfCrop) meta.append(I18n.t("  ·  🔶 Highest in county"));
+                if (p.alertTarget != null)
+                    meta.append(I18n.t("  ·  🎯 alert at ")).append("BELOW".equals(p.alertDirection) ? "≤ " : "≥ ").append(Ui.kes(p.alertTarget));
                 Row r = Row.of(Labels.cropIcon(p.crop), p.crop + " · " + p.market)
                         .sub(Ui.kes(p.price) + I18n.t(" per ") + p.unit)
                         .meta(meta.toString())
@@ -74,14 +76,67 @@ public class PricesActivity extends BaseListActivity {
                     .setTitle(Labels.cropIcon(p.crop) + "  " + p.crop + " · " + p.market)
                     .setMessage(m.toString().trim())
                     .setNegativeButton(I18n.t("Close"), null)
-                    .setPositiveButton(p.subscribed ? I18n.t("🔕 Stop alerts") : I18n.t("🔔 Alert me on changes"), (x, y) ->
-                            Ui.watch(this, vm.togglePriceAlert(p.crop), b.progress, t -> {
-                                Ui.toast(this, t.subscribed ? I18n.t("You will be notified when ") + p.crop + I18n.t(" prices change") : I18n.t("Alerts turned off"));
-                                load();
-                            }));
+                    .setPositiveButton(p.subscribed ? I18n.t("🔔 Alerts: on") : I18n.t("🔔 Alerts"), (x, y) -> alertOptions(p));
             if (Labels.isStaff()) d.setNeutralButton(I18n.t("Delete latest"), (x, y) ->
                     Ui.watch(this, vm.deletePrice(p.id), b.progress, r -> { Ui.toast(this, I18n.t("Price removed")); load(); }));
             d.show();
+        });
+    }
+
+    /** Alert choices for a crop: every change, a target price, or off. */
+    private void alertOptions(Price p) {
+        List<String> labels = new ArrayList<>();
+        List<Runnable> actions = new ArrayList<>();
+        boolean hasTarget = p.alertTarget != null;
+
+        if (!p.subscribed) {
+            labels.add(I18n.t("🔔 Alert me on every price change"));
+            actions.add(() -> toggleAlert(p));
+        } else {
+            labels.add(I18n.t("🔕 Stop alerts"));
+            actions.add(() -> toggleAlert(p));
+        }
+        labels.add(hasTarget ? I18n.t("🎯 Change my target price") : I18n.t("🎯 Alert me at a target price"));
+        actions.add(() -> askTarget(p));
+        if (hasTarget) {
+            labels.add(I18n.t("↩ Alert on every change instead"));
+            actions.add(() -> Ui.watch(this, vm.setPriceTarget(p.crop, null, "ABOVE"), b.progress, t -> {
+                Ui.toast(this, I18n.t("Target removed. You will hear about every price change."));
+                load();
+            }));
+        }
+        new AlertDialog.Builder(this)
+                .setTitle(Labels.cropIcon(p.crop) + "  " + p.crop + I18n.t(" alerts"))
+                .setItems(labels.toArray(new String[0]), (d, which) -> actions.get(which).run())
+                .setNegativeButton(I18n.t("Close"), null)
+                .show();
+    }
+
+    private void toggleAlert(Price p) {
+        Ui.watch(this, vm.togglePriceAlert(p.crop), b.progress, t -> {
+            Ui.toast(this, t.subscribed ? I18n.t("You will be notified when ") + p.crop + I18n.t(" prices change") : I18n.t("Alerts turned off"));
+            load();
+        });
+    }
+
+    /** "Tell me when Maize reaches KES 4,500": the alert fires once, the first time a market crosses that line. */
+    private void askTarget(Price p) {
+        List<Forms.Field> f = new ArrayList<>();
+        f.add(Forms.choice("direction", I18n.t("Notify me when the price"), true,
+                Forms.arr("ABOVE", "BELOW"), Forms.arr("Rises to or above the target", "Falls to or below the target"))
+                .value(p.alertDirection == null ? "ABOVE" : p.alertDirection));
+        String start = p.alertTarget != null ? String.valueOf(Math.round(p.alertTarget)) : String.valueOf(Math.round(p.price));
+        f.add(Forms.number("price", I18n.t("Target price in KES (now ") + Ui.kes(p.price) + ")", true).value(start));
+        Forms.show(this, I18n.t("Target price for ") + p.crop, I18n.t("Save alert"), f, v -> {
+            double target;
+            try { target = Double.parseDouble(v.get("price")); } catch (Exception e) { target = 0; }
+            if (target <= 0) { Ui.toast(this, I18n.t("Enter a price above zero")); return; }
+            String dir = v.get("direction");
+            Ui.watch(this, vm.setPriceTarget(p.crop, target, dir), b.progress, t -> {
+                Ui.toast(this, I18n.t("You will be notified when ") + p.crop
+                        + ("BELOW".equals(dir) ? I18n.t(" falls to ") : I18n.t(" rises to ")) + Ui.kes(t.targetPrice == null ? 0 : t.targetPrice));
+                load();
+            });
         });
     }
 

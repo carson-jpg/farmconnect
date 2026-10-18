@@ -32,10 +32,11 @@ public class PriceController {
     @GetMapping
     @Transactional(readOnly = true)
     public List<PriceResponse> latest(@RequestParam(required = false) String q, @AuthenticationPrincipal User me) {
-        return latestFor(q, me == null ? Set.of() : subscribed(me.getId()));
+        return latestFor(q, me == null ? Map.of() : mine(me.getId()));
     }
 
-    public List<PriceResponse> latestFor(String q, Set<String> mySubs) {
+    /** @param mySubs the caller's alerts keyed by lower-case crop name */
+    public List<PriceResponse> latestFor(String q, Map<String, PriceAlert> mySubs) {
         String needle = q == null ? "" : q.trim().toLowerCase();
         Map<String, List<MarketPrice>> byKey = new LinkedHashMap<>();
         for (MarketPrice p : prices.findAllByOrderByPriceDateDescIdDesc()) {   // newest first
@@ -51,8 +52,10 @@ public class PriceController {
                 pct = cur.getPrice().subtract(prev.getPrice()).multiply(BigDecimal.valueOf(100))
                         .divide(prev.getPrice(), 1, RoundingMode.HALF_UP).doubleValue();
             }
+            PriceAlert myAlert = mySubs.get(cur.getCrop().toLowerCase());
             out.add(new PriceResponse(cur.getId(), cur.getCrop(), cur.getMarket(), cur.getUnit(), cur.getPrice(), cur.getPriceDate(),
-                    prev == null ? null : prev.getPrice(), pct, cur.getPostedBy().getName(), mySubs.contains(cur.getCrop().toLowerCase())));
+                    prev == null ? null : prev.getPrice(), pct, cur.getPostedBy().getName(), myAlert != null,
+                    myAlert == null ? null : myAlert.getTargetPrice(), myAlert == null ? null : myAlert.getDirection()));
         }
         out.sort(Comparator.comparing((PriceResponse r) -> r.crop().toLowerCase()).thenComparing(PriceResponse::price));
         return out;
@@ -70,7 +73,7 @@ public class PriceController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN','OFFICER')")
+    @PreAuthorize("hasAnyRole('ADMIN','COUNTY_ADMIN','OFFICER')")
     @Transactional
     @ResponseStatus(HttpStatus.CREATED)
     public PriceResponse post(@Valid @RequestBody PriceRequest r, @AuthenticationPrincipal User u) {
@@ -85,24 +88,40 @@ public class PriceController {
         p.setPriceDate(date);
         p.setPostedBy(u);
         p = prices.save(p);
-        String msg = p.getMarket() + ": KES " + p.getPrice().stripTrailingZeros().toPlainString() + " per " + p.getUnit();
-        for (PriceAlert a : alerts.findByCropIgnoreCase(p.getCrop())) {
-            notifier.notifyAndSms(a.getUser(), "PRICE", p.getCrop() + " price update", msg, p.getId());
-        }
         final MarketPrice saved = p;
         MarketPrice prev = prices.findAllByOrderByPriceDateDescIdDesc().stream()
                 .filter(x -> key(x).equals(key(saved)) && x.getPriceDate().isBefore(saved.getPriceDate())).findFirst().orElse(null);
+
+        String msg = p.getMarket() + ": KES " + p.getPrice().stripTrailingZeros().toPlainString() + " per " + p.getUnit();
+        for (PriceAlert a : alerts.findByCropIgnoreCase(p.getCrop())) {
+            if (a.getTargetPrice() == null) {                       // plain alert: every new price
+                notifier.notifyAndSms(a.getUser(), "PRICE", p.getCrop() + " price update", msg, p.getId());
+            } else if (reached(a, p.getPrice()) && (prev == null || !reached(a, prev.getPrice()))) {
+                // target alert: only when this market first crosses the line, not on every later update
+                String line = ("BELOW".equals(a.getDirection()) ? " (your target: KES " + plain(a.getTargetPrice()) + " or lower)"
+                        : " (your target: KES " + plain(a.getTargetPrice()) + " or higher)");
+                notifier.notifyAndSms(a.getUser(), "PRICE", p.getCrop() + " reached your target", msg + line, p.getId());
+            }
+        }
         Double pct = prev == null || prev.getPrice().signum() <= 0 ? null
                 : saved.getPrice().subtract(prev.getPrice()).multiply(BigDecimal.valueOf(100)).divide(prev.getPrice(), 1, RoundingMode.HALF_UP).doubleValue();
         return new PriceResponse(saved.getId(), saved.getCrop(), saved.getMarket(), saved.getUnit(), saved.getPrice(), saved.getPriceDate(),
-                prev == null ? null : prev.getPrice(), pct, u.getName(), false);
+                prev == null ? null : prev.getPrice(), pct, u.getName(), false, null, null);
     }
 
+    /** A county admin can remove prices they posted, or ones posted by staff of their own county; not other counties'. */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','OFFICER')")
-    public void delete(@PathVariable Long id) {
-        if (!prices.existsById(id)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Price not found");
-        prices.deleteById(id);
+    @PreAuthorize("hasAnyRole('ADMIN','COUNTY_ADMIN','OFFICER')")
+    @Transactional
+    public void delete(@PathVariable Long id, @AuthenticationPrincipal User me) {
+        MarketPrice p = prices.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Price not found"));
+        if (me.getRole() == Role.COUNTY_ADMIN) {
+            User by = p.getPostedBy();
+            boolean mine = by.getId().equals(me.getId())
+                    || (by.getRole() != Role.ADMIN && by.getAssignedCounty() != null && by.getAssignedCounty().equals(me.getAssignedCounty()));
+            if (!mine) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This price was posted outside your county");
+        }
+        prices.delete(p);
     }
 
     @GetMapping("/alerts")
@@ -126,9 +145,58 @@ public class PriceController {
         return new AlertToggle(a.getCrop(), true);
     }
 
-    private Set<String> subscribed(Long userId) {
-        return alerts.findByUserId(userId).stream().map(a -> a.getCrop().toLowerCase()).collect(Collectors.toSet());
+    /** My alerts with their target prices, one per crop. */
+    @GetMapping("/alerts/details")
+    @Transactional(readOnly = true)
+    public List<AlertInfo> myAlertDetails(@AuthenticationPrincipal User me) {
+        return alerts.findByUserId(me.getId()).stream()
+                .sorted(Comparator.comparing((PriceAlert a) -> a.getCrop().toLowerCase()))
+                .map(a -> new AlertInfo(a.getCrop(), a.getTargetPrice(), a.getDirection())).toList();
     }
+
+    /**
+     * Set a target price for a crop: "ABOVE" = tell me when it rises to this or higher, "BELOW" = falls to this or lower.
+     * Also subscribes me to the crop if I was not yet. Leave the price out (or 0) to drop the target and go back
+     * to hearing about every new price.
+     */
+    @PostMapping("/alerts/target")
+    @Transactional
+    public AlertInfo setTarget(@RequestParam String crop, @RequestParam(required = false) BigDecimal price,
+                               @RequestParam(defaultValue = "ABOVE") String direction, @AuthenticationPrincipal User me) {
+        String dir = direction.trim().toUpperCase();
+        if (!dir.equals("ABOVE") && !dir.equals("BELOW"))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Direction must be ABOVE or BELOW");
+        if (crop.isBlank()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Crop is required");
+        PriceAlert a = alerts.findByUserIdAndCropIgnoreCase(me.getId(), crop.trim()).orElseGet(() -> {
+            PriceAlert n = new PriceAlert();
+            n.setUser(me);
+            n.setCrop(pretty(crop));
+            return n;
+        });
+        if (price == null || price.signum() <= 0) {
+            a.setTargetPrice(null);
+            a.setDirection(null);
+        } else {
+            a.setTargetPrice(price.setScale(2, RoundingMode.HALF_UP));
+            a.setDirection(dir);
+        }
+        a = alerts.save(a);
+        return new AlertInfo(a.getCrop(), a.getTargetPrice(), a.getDirection());
+    }
+
+    private Map<String, PriceAlert> mine(Long userId) {
+        return alerts.findByUserId(userId).stream()
+                .collect(Collectors.toMap(a -> a.getCrop().toLowerCase(), a -> a, (x, y) -> x));
+    }
+
+    /** True when {@code price} is on the target side of the alert's line (an alert without a target is always "reached"). */
+    static boolean reached(PriceAlert a, BigDecimal price) {
+        if (a.getTargetPrice() == null) return true;
+        int cmp = price.compareTo(a.getTargetPrice());
+        return "BELOW".equals(a.getDirection()) ? cmp <= 0 : cmp >= 0;
+    }
+
+    private static String plain(BigDecimal v) { return v.stripTrailingZeros().toPlainString(); }
 
     private static String key(MarketPrice p) {
         return p.getCrop().toLowerCase() + "|" + p.getMarket().toLowerCase() + "|" + p.getUnit().toLowerCase();

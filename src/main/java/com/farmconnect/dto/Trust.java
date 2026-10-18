@@ -15,9 +15,12 @@ public final class Trust {
     public record PriceRequest(@NotBlank @Size(max = 60) String crop, @NotBlank @Size(max = 60) String market,
                                @NotBlank @Size(max = 30) String unit, @NotNull @DecimalMin("0.01") BigDecimal price, LocalDate date) {}
     public record PriceResponse(Long id, String crop, String market, String unit, BigDecimal price, LocalDate date,
-                                BigDecimal previousPrice, Double changePct, String postedBy, boolean subscribed) {}
+                                BigDecimal previousPrice, Double changePct, String postedBy, boolean subscribed,
+                                BigDecimal alertTarget, String alertDirection) {}
     public record PricePoint(Long id, LocalDate date, BigDecimal price, String unit, String market) {}
     public record AlertToggle(String crop, boolean subscribed) {}
+    /** One of my crop alerts; targetPrice/direction are null for a plain "every new price" alert. */
+    public record AlertInfo(String crop, BigDecimal targetPrice, String direction) {}
 
     // ---- reviews
     public record ReviewRequest(@NotNull Long orderId, @NotNull Long sellerId, @Min(1) @Max(5) int rating, @Size(max = 500) String comment) {}

@@ -3,16 +3,22 @@ package com.farmconnect.controller;
 import com.farmconnect.dto.Community.*;
 import com.farmconnect.model.*;
 import com.farmconnect.repository.ServiceProviderRepository;
+import com.farmconnect.security.Staff;
+import com.farmconnect.service.AreaScope;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
-/** Directory of agricultural service providers. Everyone reads; admins and officers maintain it. */
+/**
+ * Directory of agricultural service providers. Everyone reads; the super admin, county admins and officers maintain it.
+ * A county admin can only add, change or remove providers located in their own county.
+ */
 @RestController
 @RequestMapping("/api/services")
 @RequiredArgsConstructor
@@ -31,28 +37,38 @@ public class ServiceController {
                 .map(ServiceController::toResponse).toList();
     }
 
+    /** A county admin may only work with sub-counties inside their county. */
+    private static void requireInArea(User me, String subCounty) {
+        if (Staff.isCountyAdmin(me) && !AreaScope.of(me).allows(subCounty))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Choose a sub-county inside your own county");
+    }
+
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN','OFFICER')")
+    @PreAuthorize("hasAnyRole('ADMIN','COUNTY_ADMIN','OFFICER')")
     @ResponseStatus(HttpStatus.CREATED)
-    public ServiceResponse create(@Valid @RequestBody ServiceRequest r) {
+    public ServiceResponse create(@Valid @RequestBody ServiceRequest r, @AuthenticationPrincipal User me) {
+        requireInArea(me, r.subCounty());
         ServiceProvider s = new ServiceProvider();
         apply(s, r);
         return toResponse(repo.save(s));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','OFFICER')")
-    public ServiceResponse update(@PathVariable Long id, @Valid @RequestBody ServiceRequest r) {
+    @PreAuthorize("hasAnyRole('ADMIN','COUNTY_ADMIN','OFFICER')")
+    public ServiceResponse update(@PathVariable Long id, @Valid @RequestBody ServiceRequest r, @AuthenticationPrincipal User me) {
         ServiceProvider s = repo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found"));
+        requireInArea(me, s.getSubCounty());      // the provider as it is now ...
+        requireInArea(me, r.subCounty());         // ... and where it would be moved to
         apply(s, r);
         return toResponse(repo.save(s));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','OFFICER')")
-    public void delete(@PathVariable Long id) {
-        if (!repo.existsById(id)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
-        repo.deleteById(id);
+    @PreAuthorize("hasAnyRole('ADMIN','COUNTY_ADMIN','OFFICER')")
+    public void delete(@PathVariable Long id, @AuthenticationPrincipal User me) {
+        ServiceProvider s = repo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found"));
+        requireInArea(me, s.getSubCounty());
+        repo.delete(s);
     }
 
     private void apply(ServiceProvider s, ServiceRequest r) {

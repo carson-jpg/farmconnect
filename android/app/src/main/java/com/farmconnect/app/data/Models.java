@@ -106,6 +106,32 @@ public class Models {
             this.name = name; this.email = email; this.phone = phone; this.password = password;
         }
     }
+    // ---- security ----
+    public static class AuditEntry { public long id; public String at, actorEmail, actorRole, action, target, detail, ip; public boolean success; }
+    public static class LockInfo { public String kind, subject, until; }
+    public static class SecuritySummary {
+        public long failedLogins24h, blocked24h, denied24h, adminLogins24h; public int activeLocks; public boolean defaultAdminPassword;
+    }
+    public static class TempPassword { public String email, temporaryPassword; }
+    public static class Cleared { public int cleared; }
+    public static class UnlockRequest {
+        public String email, ip;
+        public UnlockRequest(String email, String ip) { this.email = email; this.ip = ip; }
+    }
+    public static class ChangePasswordRequest {
+        public String currentPassword, newPassword;
+        public ChangePasswordRequest(String currentPassword, String newPassword) { this.currentPassword = currentPassword; this.newPassword = newPassword; }
+    }
+    public static class CountyAdminRequest {
+        public String name, email, phone, password, county;
+        public CountyAdminRequest(String name, String email, String phone, String password, String county) {
+            this.name = name; this.email = email; this.phone = phone; this.password = password; this.county = county;
+        }
+    }
+    public static class CountyRequest {
+        public String county;
+        public CountyRequest(String county) { this.county = county; }
+    }
     public static class UserSummary {
         public long id; public String name, email, phone, role, createdAt; public boolean verified, enabled;
         public String assignedCounty; public java.util.List<String> assignedSubCounties;
@@ -221,9 +247,12 @@ public class Models {
     public static class Price {
         public long id; public String crop, market, unit, date, postedBy; public double price;
         public Double previousPrice, changePct; public boolean subscribed;
+        /** My target for this crop (KES) and "ABOVE"/"BELOW"; null when I only get plain "every change" alerts. */
+        public Double alertTarget; public String alertDirection;
     }
     public static class PricePoint { public long id; public String date, unit, market; public double price; }
     public static class AlertToggle { public String crop; public boolean subscribed; }
+    public static class AlertInfo { public String crop, direction; public Double targetPrice; }
     public static class ReviewRequest {
         public long orderId, sellerId; public int rating; public String comment;
         public ReviewRequest(long orderId, long sellerId, int rating, String comment) {

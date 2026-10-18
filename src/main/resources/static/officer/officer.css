@@ -114,7 +114,7 @@ td .sub { color: var(--grey); font-size: 12px; }
 .st-PENDING { background: #f9a825; color: #3a2a00; } .st-UNDER_REVIEW, .st-CONFIRMED { background: #1e88e5; }
 .st-VERIFIED, .st-DELIVERED, .st-ok, .st-LIVE { background: #2e7d32; } .st-REJECTED, .st-CANCELLED, .st-bad { background: #c62828; }
 .st-SHIPPED { background: #8e24aa; } .st-HIDDEN { background: #78909c; }
-.role-ADMIN { background: #3e2723; } .role-OFFICER { background: #1e88e5; } .role-FARMER { background: #2e7d32; } .role-BUYER { background: #8e24aa; }
+.role-ADMIN { background: #3e2723; } .role-COUNTY_ADMIN { background: #00796b; } .role-OFFICER { background: #1e88e5; } .role-FARMER { background: #2e7d32; } .role-BUYER { background: #8e24aa; }
 .up { color: var(--red); font-weight: 600; } .down { color: var(--green); font-weight: 600; }
 
 /* ---------- forms in cards, reports ---------- */

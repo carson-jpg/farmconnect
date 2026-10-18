@@ -25,6 +25,8 @@ public class Post {
     private String contact;
     /** ALL, FARMERS or BUYERS */
     private String audience = "ALL";
+    /** Set when a county admin published it: the county it speaks for. null = a national post (super admin / officer). */
+    private String county;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User author;
     private Instant createdAt = Instant.now();

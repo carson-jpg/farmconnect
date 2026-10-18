@@ -130,7 +130,7 @@ public class Ui {
         String role = Session.role();
         Class<?> target;
         if ("FARMER".equals(role)) target = FarmerHomeActivity.class;
-        else if ("ADMIN".equals(role)) target = AdminHomeActivity.class;
+        else if ("ADMIN".equals(role) || "COUNTY_ADMIN".equals(role)) target = AdminHomeActivity.class;
         else if ("OFFICER".equals(role)) target = ReviewerHomeActivity.class;
         else target = BuyerHomeActivity.class;
         Intent i = new Intent(a, target);

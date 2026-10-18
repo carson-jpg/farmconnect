@@ -841,3 +841,86 @@ Create your account as	Fungua akaunti yako kama
 Google sign-in is not set up yet	Uingiaji kwa Google bado haujawekwa
 Google sign-in failed	Kuingia kwa Google kumeshindwa
 Officer	Afisa
+🔔 Alerts: on	🔔 Arifa: zimewashwa
+🔔 Alerts	🔔 Arifa
+🔔 Alert me on every price change	🔔 Nijulishe kila bei inapobadilika
+🎯 Change my target price	🎯 Badilisha bei lengwa yangu
+🎯 Alert me at a target price	🎯 Nijulishe bei ikifikia bei lengwa
+↩ Alert on every change instead	↩ Badala yake, nijulishe kila mabadiliko
+Target removed. You will hear about every price change.	Bei lengwa imeondolewa. Utaarifiwa kila bei inapobadilika.
+alerts	arifa
+Notify me when the price	Nijulishe bei inapokuwa
+Rises to or above the target	Inapanda hadi au juu ya bei lengwa
+Falls to or below the target	Inashuka hadi au chini ya bei lengwa
+Target price in KES (now	Bei lengwa kwa KES (sasa
+Target price for	Bei lengwa ya
+Save alert	Hifadhi arifa
+Enter a price above zero	Weka bei zaidi ya sifuri
+falls to	inashuka hadi
+rises to	inapanda hadi
+·  🎯 alert at	·  🎯 arifa kwa
+Super admin	Msimamizi mkuu
+County admin	Msimamizi wa kaunti
+County admins	Wasimamizi wa kaunti
+New county admin	Msimamizi mpya wa kaunti
+No county admins yet.\nCreate one and choose the county they manage.	Hakuna wasimamizi wa kaunti bado.\nUnda mmoja na uchague kaunti anayosimamia.
+⚠ No county assigned. They cannot see anything yet.	⚠ Hajapewa kaunti. Hawezi kuona chochote bado.
+Manages	Anasimamia
+county only	kaunti hii pekee
+No county	Hakuna kaunti
+Email (they log in with this)	Barua pepe (ataingia nayo)
+Password (at least 8 characters)	Nenosiri (angalau herufi 8)
+County they will manage	Kaunti atakayosimamia
+Enter a valid email address	Weka barua pepe sahihi
+The password needs at least 8 characters.	Nenosiri linahitaji angalau herufi 8.
+County admin created for	Msimamizi wa kaunti ameundwa kwa
+County for	Kaunti ya
+Now manages	Sasa anasimamia
+No county yet	Hakuna kaunti bado
+This officer has no county yet.	Afisa huyu hana kaunti bado.
+Security	Usalama
+Nothing logged yet.	Hakuna kilichorekodiwa bado.
+Search an email, address or action...	Tafuta barua pepe, anwani au kitendo...
+My password	Nenosiri langu
+Everything	Vyote
+Lockouts	Waliozuiwa
+Wrong passwords	Nenosiri lisilo sahihi
+Blocked	Imezuiwa
+Access denied	Ufikiaji umekataliwa
+Sign-ins	Uingiaji
+Staff actions	Vitendo vya wafanyakazi
+Signed in	Ameingia
+Wrong password	Nenosiri si sahihi
+Blocked (locked out)	Amezuiwa (amefungiwa nje)
+Suspended account tried to sign in	Akaunti iliyosimamishwa ilijaribu kuingia
+Staff action	Kitendo cha mfanyakazi
+Staff action failed	Kitendo cha mfanyakazi kimeshindwa
+Password reset	Nenosiri limewekwa upya
+Password changed	Nenosiri limebadilishwa
+Signed out everywhere	Ametolewa kila mahali
+Temporary password issued	Nenosiri la muda limetolewa
+Lockout cleared	Kizuizi kimeondolewa
+(not signed in)	(hajaingia)
+events	matukio
+Address locked	Anwani imefungwa
+Account locked	Akaunti imefungwa
+Until	Hadi
+Unlock	Fungua
+Unlocked	Imefunguliwa
+Nobody is locked out	Hakuna aliyefungiwa nje
+active lockouts	vizuizi vinavyoendelea
+Current password	Nenosiri la sasa
+New password (8+ characters, a letter and a number)	Nenosiri jipya (herufi 8+, herufi na nambari)
+Change my password	Badilisha nenosiri langu
+Change password	Badilisha nenosiri
+Password changed. Other devices were signed out.	Nenosiri limebadilishwa. Vifaa vingine vimetolewa.
+Temporary password	Nenosiri la muda
+Give this to them privately. It is shown only once.	Wapatie kwa siri. Linaonyeshwa mara moja tu.
+Done	Nimemaliza
+Choose area	Chagua eneo
+Sign out everywhere	Toa kila mahali
+They will have to log in again on every device.	Watalazimika kuingia tena kwenye kila kifaa.
+Sign out	Toka
+Issue a new temporary password	Toa nenosiri jipya la muda
+Their old password stops working and they are signed out everywhere.	Nenosiri lao la zamani halitafanya kazi na watatolewa kila mahali.
+Issue password	Toa nenosiri

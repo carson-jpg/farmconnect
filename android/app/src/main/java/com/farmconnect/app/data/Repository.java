@@ -128,6 +128,7 @@ public class Repository {
     public LiveData<Resource<Price>> postPrice(PriceRequest r) { return run(api().postPrice(r)); }
     public LiveData<Resource<Void>> deletePrice(long id) { return run(api().deletePrice(id)); }
     public LiveData<Resource<AlertToggle>> togglePriceAlert(String crop) { return run(api().togglePriceAlert(crop)); }
+    public LiveData<Resource<AlertInfo>> setPriceTarget(String crop, Double price, String direction) { return run(api().setPriceTarget(crop, price, direction)); }
     public LiveData<Resource<Review>> createReview(long orderId, long sellerId, int rating, String comment) {
         return run(api().createReview(new ReviewRequest(orderId, sellerId, rating, comment)));
     }
@@ -148,6 +149,16 @@ public class Repository {
     public LiveData<Resource<List<Product>>> adminProducts(String q) { return run(api().adminProducts(q == null || q.isEmpty() ? null : q)); }
     public LiveData<Resource<Product>> adminSetProductActive(long id, boolean active) { return run(api().adminSetProductActive(id, new ActiveRequest(active))); }
     public LiveData<Resource<AuthResponse>> createOfficer(OfficerRequest r) { return run(api().createOfficer(r)); }
+    public LiveData<Resource<AuthResponse>> changePassword(String current, String next) { return run(api().changePassword(new ChangePasswordRequest(current, next))); }
+    public LiveData<Resource<SecuritySummary>> securitySummary() { return run(api().securitySummary()); }
+    public LiveData<Resource<List<AuditEntry>>> securityAudit(String action, String q) { return run(api().securityAudit(action, q, 200)); }
+    public LiveData<Resource<List<LockInfo>>> securityLocks() { return run(api().securityLocks()); }
+    public LiveData<Resource<Cleared>> unlock(String email, String ip) { return run(api().unlock(new UnlockRequest(email, ip))); }
+    public LiveData<Resource<MessageResponse>> forceLogout(long id) { return run(api().forceLogout(id)); }
+    public LiveData<Resource<TempPassword>> adminResetPassword(long id) { return run(api().adminResetPassword(id)); }
+    public LiveData<Resource<List<UserSummary>>> countyAdmins() { return run(api().countyAdmins()); }
+    public LiveData<Resource<UserSummary>> createCountyAdmin(CountyAdminRequest r) { return run(api().createCountyAdmin(r)); }
+    public LiveData<Resource<UserSummary>> setCountyAdminCounty(long id, String county) { return run(api().setCountyAdminCounty(id, new CountyRequest(county))); }
     public LiveData<Resource<UserSummary>> assignOfficer(long id, AssignmentRequest r) { return run(api().assignOfficer(id, r)); }
 
     // reviewer

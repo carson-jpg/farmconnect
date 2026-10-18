@@ -67,7 +67,7 @@ public class NotificationsActivity extends BaseListActivity {
                 break;
             case "ORDER": {
                 String role = Session.role();
-                String mode = "FARMER".equals(role) ? "FARMER" : "ADMIN".equals(role) ? "ADMIN" : "BUYER";
+                String mode = "FARMER".equals(role) ? "FARMER" : ("ADMIN".equals(role) || "COUNTY_ADMIN".equals(role)) ? "ADMIN" : "BUYER";
                 i = new Intent(this, OrdersActivity.class).putExtra("mode", mode);
                 break;
             }

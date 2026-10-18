@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 /** In-app notifications (the bell) plus optional SMS through SmsService (Africa's Talking when configured). */
 @Service
@@ -53,10 +54,22 @@ public class NotificationService {
     public int broadcast(String audience, String type, String title, String body, Long refId, boolean alsoSms) {
         String a = audience == null ? "ALL" : audience.toUpperCase();
         List<User> targets = users.findAll().stream().filter(User::isEnabled).filter(u -> switch (a) {
-            case "FARMERS" -> u.getRole() == Role.FARMER || u.getRole() == Role.ADMIN || u.getRole() == Role.OFFICER;
-            case "BUYERS" -> u.getRole() == Role.BUYER || u.getRole() == Role.ADMIN || u.getRole() == Role.OFFICER;
+            case "FARMERS" -> u.getRole() == Role.FARMER || u.getRole() == Role.ADMIN || u.getRole() == Role.COUNTY_ADMIN || u.getRole() == Role.OFFICER;
+            case "BUYERS" -> u.getRole() == Role.BUYER || u.getRole() == Role.ADMIN || u.getRole() == Role.COUNTY_ADMIN || u.getRole() == Role.OFFICER;
             default -> true;
         }).toList();
+        for (User u : targets) {
+            notify(u, type, title, body, refId);
+            if (alsoSms && u.getRole() != Role.ADMIN) text(u, title + ". " + body);
+        }
+        return targets.size();
+    }
+
+    /** Notify an exact set of users (for example the farmers of one county). Suspended users are skipped. Returns how many. */
+    @Transactional
+    public int broadcastToUsers(Set<Long> userIds, String type, String title, String body, Long refId, boolean alsoSms) {
+        if (userIds == null || userIds.isEmpty()) return 0;
+        List<User> targets = users.findAllById(userIds).stream().filter(User::isEnabled).toList();
         for (User u : targets) {
             notify(u, type, title, body, refId);
             if (alsoSms && u.getRole() != Role.ADMIN) text(u, title + ". " + body);

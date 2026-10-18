@@ -3,6 +3,8 @@ package com.farmconnect.controller;
 import com.farmconnect.dto.Community.*;
 import com.farmconnect.model.*;
 import com.farmconnect.repository.*;
+import com.farmconnect.security.Staff;
+import com.farmconnect.service.AreaScope;
 import com.farmconnect.service.NotificationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +44,7 @@ public class GroupController {
     @Transactional(readOnly = true)
     public GroupDetail one(@PathVariable Long id, @AuthenticationPrincipal User me) {
         FarmerGroup g = find(id);
-        boolean privileged = staff(me) || isLeader(g, me);
+        boolean privileged = canManage(g, me);
         List<MemberResponse> list = members.findByGroupIdOrderByLeaderDescJoinedAtAsc(id).stream()
                 .map(m -> new MemberResponse(m.getUser().getId(), m.getUser().getName(), m.isLeader(), m.getUser().isVerified(),
                         privileged ? m.getUser().getPhone() : null, m.getJoinedAt())).toList();
@@ -54,6 +56,7 @@ public class GroupController {
     @ResponseStatus(HttpStatus.CREATED)
     public GroupResponse create(@Valid @RequestBody GroupRequest r, @AuthenticationPrincipal User me) {
         if (me.getRole() == Role.BUYER) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only farmers and county staff can create groups");
+        requireInOwnCounty(me, r.subCounty());
         FarmerGroup g = new FarmerGroup();
         g.setCreatedBy(me);
         apply(g, r);
@@ -67,6 +70,7 @@ public class GroupController {
     public GroupResponse update(@PathVariable Long id, @Valid @RequestBody GroupRequest r, @AuthenticationPrincipal User me) {
         FarmerGroup g = find(id);
         requireManager(g, me);
+        requireInOwnCounty(me, r.subCounty());
         apply(g, r);
         return toResponse(groups.save(g), me);
     }
@@ -140,14 +144,26 @@ public class GroupController {
         return groups.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Group not found"));
     }
 
-    private boolean staff(User u) { return u.getRole() == Role.ADMIN || u.getRole() == Role.OFFICER; }
+    private boolean staff(User u) { return Staff.is(u); }
+
+    /** A county admin may only create groups in, or move groups to, their own county. */
+    private static void requireInOwnCounty(User me, String subCounty) {
+        if (Staff.isCountyAdmin(me) && !AreaScope.of(me).allows(subCounty))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Choose a sub-county inside your own county");
+    }
+
+    /** Leader, super admin, officer, or a county admin whose county the group is in. */
+    private boolean canManage(FarmerGroup g, User u) {
+        if (Staff.isCountyAdmin(u)) return AreaScope.of(u).allows(g.getSubCounty());
+        return staff(u) || isLeader(g, u);
+    }
 
     private boolean isLeader(FarmerGroup g, User u) {
         return members.findByGroupIdAndUserId(g.getId(), u.getId()).map(GroupMember::isLeader).orElse(false);
     }
 
     private void requireManager(FarmerGroup g, User u) {
-        if (!staff(u) && !isLeader(g, u)) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the group leader or county staff can do this");
+        if (!canManage(g, u)) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the group leader or county staff can do this");
     }
 
     private void apply(FarmerGroup g, GroupRequest r) {

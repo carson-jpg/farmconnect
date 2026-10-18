@@ -49,7 +49,7 @@ public final class Hub {
 
     private void build(LinearLayout container) {
         String role = Session.role() == null ? "" : Session.role();
-        boolean staff = role.equals("ADMIN") || role.equals("OFFICER");
+        boolean staff = role.equals("ADMIN") || role.equals("COUNTY_ADMIN") || role.equals("OFFICER");
         List<Link> links = new ArrayList<>();
         if (role.equals("FARMER")) {
             links.addAll(Arrays.asList(
@@ -68,6 +68,11 @@ public final class Hub {
                     new Link("👥", "Groups", null, open(GroupsActivity.class)),
                     new Link("🧰", "Directory", null, open(ServicesActivity.class)),
                     new Link("🌦", "Weather", null, open(WeatherActivity.class))));
+            // only the super admin appoints county admins
+            if (role.equals("ADMIN")) {
+                links.add(0, new Link("🔐", "Security", null, open(SecurityActivity.class)));
+                links.add(0, new Link("🗺", "County admins", null, open(CountyAdminsActivity.class)));
+            }
         } else {
             links.addAll(Arrays.asList(
                     new Link("💹", "Prices", null, open(PricesActivity.class)),
@@ -78,6 +83,7 @@ public final class Hub {
         links.add(new Link("💬", "Messages", "m", open(MessagesActivity.class)));
         links.add(new Link("🔔", "Alerts", "n", open(NotificationsActivity.class)));
         if (!staff) links.add(new Link("⭐", "Rate us", null, this::rateDialog));
+        links.add(new Link("🔑", "Password", null, () -> SecurityActivity.changePasswordDialog(a, vm)));
         links.add(new Link("🌐", "Language", null, () -> com.farmconnect.app.util.I18n.chooseLanguage(a)));
 
         container.removeAllViews();

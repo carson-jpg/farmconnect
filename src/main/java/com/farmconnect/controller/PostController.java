@@ -3,6 +3,9 @@ package com.farmconnect.controller;
 import com.farmconnect.dto.Community.*;
 import com.farmconnect.model.*;
 import com.farmconnect.repository.*;
+import com.farmconnect.security.Staff;
+import com.farmconnect.service.AreaScope;
+import com.farmconnect.service.AreaService;
 import com.farmconnect.service.NotificationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +19,11 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.Set;
 
-/** Agricultural information and county programmes. Anyone logged in reads; admins and officers publish. */
+/**
+ * Agricultural information and county programmes. Anyone logged in reads; the super admin, county admins and officers publish.
+ * A county admin's posts are tagged with their county, reach only that county's farmers, and can only be changed by them
+ * (or the super admin).
+ */
 @RestController
 @RequestMapping("/api/posts")
 @RequiredArgsConstructor
@@ -26,6 +33,7 @@ public class PostController {
     private final PostRepository posts;
     private final PostRegistrationRepository registrations;
     private final NotificationService notifier;
+    private final AreaService areas;
 
     @GetMapping
     @Transactional(readOnly = true)
@@ -51,35 +59,44 @@ public class PostController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN','OFFICER')")
+    @PreAuthorize("hasAnyRole('ADMIN','COUNTY_ADMIN','OFFICER')")
     @Transactional
     @ResponseStatus(HttpStatus.CREATED)
     public PostResponse create(@Valid @RequestBody PostRequest r, @AuthenticationPrincipal User u) {
         Post p = new Post();
         p.setAuthor(u);
         apply(p, r);
+        if (Staff.isCountyAdmin(u)) p.setCounty(ownCounty(u));
         p = posts.save(p);
         if (r.notifyUsers() == null || r.notifyUsers()) {
-            notifier.broadcast(p.getAudience(), "POST", label(p.getType()) + ": " + p.getTitle(), excerpt(p.getBody()), p.getId(),
-                    Boolean.TRUE.equals(r.sendSms()));
+            String title = label(p.getType()) + ": " + p.getTitle();
+            if (p.getCounty() != null) {
+                // a county post is announced to that county's farmers only
+                notifier.broadcastToUsers(areas.farmerIdsIn(AreaScope.of(u)), "POST", title, excerpt(p.getBody()), p.getId(),
+                        Boolean.TRUE.equals(r.sendSms()));
+            } else {
+                notifier.broadcast(p.getAudience(), "POST", title, excerpt(p.getBody()), p.getId(), Boolean.TRUE.equals(r.sendSms()));
+            }
         }
         return toResponse(p, u);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','OFFICER')")
+    @PreAuthorize("hasAnyRole('ADMIN','COUNTY_ADMIN','OFFICER')")
     @Transactional
     public PostResponse update(@PathVariable Long id, @Valid @RequestBody PostRequest r, @AuthenticationPrincipal User u) {
         Post p = find(id);
+        requireMayChange(p, u);
         apply(p, r);
         return toResponse(posts.save(p), u);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','OFFICER')")
+    @PreAuthorize("hasAnyRole('ADMIN','COUNTY_ADMIN','OFFICER')")
     @Transactional
-    public void delete(@PathVariable Long id) {
+    public void delete(@PathVariable Long id, @AuthenticationPrincipal User u) {
         Post p = find(id);
+        requireMayChange(p, u);
         registrations.deleteByPostId(id);
         posts.delete(p);
     }
@@ -125,8 +142,22 @@ public class PostController {
         return posts.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
     }
 
+    /** A county admin's own county; a county admin without one cannot publish yet. */
+    private static String ownCounty(User u) {
+        String c = u.getAssignedCounty();
+        if (c == null || c.isBlank())
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No county has been assigned to you yet. Ask the super admin.");
+        return c;
+    }
+
+    /** A county admin may only change posts of their own county; everyone else keeps their existing rights. */
+    private static void requireMayChange(Post p, User u) {
+        if (Staff.isCountyAdmin(u) && !ownCounty(u).equals(p.getCounty()))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This post does not belong to your county");
+    }
+
     private static boolean visible(User viewer, Post p) {
-        if (viewer != null && (viewer.getRole() == Role.ADMIN || viewer.getRole() == Role.OFFICER)) return true;
+        if (Staff.is(viewer)) return true;
         if ("FARMERS".equals(p.getAudience())) return viewer != null && viewer.getRole() == Role.FARMER;
         if ("BUYERS".equals(p.getAudience())) return viewer != null && viewer.getRole() == Role.BUYER;
         return true;

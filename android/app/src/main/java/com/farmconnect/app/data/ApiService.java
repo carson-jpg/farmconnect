@@ -104,6 +104,8 @@ public interface ApiService {
     @POST("api/prices") Call<Price> postPrice(@Body PriceRequest r);
     @DELETE("api/prices/{id}") Call<Void> deletePrice(@Path("id") long id);
     @POST("api/prices/alerts/toggle") Call<AlertToggle> togglePriceAlert(@Query("crop") String crop);
+    /** price == null clears the target (back to "every change"). direction: ABOVE or BELOW. */
+    @POST("api/prices/alerts/target") Call<AlertInfo> setPriceTarget(@Query("crop") String crop, @Query("price") Double price, @Query("direction") String direction);
     @POST("api/reviews") Call<Review> createReview(@Body ReviewRequest r);
     @GET("api/reviews/seller/{id}") Call<SellerReviewSummary> sellerReviews(@Path("id") long id);
     @POST("api/reviews/{id}/reply") Call<Review> replyReview(@Path("id") long id, @Body ReplyRequest r);
@@ -118,6 +120,16 @@ public interface ApiService {
     @GET("api/admin/products") Call<List<Product>> adminProducts(@Query("q") String q);
     @POST("api/admin/products/{id}/active") Call<Product> adminSetProductActive(@Path("id") long id, @Body ActiveRequest r);
     @POST("api/admin/officers") Call<AuthResponse> createOfficer(@Body OfficerRequest r);
+    @POST("api/auth/change-password") Call<AuthResponse> changePassword(@Body ChangePasswordRequest r);
+    @GET("api/admin/security/summary") Call<SecuritySummary> securitySummary();
+    @GET("api/admin/security/audit") Call<List<AuditEntry>> securityAudit(@Query("action") String action, @Query("q") String q, @Query("limit") int limit);
+    @GET("api/admin/security/locks") Call<List<LockInfo>> securityLocks();
+    @POST("api/admin/security/locks/unlock") Call<Cleared> unlock(@Body UnlockRequest r);
+    @POST("api/admin/security/users/{id}/force-logout") Call<MessageResponse> forceLogout(@Path("id") long id);
+    @POST("api/admin/security/users/{id}/reset-password") Call<TempPassword> adminResetPassword(@Path("id") long id);
+    @GET("api/admin/county-admins") Call<List<UserSummary>> countyAdmins();
+    @POST("api/admin/county-admins") Call<UserSummary> createCountyAdmin(@Body CountyAdminRequest r);
+    @PUT("api/admin/county-admins/{id}/county") Call<UserSummary> setCountyAdminCounty(@Path("id") long id, @Body CountyRequest r);
     @PUT("api/admin/officers/{id}/assignment") Call<UserSummary> assignOfficer(@Path("id") long id, @Body AssignmentRequest r);
 
     // reviewer (admin / county officer)

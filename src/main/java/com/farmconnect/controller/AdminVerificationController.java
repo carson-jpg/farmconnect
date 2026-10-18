@@ -7,6 +7,7 @@ import com.farmconnect.model.Role;
 import com.farmconnect.model.User;
 import com.farmconnect.model.VerificationStatus;
 import com.farmconnect.repository.UserRepository;
+import com.farmconnect.security.Staff;
 import com.farmconnect.service.FileStorageService;
 import com.farmconnect.service.AreaScope;
 import com.farmconnect.service.Locations;
@@ -24,10 +25,13 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
-/** Only ADMIN and County Agricultural OFFICER accounts can use these endpoints. */
+/**
+ * Verification review and officer accounts. Super admin, county admin and county agricultural officer can review;
+ * each only inside their area. The super admin creates officers anywhere; a county admin only inside their own county.
+ */
 @RestController
 @RequestMapping("/api/admin")
-@PreAuthorize("hasAnyRole('ADMIN','OFFICER')")
+@PreAuthorize("hasAnyRole('ADMIN','COUNTY_ADMIN','OFFICER')")
 @RequiredArgsConstructor
 public class AdminVerificationController {
     private final VerificationService service;
@@ -83,33 +87,57 @@ public class AdminVerificationController {
         return Mapper.reviewDetail(service.reject(id, reviewer, r.reason()));
     }
 
-    /** ADMIN only: create a County Agricultural Officer account. */
+    /**
+     * Create a County Agricultural Officer account. The super admin may put the officer in any county (or none yet).
+     * A county admin can only create officers for their own county: whatever county is sent, theirs is used.
+     */
     @PostMapping("/officers")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','COUNTY_ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
-    public AuthResponse createOfficer(@Valid @RequestBody OfficerRequest r) {
+    public AuthResponse createOfficer(@Valid @RequestBody OfficerRequest r, @AuthenticationPrincipal User me) {
         if (users.existsByEmail(r.email())) throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already registered");
+        com.farmconnect.security.PasswordPolicy.require(r.password(), r.email());
+        String county = r.county();
+        if (Staff.isCountyAdmin(me)) county = ownCounty(me);
         User u = new User();
         u.setName(r.name());
         u.setEmail(r.email());
         u.setPhone(r.phone());
         u.setPassword(encoder.encode(r.password()));
         u.setRole(Role.OFFICER);
-        assign(u, r.county(), r.subCounties());
+        assign(u, county, r.subCounties());
         users.save(u);
         return new AuthResponse(null, u.getId(), u.getName(), u.getEmail(), u.getRole());
     }
 
     public record AssignmentRequest(String county, List<String> subCounties) {}
 
-    /** ADMIN only: give an officer a county, and optionally only some of its sub-counties. Empty county = sees everything. */
+    /**
+     * Give an officer a county, and optionally only some of its sub-counties. Empty county = sees everything.
+     * A county admin can only change officers who already work in their county, and only within that county.
+     */
     @PutMapping("/officers/{id}/assignment")
-    @PreAuthorize("hasRole('ADMIN')")
-    public UserSummary assignOfficer(@PathVariable Long id, @RequestBody AssignmentRequest r) {
+    @PreAuthorize("hasAnyRole('ADMIN','COUNTY_ADMIN')")
+    public UserSummary assignOfficer(@PathVariable Long id, @RequestBody AssignmentRequest r, @AuthenticationPrincipal User me) {
         User u = users.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         if (u.getRole() != Role.OFFICER) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only officers can be assigned an area");
-        assign(u, r.county(), r.subCounties());
+        String county = r.county();
+        if (Staff.isCountyAdmin(me)) {
+            String mine = ownCounty(me);
+            if (!mine.equals(u.getAssignedCounty()))
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This officer does not work in your county");
+            county = mine;                       // cannot move an officer out of the county, or make them see everything
+        }
+        assign(u, county, r.subCounties());
         return Mapper.user(users.save(u));
+    }
+
+    /** The county a county admin is responsible for; a county admin without one cannot manage anyone yet. */
+    private static String ownCounty(User me) {
+        String c = me.getAssignedCounty();
+        if (c == null || c.isBlank() || !Locations.isCounty(c))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No county has been assigned to you yet. Ask the super admin.");
+        return c;
     }
 
     private static void assign(User u, String county, List<String> subCounties) {

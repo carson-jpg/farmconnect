@@ -42,6 +42,8 @@
     prices: ['M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z', 'M7 7h.01'],
     reports: ['M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z', 'M14 2v6h6', 'M16 13H8', 'M16 17H8'],
     users: ['M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2', 'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z', 'M23 21v-2a4 4 0 0 0-3-3.87', 'M16 3.13a4 4 0 0 1 0 7.75'],
+    security: ['M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z', 'M12 8v4', 'M12 16h.01'],
+    countyadmins: ['M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4z', 'M8 2v16', 'M16 6v16'],
     officers: ['M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2', 'M8.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z', 'M20 8v6', 'M23 11h-6'],
     products: ['M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z', 'M3.27 6.96L12 12.01l8.73-5.05', 'M12 22.08V12'],
     orders: ['M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z', 'M3 6h18', 'M16 10a4 4 0 0 1-8 0'],
@@ -74,7 +76,10 @@
   function when(iso) { return iso ? new Date(iso).toLocaleString('en-KE', { dateStyle: 'medium', timeStyle: 'short' }) : '-'; }
   function day(iso) { return iso ? new Date(iso).toLocaleDateString('en-KE', { dateStyle: 'medium' }) : '-'; }
   function clip(s, n) { s = String(s == null ? '' : s); return s.length > n ? s.slice(0, n - 1) + '…' : s; }
-  function isAdmin() { return !!state.user && state.user.role === 'ADMIN'; }
+  /** Super admin or county admin: both get the administration tools (a county admin only for their own county). */
+  function isAdmin() { return !!state.user && (state.user.role === 'ADMIN' || state.user.role === 'COUNTY_ADMIN'); }
+  function isSuper() { return !!state.user && state.user.role === 'ADMIN'; }
+  function isCountyAdmin() { return !!state.user && state.user.role === 'COUNTY_ADMIN'; }
 
   function toast(msg, bad) {
     var t = h('div', { class: 'toast' + (bad ? ' bad' : ''), text: msg });
@@ -129,7 +134,7 @@
       api('/api/auth/login', { method: 'POST', json: { email: email.value.trim(), password: pass.value } })
         .then(function (r) { return r.json(); })
         .then(function (u) {
-          if (u.role !== 'ADMIN' && u.role !== 'OFFICER') throw new Error('This dashboard is for county officers and administrators.');
+          if (u.role !== 'ADMIN' && u.role !== 'COUNTY_ADMIN' && u.role !== 'OFFICER') throw new Error('This dashboard is for county officers and administrators.');
           state.token = u.token; state.user = { name: u.name, role: u.role };
           sessionStorage.setItem(TOKEN_KEY, u.token); sessionStorage.setItem(USER_KEY, JSON.stringify(state.user));
           location.hash = '#overview';
@@ -284,6 +289,16 @@
     if (state.locations) return Promise.resolve(state.locations);
     return getJson('/api/locations').then(function (l) { state.locations = l; return l; });
   }
+  /** Counties the logged-in admin may assign officers to: all of them, or just a county admin's own. */
+  function scopedLocations() {
+    return getLocations().then(function (locs) {
+      if (!isCountyAdmin()) return locs;
+      return getJson('/api/analytics/scope').then(function (sc) {
+        var mine = locs.filter(function (c) { return c.name === sc.county; });
+        return mine.length ? mine : [];
+      });
+    });
+  }
   function areaText(u) {
     if (!u.assignedCounty) return 'All counties (not assigned yet)';
     var subs = u.assignedSubCounties || [];
@@ -292,10 +307,11 @@
 
   /** County drop-down plus sub-county tick boxes. get() returns {county, subCounties}. */
   function areaPicker(locs, county, subs) {
-    var sel = h('select', {}, [h('option', { value: '', text: 'All counties (not restricted)' })].concat(
+    var only = locs.length === 1;   // a county admin sees just their own county
+    var sel = h('select', {}, (only ? [] : [h('option', { value: '', text: 'All counties (not restricted)' })]).concat(
       locs.map(function (c) { return h('option', { value: c.name, text: c.name }); })));
     var box = h('div');
-    sel.value = county || '';
+    sel.value = county || (only ? locs[0].name : '');
     function draw(chosen) {
       box.textContent = '';
       var c = locs.filter(function (x) { return x.name === sel.value; })[0];
@@ -528,10 +544,10 @@
   }
 
   // ---------- administration: users ----------
-  var ROLE_LABEL = { ADMIN: 'Administrator', OFFICER: 'Officer', FARMER: 'Farmer', BUYER: 'Buyer' };
+  var ROLE_LABEL = { ADMIN: 'Super admin', COUNTY_ADMIN: 'County admin', OFFICER: 'Officer', FARMER: 'Farmer', BUYER: 'Buyer' };
 
   function usersView(box, fixedRole) {
-    var role = h('select', { onchange: load }, [['', 'Everyone'], ['FARMER', 'Farmers'], ['BUYER', 'Buyers'], ['OFFICER', 'Officers'], ['ADMIN', 'Administrators']]
+    var role = h('select', { onchange: load }, [['', 'Everyone'], ['FARMER', 'Farmers'], ['BUYER', 'Buyers'], ['OFFICER', 'Officers'], ['COUNTY_ADMIN', 'County admins'], ['ADMIN', 'Super admins']]
       .map(function (o) { return h('option', { value: o[0], text: o[1] }); }));
     var q = h('input', { type: 'search', placeholder: 'Search by name or email', oninput: debounce(load, 300) });
     var list = h('div');
@@ -546,14 +562,17 @@
         list.textContent = '';
         if (!rows.length) { list.appendChild(emptyBox('No users match')); return; }
         paged(list, rows, 25, function (u) {
-          var locked = u.role === 'ADMIN';
+          var locked = u.role === 'ADMIN' || (u.role === 'COUNTY_ADMIN' && isCountyAdmin());
           return h('tr', {},
             h('td', {}, h('b', { text: u.name || '(no name)' }), h('div', { class: 'sub', text: u.email })), h('td', { text: u.phone || '-' }),
-            h('td', {}, pill(ROLE_LABEL[u.role] || u.role, 'role-' + u.role), u.role === 'OFFICER' ? h('div', { class: 'sub', text: areaText(u) }) : null),
+            h('td', {}, pill(ROLE_LABEL[u.role] || u.role, 'role-' + u.role), u.role === 'OFFICER' ? h('div', { class: 'sub', text: areaText(u) }) : null,
+              u.role === 'COUNTY_ADMIN' ? h('div', { class: 'sub', text: (u.assignedCounty || 'No county yet') + (u.assignedCounty ? ' County' : '') }) : null),
             h('td', { text: u.role === 'FARMER' ? (u.verified ? '✓ Verified' : 'Not verified') : '-' }),
             h('td', {}, pill(u.enabled ? 'Active' : 'Suspended', u.enabled ? 'st-ok' : 'st-bad')),
             h('td', { text: day(u.createdAt) }),
-            h('td', { class: 'actions' }, locked ? null : h('button', { class: 'btn small ' + (u.enabled ? 'danger' : ''), text: u.enabled ? 'Suspend' : 'Re-activate', onclick: function () {
+            h('td', { class: 'actions' }, isSuper() && u.role !== 'ADMIN' ? [h('button', { class: 'btn small secondary', text: 'Sign out', title: 'End all their sessions', onclick: function () { forceLogout(u); } }), ' ',
+              h('button', { class: 'btn small secondary', text: 'New password', onclick: function () { resetUserPassword(u); } }), ' '] : null,
+              locked ? null : h('button', { class: 'btn small ' + (u.enabled ? 'danger' : ''), text: u.enabled ? 'Suspend' : 'Re-activate', onclick: function () {
               var msg = u.enabled ? 'Suspend ' + u.name + '? They will be logged out and blocked until you re-activate them.' : 'Re-activate ' + u.name + '?';
               if (!window.confirm(msg)) return;
               api('/api/admin/users/' + u.id + '/enabled', { method: 'POST', json: { active: !u.enabled } })
@@ -568,7 +587,7 @@
 
   function officersView(box) {
     loading(box);
-    getLocations().then(function (locs) {
+    scopedLocations().then(function (locs) {
       box.textContent = '';
       var f = {
         name: h('input', { required: true, maxlength: '80', autocomplete: 'off' }),
@@ -634,6 +653,182 @@
     m.modal.appendChild(h('h2', { text: 'Area for ' + u.name }));
     m.modal.appendChild(h('p', { class: 'muted', text: 'The officer will only see farmers, verifications, orders and reports for this area.' }));
     m.modal.appendChild(picker.el);
+    m.modal.appendChild(h('div', { class: 'actions' }, h('button', { class: 'btn secondary', text: 'Cancel', onclick: m.close }), save));
+  }
+
+  // ---------- security ----------
+  function forceLogout(u) {
+    if (!window.confirm('Sign ' + u.name + ' out of every device? They will have to log in again.')) return;
+    api('/api/admin/security/users/' + u.id + '/force-logout', { method: 'POST', json: {} })
+      .then(function () { toast(u.name + ' was signed out everywhere'); })
+      .catch(function (e) { toast(e.message, true); });
+  }
+  function resetUserPassword(u) {
+    if (!window.confirm('Give ' + u.name + ' a new temporary password? Their old password stops working and they are signed out everywhere.')) return;
+    api('/api/admin/security/users/' + u.id + '/reset-password', { method: 'POST', json: {} })
+      .then(function (r) { return r.json(); })
+      .then(function (r) {
+        var m = modalShell(); m.modal.textContent = '';
+        m.modal.appendChild(h('h2', { text: 'Temporary password' }));
+        m.modal.appendChild(h('p', { class: 'muted', text: 'Give this to ' + r.email + ' privately. It is shown only once. Ask them to change it after they log in.' }));
+        m.modal.appendChild(h('div', { class: 'card' }, h('b', { text: r.temporaryPassword })));
+        m.modal.appendChild(h('div', { class: 'actions' }, h('button', { class: 'btn', text: 'Done', onclick: m.close })));
+      })
+      .catch(function (e) { toast(e.message, true); });
+  }
+  function changePasswordModal() {
+    var m = modalShell(); m.modal.textContent = '';
+    var cur = h('input', { type: 'password', autocomplete: 'current-password' });
+    var nw = h('input', { type: 'password', autocomplete: 'new-password', placeholder: 'At least 8 characters, a letter and a number' });
+    var save = h('button', { class: 'btn', text: 'Change password', onclick: function () {
+      save.disabled = true;
+      api('/api/auth/change-password', { method: 'POST', json: { currentPassword: cur.value, newPassword: nw.value } })
+        .then(function (r) { return r.json(); })
+        .then(function (u) {
+          state.token = u.token; sessionStorage.setItem(TOKEN_KEY, u.token);   // the old token was just ended
+          toast('Password changed. Other devices were signed out.'); m.close();
+        })
+        .catch(function (e) { toast(e.message, true); save.disabled = false; });
+    } });
+    m.modal.appendChild(h('h2', { text: 'Change my password' }));
+    m.modal.appendChild(h('label', { text: 'Current password' })); m.modal.appendChild(cur);
+    m.modal.appendChild(h('label', { text: 'New password' })); m.modal.appendChild(nw);
+    m.modal.appendChild(h('div', { class: 'actions' }, h('button', { class: 'btn secondary', text: 'Cancel', onclick: m.close }), save));
+  }
+
+  var ACTION_LABEL = { LOGIN_OK: 'Signed in', LOGIN_FAILED: 'Wrong password', LOGIN_BLOCKED: 'Blocked (locked out)', LOGIN_REFUSED: 'Suspended account tried to sign in',
+    ACCESS_DENIED: 'Access denied', STAFF_ACTION: 'Staff action', STAFF_ACTION_FAILED: 'Staff action failed', PASSWORD_RESET: 'Password reset (emailed code)',
+    PASSWORD_CHANGED: 'Password changed', PASSWORD_CHANGE_FAILED: 'Password change failed', FORCE_LOGOUT: 'Signed out everywhere', ADMIN_PASSWORD_RESET: 'Temporary password issued', UNLOCK: 'Lockout cleared' };
+
+  function securityView(box) {
+    loading(box);
+    Promise.all([getJson('/api/admin/security/summary'), getJson('/api/admin/security/locks')]).then(function (res) {
+      var sum = res[0], locks = res[1];
+      box.textContent = '';
+      if (sum.defaultAdminPassword) box.appendChild(h('div', { class: 'card warn', text: '⚠ A super admin account still uses the default password. Change it now with "Change password" at the top.' }));
+      box.appendChild(h('div', { class: 'kpis' },
+        kpi('security', 'amber', 'Wrong passwords, 24h', num(sum.failedLogins24h)),
+        kpi('security', 'amber', 'Blocked attempts, 24h', num(sum.blocked24h)),
+        kpi('security', 'purple', 'Access denied, 24h', num(sum.denied24h)),
+        kpi('users', '', 'Admin sign-ins, 24h', num(sum.adminLogins24h)),
+        kpi('security', 'blue', 'Active lockouts', num(sum.activeLocks))));
+
+      box.appendChild(h('div', { class: 'section-title', text: 'Active lockouts' }));
+      if (!locks.length) box.appendChild(emptyBox('Nobody is locked out'));
+      else box.appendChild(table(['Who', 'Type', 'Locked until', ''], locks.map(function (l) {
+        var isIp = l.kind === 'ADDRESS';
+        var subject = l.subject.split(' from ')[0];
+        return h('tr', {}, h('td', { text: l.subject }), h('td', { text: l.kind === 'ADDRESS' ? 'Address' : 'Account' }), h('td', { text: when(l.until) }),
+          h('td', { class: 'actions' }, h('button', { class: 'btn small', text: 'Unlock', onclick: function () {
+            api('/api/admin/security/locks/unlock', { method: 'POST', json: isIp ? { ip: subject } : { email: subject } })
+              .then(function () { toast('Unlocked'); securityView(box); }).catch(function (e) { toast(e.message, true); });
+          } })));
+      })));
+
+      box.appendChild(h('div', { class: 'section-title', text: 'Audit log' }));
+      var kind = h('select', { onchange: loadAudit }, [['', 'Everything'], ['LOGIN_FAILED', 'Wrong passwords'], ['LOGIN_BLOCKED', 'Blocked'], ['ACCESS_DENIED', 'Access denied'],
+        ['LOGIN_OK', 'Sign-ins'], ['STAFF_ACTION', 'Staff actions'], ['ADMIN_PASSWORD_RESET', 'Password resets by you'], ['FORCE_LOGOUT', 'Forced sign-outs']]
+        .map(function (o) { return h('option', { value: o[0], text: o[1] }); }));
+      var q = h('input', { type: 'search', placeholder: 'Search by email, address or what was done', oninput: debounce(loadAudit, 300) });
+      var list = h('div');
+      box.appendChild(h('div', { class: 'toolbar' }, h('div', {}, h('label', { text: 'Show' }), kind), h('div', { class: 'grow' }, h('label', { text: 'Search' }), q)));
+      box.appendChild(list);
+      function loadAudit() {
+        loading(list);
+        getJson('/api/admin/security/audit?limit=300&action=' + encodeURIComponent(kind.value) + '&q=' + encodeURIComponent(q.value.trim())).then(function (rows) {
+          list.textContent = '';
+          if (!rows.length) { list.appendChild(emptyBox('Nothing logged yet')); return; }
+          paged(list, rows, 25, function (a) {
+            return h('tr', {}, h('td', { text: when(a.at) }),
+              h('td', {}, h('b', { text: a.actorEmail || '(not signed in)' }), a.actorRole ? h('div', { class: 'sub', text: ROLE_LABEL[a.actorRole] || a.actorRole }) : null),
+              h('td', {}, pill(ACTION_LABEL[a.action] || a.action, a.success ? 'st-ok' : 'st-bad')),
+              h('td', {}, h('div', { text: clip(a.target || '', 70) }), a.detail ? h('div', { class: 'sub', text: clip(a.detail, 90) }) : null),
+              h('td', { text: a.ip || '-' }));
+          }, ['When', 'Who', 'What', 'Details', 'Address']);
+        }).catch(function (e) { failed(list, e); });
+      }
+      loadAudit();
+    }).catch(function (e) { failed(box, e); });
+  }
+
+  // ---------- super admin: county admins ----------
+  function countyAdminsView(box) {
+    loading(box);
+    getLocations().then(function (locs) {
+      box.textContent = '';
+      function countySelect(value) {
+        var sel = h('select', { required: true }, [h('option', { value: '', text: 'Choose a county' })].concat(
+          locs.map(function (c) { return h('option', { value: c.name, text: c.name }); })));
+        sel.value = value || '';
+        return sel;
+      }
+      var f = {
+        name: h('input', { required: true, maxlength: '80', autocomplete: 'off' }),
+        email: h('input', { required: true, type: 'email', autocomplete: 'off' }),
+        phone: h('input', { type: 'tel', placeholder: '07XXXXXXXX', autocomplete: 'off' }),
+        password: h('input', { required: true, type: 'password', minlength: '8', autocomplete: 'new-password', placeholder: 'At least 8 characters' }),
+        county: countySelect('')
+      };
+      var btn = h('button', { class: 'btn', type: 'submit', text: 'Create county admin' });
+      var form = h('form', { class: 'card', onsubmit: function (ev) {
+        ev.preventDefault(); btn.disabled = true;
+        api('/api/admin/county-admins', { method: 'POST', json: { name: f.name.value.trim(), email: f.email.value.trim(),
+            phone: f.phone.value.trim() || null, password: f.password.value, county: f.county.value } })
+          .then(function () { toast('County admin created'); countyAdminsView(box); })
+          .catch(function (e) { toast(e.message, true); })
+          .then(function () { btn.disabled = false; });
+      } },
+        h('h3', { text: 'Appoint a county admin' }),
+        h('p', { class: 'muted', text: 'A county admin manages one county only: its farmers, orders, products, prices, posts and officers. They cannot create other admins.' }),
+        h('div', { class: 'form-row' },
+          h('div', {}, h('label', { text: 'Full name' }), f.name), h('div', {}, h('label', { text: 'Email' }), f.email),
+          h('div', {}, h('label', { text: 'Phone' }), f.phone), h('div', {}, h('label', { text: 'Temporary password' }), f.password),
+          h('div', {}, h('label', { text: 'County they manage' }), f.county)),
+        h('div', { class: 'actions-row' }, btn));
+      var holder = h('div');
+      box.appendChild(form);
+      box.appendChild(h('div', { class: 'section-title', text: 'County admins' }));
+      box.appendChild(holder);
+      loadCountyAdmins(holder, locs, countySelect);
+    }).catch(function (e) { failed(box, e); });
+  }
+
+  function loadCountyAdmins(holder, locs, countySelect) {
+    loading(holder);
+    getJson('/api/admin/county-admins').then(function (rows) {
+      holder.textContent = '';
+      if (!rows.length) { holder.appendChild(emptyBox('No county admins yet')); return; }
+      holder.appendChild(table(['County admin', 'Phone', 'County', 'Account', ''], rows.map(function (u) {
+        return h('tr', {},
+          h('td', {}, h('b', { text: u.name }), h('div', { class: 'sub', text: u.email })), h('td', { text: u.phone || '-' }),
+          h('td', {}, h('span', { class: u.assignedCounty ? '' : 'warn', text: u.assignedCounty ? u.assignedCounty + ' County' : 'No county. They see nothing yet.' })),
+          h('td', {}, pill(u.enabled ? 'Active' : 'Suspended', u.enabled ? 'st-ok' : 'st-bad')),
+          h('td', { class: 'actions' },
+            h('button', { class: 'btn small secondary', text: 'Change county', onclick: function () { changeCounty(u, countySelect, function () { loadCountyAdmins(holder, locs, countySelect); }); } }), ' ',
+            h('button', { class: 'btn small ' + (u.enabled ? 'danger' : ''), text: u.enabled ? 'Suspend' : 'Re-activate', onclick: function () {
+              if (!window.confirm((u.enabled ? 'Suspend ' : 'Re-activate ') + u.name + '?')) return;
+              api('/api/admin/users/' + u.id + '/enabled', { method: 'POST', json: { active: !u.enabled } })
+                .then(function () { toast(u.enabled ? 'Account suspended' : 'Account re-activated'); loadCountyAdmins(holder, locs, countySelect); })
+                .catch(function (e) { toast(e.message, true); });
+            } })));
+      })));
+    }).catch(function (e) { failed(holder, e); });
+  }
+
+  function changeCounty(u, countySelect, done) {
+    var m = modalShell(); m.modal.textContent = '';
+    var sel = countySelect(u.assignedCounty || '');
+    var save = h('button', { class: 'btn', text: 'Save county', onclick: function () {
+      if (!sel.value) { toast('Choose a county', true); return; }
+      save.disabled = true;
+      api('/api/admin/county-admins/' + u.id + '/county', { method: 'PUT', json: { county: sel.value } })
+        .then(function () { toast(u.name + ' now manages ' + sel.value); m.close(); done(); })
+        .catch(function (e) { toast(e.message, true); save.disabled = false; });
+    } });
+    m.modal.appendChild(h('h2', { text: 'County for ' + u.name }));
+    m.modal.appendChild(h('p', { class: 'muted', text: 'They will only see and manage this county.' }));
+    m.modal.appendChild(h('label', { text: 'County' }));
+    m.modal.appendChild(sel);
     m.modal.appendChild(h('div', { class: 'actions' }, h('button', { class: 'btn secondary', text: 'Cancel', onclick: m.close }), save));
   }
 
@@ -734,6 +929,10 @@
   function paymentsView(box) {
     var TABS = [['attention', 'Needs attention'], ['payments', 'All payments'], ['payouts', 'Payouts'], ['accounts', 'Payout accounts'], ['recon', 'Reconciliation']];
     var current = 'attention';
+    if (isCountyAdmin()) {      // read-only view of their own county: money-changing screens stay with the super admin
+      TABS = [['payments', 'Payments in my county'], ['payouts', 'Payouts']];
+      current = 'payments';
+    }
     var summaryBox = h('div'), tabBar = h('div', { class: 'toolbar' }), body = h('div');
     box.appendChild(summaryBox); box.appendChild(tabBar); box.appendChild(body);
 
@@ -992,14 +1191,16 @@
   var NAV = [
     { group: 'Dashboard', items: [['overview', 'Overview', 'Overview']] },
     { group: 'County work', items: [['verifications', 'Verification', 'Farmer verification'], ['prices', 'Market prices', 'Market price board'], ['reports', 'Reports', 'Reports']] },
-    { group: 'Administration', admin: true, items: [['users', 'Users', 'Users'], ['officers', 'Officers', 'County officers'], ['products', 'Products', 'Product moderation'], ['orders', 'Orders', 'Orders'], ['payments', 'Payments', 'Payments & payouts']] }
+    { group: 'Administration', admin: true, items: [['users', 'Users', 'Users'], ['officers', 'Officers', 'County officers'], ['products', 'Products', 'Product moderation'], ['orders', 'Orders', 'Orders'], ['payments', 'Payments', 'Payments & payouts']] },
+    { group: 'Super admin', superOnly: true, items: [['countyadmins', 'County admins', 'County admins'], ['security', 'Security', 'Security and audit log']] }
   ];
-  var VIEWS = { overview: overview, verifications: verifications, prices: prices, reports: reports, users: function (b) { usersView(b); }, officers: officersView, products: productsView, orders: ordersView, payments: paymentsView };
-  var ADMIN_ONLY = { users: 1, officers: 1, products: 1, orders: 1, payments: 1 };
+  var VIEWS = { overview: overview, verifications: verifications, prices: prices, reports: reports, users: function (b) { usersView(b); }, officers: officersView, products: productsView, orders: ordersView, payments: paymentsView, countyadmins: countyAdminsView, security: securityView };
+  var ADMIN_ONLY = { users: 1, officers: 1, products: 1, orders: 1, payments: 1, countyadmins: 1, security: 1 };
+  var SUPER_ONLY = { countyadmins: 1, security: 1 };
 
   function currentView() {
     var v = (location.hash || '').replace('#', '');
-    if (!VIEWS[v] || (ADMIN_ONLY[v] && !isAdmin())) v = 'overview';
+    if (!VIEWS[v] || (ADMIN_ONLY[v] && !isAdmin()) || (SUPER_ONLY[v] && !isSuper())) v = 'overview';
     return v;
   }
   function titleOf(view) {
@@ -1017,6 +1218,7 @@
     var nav = h('nav', { class: 'nav' });
     NAV.forEach(function (g) {
       if (g.admin && !isAdmin()) return;
+      if (g.superOnly && !isSuper()) return;
       nav.appendChild(h('div', { class: 'group', text: g.group }));
       g.items.forEach(function (i) {
         nav.appendChild(h('a', { href: '#' + i[0], class: i[0] === state.view ? 'active' : null, onclick: function () { state.menuOpen = false; frame.classList.remove('open'); } },
@@ -1028,12 +1230,13 @@
       h('div', { class: 'brand' }, h('h1', { text: '🌿 FarmConnect' }), areaLine),
       nav,
       h('div', { class: 'me' }, h('div', { class: 'avatar', text: (name || '?').trim().charAt(0).toUpperCase() }),
-        h('div', { class: 'who' }, h('b', { text: name }), h('span', { text: isAdmin() ? 'Administrator' : 'County officer' })),
+        h('div', { class: 'who' }, h('b', { text: name }), h('span', { text: isSuper() ? 'Super admin' : isCountyAdmin() ? 'County admin' : 'County officer' })),
         h('button', { title: 'Log out', 'aria-label': 'Log out', onclick: logout }, icon('logout'))));
 
     var bar = h('header', { class: 'bar' },
       h('button', { class: 'menu-btn', 'aria-label': 'Menu', onclick: function () { state.menuOpen = !state.menuOpen; frame.classList.toggle('open', state.menuOpen); } }, icon('menu')),
       h('h2', { text: titleOf(state.view) }), h('div', { class: 'spacer' }),
+      h('button', { class: 'btn secondary small', text: 'Change password', onclick: changePasswordModal }),
       state.view === 'overview' ? h('button', { class: 'btn secondary small', text: 'Refresh', onclick: render }) : null,
       state.view === 'overview' ? h('button', { class: 'btn secondary small', text: 'Print', onclick: function () { window.print(); } }) : null,
       h('span', { class: 'date', text: new Date().toLocaleDateString('en-KE', { dateStyle: 'full' }) }));

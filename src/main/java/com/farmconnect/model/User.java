@@ -34,6 +34,8 @@ public class User {
     private double ratingAvg;
     @Column(columnDefinition = "integer default 0 not null")
     private int ratingCount;
+    /** Raised to sign the user out of every device: tokens carry the number they were issued with. Empty = 0. */
+    private Integer tokenVersion;
     /** Officers only: the county they work in. Empty = not assigned yet (sees everything until an admin assigns them). */
     private String assignedCounty;
     /** Officers only: the sub-counties inside that county. Empty with a county set = the whole county. */

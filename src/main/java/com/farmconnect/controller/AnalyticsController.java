@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 /** County analytics and the programme monitoring indicators. Admin and officers only. */
 @RestController
 @RequestMapping("/api/analytics")
-@PreAuthorize("hasAnyRole('ADMIN','OFFICER')")
+@PreAuthorize("hasAnyRole('ADMIN','COUNTY_ADMIN','OFFICER')")
 @RequiredArgsConstructor
 public class AnalyticsController {
     private static final String UNSPECIFIED = "Not specified";

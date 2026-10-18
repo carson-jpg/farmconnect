@@ -88,7 +88,7 @@ public class MessageController {
                 .map(u -> new ContactResponse(u.getId(), u.getName(), u.getRole(), u.isVerified())).toList();
     }
 
-    private boolean staff(User u) { return u.getRole() == Role.ADMIN || u.getRole() == Role.OFFICER; }
+    private boolean staff(User u) { return com.farmconnect.security.Staff.is(u); }
 
     /** Staff can talk to anyone; farmers (verified) and buyers can talk to each other; buyers cannot message buyers. */
     private boolean allowed(User a, User b) {

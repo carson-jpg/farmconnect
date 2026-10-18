@@ -30,7 +30,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             try {
                 String email = jwtService.extractEmail(header.substring(7));
                 User user = users.findByEmail(email).orElse(null);
-                if (user != null && user.isEnabled() && SecurityContextHolder.getContext().getAuthentication() == null) {
+                int issued = jwtService.extractTokenVersion(header.substring(7));
+                int current = user == null || user.getTokenVersion() == null ? 0 : user.getTokenVersion();
+                // a token issued before the last "sign out everywhere" / password change is dead
+                if (user != null && issued == current && user.isEnabled() && SecurityContextHolder.getContext().getAuthentication() == null) {
                     var auth = new UsernamePasswordAuthenticationToken(user, null,
                             List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name())));
                     SecurityContextHolder.getContext().setAuthentication(auth);

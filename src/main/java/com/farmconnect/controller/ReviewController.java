@@ -58,7 +58,7 @@ public class ReviewController {
     public ReviewSummary forSeller(@PathVariable Long sellerId, @AuthenticationPrincipal User me) {
         User seller = users.findById(sellerId).filter(u -> u.getRole() == Role.FARMER)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Seller not found"));
-        boolean privileged = me.getId().equals(sellerId) || me.getRole() == Role.ADMIN || me.getRole() == Role.OFFICER;
+        boolean privileged = me.getId().equals(sellerId) || com.farmconnect.security.Staff.is(me);
         if (!seller.isVerified() && !privileged) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Seller not found");
         List<Review> list = reviews.findBySellerIdOrderByCreatedAtDesc(sellerId);
         int[] dist = new int[5];

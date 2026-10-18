@@ -23,7 +23,7 @@ public final class Forms {
 
     public interface Submit { void ok(Map<String, String> values); }
 
-    private static final int TEXT = 0, MULTI = 1, NUMBER = 2, DATE = 3, CHOICE = 4, PHONE = 5, EMAIL = 6;
+    private static final int TEXT = 0, MULTI = 1, NUMBER = 2, DATE = 3, CHOICE = 4, PHONE = 5, EMAIL = 6, PASSWORD = 7;
 
     public static class Field {
         final String key, label; final int type; boolean required; String value = ""; String[] values, labels;
@@ -39,6 +39,7 @@ public final class Forms {
     public static Field date(String key, String label, boolean required) { return new Field(key, label, DATE, required); }
     public static Field phone(String key, String label, boolean required) { return new Field(key, label, PHONE, required); }
     public static Field email(String key, String label, boolean required) { return new Field(key, label, EMAIL, required); }
+    public static Field password(String key, String label, boolean required) { return new Field(key, label, PASSWORD, required); }
     public static Field choice(String key, String label, boolean required, String[] values, String[] labels) {
         Field f = new Field(key, label, CHOICE, required);
         f.values = values;
@@ -80,6 +81,9 @@ public final class Forms {
                     break;
                 case EMAIL:
                     et.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+                    break;
+                case PASSWORD:
+                    et.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                     break;
                 case CHOICE:
                 case DATE:
