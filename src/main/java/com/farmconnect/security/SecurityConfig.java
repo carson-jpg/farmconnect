@@ -42,6 +42,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/ussd", "/api/sms/inbound").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/payments/callback/**", "/api/payments/b2c/**", "/api/payments/c2b/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/officer", "/officer/", "/officer/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/company", "/company/", "/company/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/files/products/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/farms/mine", "/api/products/mine").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/products/**", "/api/farms/**").permitAll()

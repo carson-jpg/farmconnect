@@ -188,6 +188,118 @@ public class Repository {
         return live;
     }
 
+    // companies
+    public LiveData<Resource<CompanyView>> myCompany() { return run(api().myCompany()); }
+    public LiveData<Resource<CompanyView>> registerCompany(CompanyRequest r) { return run(api().registerCompany(r)); }
+    public LiveData<Resource<CompanyView>> updateCompany(CompanyRequest r) { return run(api().updateCompany(r)); }
+    public LiveData<Resource<CompanyView>> uploadCompanyDoc(String type, byte[] data, String mime, String fileName) {
+        RequestBody t = RequestBody.create(type, MediaType.parse("text/plain"));
+        RequestBody body = RequestBody.create(data, MediaType.parse(mime));
+        return run(api().uploadCompanyDoc(t, MultipartBody.Part.createFormData("file", fileName, body)));
+    }
+    public LiveData<Resource<CompanyView>> deleteCompanyDoc(long id) { return run(api().deleteCompanyDoc(id)); }
+    public LiveData<Resource<List<AdminCompanySummary>>> adminCompanies(String status) { return run(api().adminCompanies(status)); }
+    public LiveData<Resource<AdminCompanyDetail>> adminCompany(long id) { return run(api().adminCompany(id)); }
+    public LiveData<Resource<AdminCompanyDetail>> companyStartReview(long id) { return run(api().companyStartReview(id)); }
+    public LiveData<Resource<AdminCompanyDetail>> companyVerify(long id) { return run(api().companyVerify(id)); }
+    public LiveData<Resource<AdminCompanyDetail>> companyReject(long id, String reason) { return run(api().companyReject(id, new ReasonRequest(reason))); }
+    public LiveData<Resource<AdminCompanyDetail>> companySuspend(long id, String reason) { return run(api().companySuspend(id, new ReasonRequest(reason))); }
+    public LiveData<Resource<AdminCompanyDetail>> companyReinstate(long id) { return run(api().companyReinstate(id)); }
+
+    /** A company document as a picture. admin=true reads it through the super-admin endpoint for companyId. PDFs cannot be shown here. */
+    public LiveData<Resource<Bitmap>> companyDoc(boolean admin, long companyId, long docId) {
+        MutableLiveData<Resource<Bitmap>> live = new MutableLiveData<>();
+        live.setValue(Resource.loading());
+        Call<ResponseBody> call = admin ? api().adminCompanyDoc(companyId, docId) : api().companyDocFile(docId);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override public void onResponse(Call<ResponseBody> c, Response<ResponseBody> r) {
+                if (!r.isSuccessful() || r.body() == null) { live.setValue(Resource.error(errorText(r))); return; }
+                ResponseBody body = r.body();
+                IO.execute(() -> {
+                    Bitmap bm = BitmapFactory.decodeStream(body.byteStream());
+                    if (bm != null) live.postValue(Resource.success(bm));
+                    else live.postValue(Resource.error(I18n.t("This file is not a picture (a PDF?). Open it on the web portal.")));
+                });
+            }
+            @Override public void onFailure(Call<ResponseBody> c, Throwable t) {
+                live.setValue(Resource.error(I18n.t("Network error: ") + t.getMessage()));
+            }
+        });
+        return live;
+    }
+
+    // supplier listings and input orders
+    public LiveData<Resource<List<SupplyProduct>>> companyProducts() { return run(api().companyProducts()); }
+    public LiveData<Resource<SupplyProduct>> saveSupplyProduct(long id, SupplyProductRequest r) {
+        return run(id == 0 ? api().createSupplyProduct(r) : api().updateSupplyProduct(id, r));
+    }
+    public LiveData<Resource<List<SupplyOrder>>> companySupplyOrders(String status) { return run(api().companySupplyOrders(status)); }
+    public LiveData<Resource<SupplyOrder>> supplyStep(String step, long id) {
+        switch (step) {
+            case "confirm": return run(api().supplyConfirm(id));
+            case "dispatch": return run(api().supplyDispatch(id));
+            case "deliver": return run(api().supplyDeliver(id));
+            default: return run(api().supplyMarkPaid(id));
+        }
+    }
+    public LiveData<Resource<SupplyOrder>> supplyReject(long id, String reason) { return run(api().supplyReject(id, new ReasonRequest(reason))); }
+    public LiveData<Resource<SupplySummary>> companySummary() { return run(api().companySummary()); }
+    public LiveData<Resource<List<SupplyProduct>>> browseSupplies(String category, String q) { return run(api().browseSupplies(category, q)); }
+    public LiveData<Resource<SupplyOrder>> placeSupplyOrder(PlaceSupplyOrder r) { return run(api().placeSupplyOrder(r)); }
+    public LiveData<Resource<List<SupplyOrder>>> mySupplyOrders() { return run(api().mySupplyOrders()); }
+    public LiveData<Resource<SupplyOrder>> cancelSupplyOrder(long id) { return run(api().cancelSupplyOrder(id)); }
+
+    // supply payments and payouts
+    public LiveData<Resource<CompanyView>> setPayoutAccount(PayoutAccountRequest r) { return run(api().setPayoutAccount(r)); }
+    public LiveData<Resource<List<PayoutView>>> companyPayouts() { return run(api().companyPayouts()); }
+    public LiveData<Resource<SupplyPaymentView>> paySupplyOrder(long id, String phone) { return run(api().paySupplyOrder(id, new PayRequest(phone))); }
+    public LiveData<Resource<FlagResponse>> supplyPaymentsEnabled() { return run(api().supplyPaymentsEnabled()); }
+    public LiveData<Resource<AdminCompanyDetail>> companyApprovePayout(long id) { return run(api().companyApprovePayout(id)); }
+    public LiveData<Resource<AdminCompanyDetail>> companyRevokePayout(long id) { return run(api().companyRevokePayout(id)); }
+
+    // bulk buying
+    public LiveData<Resource<List<BulkRequest>>> companyRequests() { return run(api().companyRequests()); }
+    public LiveData<Resource<BulkRequest>> createBulkRequest(BulkRequestForm f) { return run(api().createBulkRequest(f)); }
+    public LiveData<Resource<BulkRequest>> closeBulkRequest(long id) { return run(api().closeBulkRequest(id)); }
+    public LiveData<Resource<List<BulkQuote>>> requestQuotations(long id) { return run(api().requestQuotations(id)); }
+    public LiveData<Resource<BulkOrder>> acceptQuotation(long id) { return run(api().acceptQuotation(id)); }
+    public LiveData<Resource<BulkQuote>> rejectQuotation(long id, String reason) { return run(api().rejectQuotation(id, new ReasonRequest(reason))); }
+    public LiveData<Resource<List<BulkOrder>>> companyPurchaseOrders() { return run(api().companyPurchaseOrders()); }
+    public LiveData<Resource<BulkOrder>> poStep(String step, long id) {
+        return "deliver".equals(step) ? run(api().poDeliver(id)) : run(api().poMarkPaid(id));
+    }
+    public LiveData<Resource<BulkOrder>> poCancel(long id, String reason) { return run(api().poCancel(id, new ReasonRequest(reason))); }
+    public LiveData<Resource<List<BulkRequest>>> browseBulk(String produce, String county) { return run(api().browseBulk(produce, county)); }
+    public LiveData<Resource<BulkQuote>> sendQuote(long id, BulkQuoteForm f) { return run(api().sendQuote(id, f)); }
+    public LiveData<Resource<List<BulkQuote>>> myQuotes() { return run(api().myQuotes()); }
+    public LiveData<Resource<BulkQuote>> withdrawQuote(long id) { return run(api().withdrawQuote(id)); }
+    public LiveData<Resource<List<BulkOrder>>> myPurchaseOrders() { return run(api().myPurchaseOrders()); }
+    public LiveData<Resource<BulkOrder>> poConfirm(long id) { return run(api().poConfirm(id)); }
+    public LiveData<Resource<BulkOrder>> poDecline(long id, String reason) { return run(api().poDecline(id, new ReasonRequest(reason))); }
+
+    // team, hire services, invoices, admin overview
+    public LiveData<Resource<List<TeamMember>>> companyTeam() { return run(api().companyTeam()); }
+    public LiveData<Resource<TeamMember>> saveTeamMember(long id, TeamMemberForm f) { return run(id == 0 ? api().addTeamMember(f) : api().updateTeamMember(id, f)); }
+    public LiveData<Resource<Void>> deleteTeamMember(long id) { return run(api().deleteTeamMember(id)); }
+    public LiveData<Resource<List<HireService>>> companyServices() { return run(api().companyServices()); }
+    public LiveData<Resource<HireService>> saveHireService(long id, HireServiceForm f) { return run(id == 0 ? api().createHireService(f) : api().updateHireService(id, f)); }
+    public LiveData<Resource<HireService>> hideHireService(long id) { return run(api().hideHireService(id)); }
+    public LiveData<Resource<List<HireRequest>>> companyServiceRequests(String status) { return run(api().companyServiceRequests(status)); }
+    public LiveData<Resource<HireRequest>> acceptServiceRequest(long id, HireAccept f) { return run(api().acceptServiceRequest(id, f)); }
+    public LiveData<Resource<HireRequest>> declineServiceRequest(long id, String reason) { return run(api().declineServiceRequest(id, new ReasonRequest(reason))); }
+    public LiveData<Resource<HireRequest>> completeServiceRequest(long id) { return run(api().completeServiceRequest(id)); }
+    public LiveData<Resource<Invoice>> supplyInvoice(long id) { return run(api().supplyInvoice(id)); }
+    public LiveData<Resource<BulkRequest>> updateBulkRequest(long id, BulkRequestForm f) { return run(api().updateBulkRequest(id, f)); }
+    public LiveData<Resource<List<HireService>>> browseHire(String category, String q) { return run(api().browseHire(category, q)); }
+    public LiveData<Resource<HireRequest>> requestHire(long id, HireRequestForm f) { return run(api().requestHire(id, f)); }
+    public LiveData<Resource<List<HireRequest>>> myHireRequests() { return run(api().myHireRequests()); }
+    public LiveData<Resource<HireRequest>> cancelHireRequest(long id) { return run(api().cancelHireRequest(id)); }
+    public LiveData<Resource<MarketOverview>> marketOverview() { return run(api().marketOverview()); }
+    public LiveData<Resource<List<SupplyOrder>>> adminSupplyOrders(String s) { return run(api().adminSupplyOrders(s)); }
+    public LiveData<Resource<List<BulkRequest>>> adminProduceRequests(String s) { return run(api().adminProduceRequests(s)); }
+    public LiveData<Resource<List<BulkOrder>>> adminPurchaseOrders(String s) { return run(api().adminPurchaseOrders(s)); }
+    public LiveData<Resource<List<HireRequest>>> adminServiceRequests(String s) { return run(api().adminServiceRequests(s)); }
+
     private <T> LiveData<Resource<T>> run(Call<T> call) {
         MutableLiveData<Resource<T>> live = new MutableLiveData<>();
         live.setValue(Resource.loading());

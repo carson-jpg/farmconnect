@@ -1,0 +1,6 @@
+{
+  "name": "farmconnect-webtest",
+  "private": true,
+  "scripts": { "test": "node company-portal.smoke.js && node officer-dashboard.smoke.js" },
+  "devDependencies": { "jsdom": "^26.0.0" }
+}

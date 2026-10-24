@@ -265,4 +265,102 @@ public class Models {
         public long sellerId; public String sellerName; public boolean verified; public double average; public int count;
         public int[] distribution; public List<Review> reviews;
     }
+
+    // ---- companies ----
+    public static class CompanyRequest {
+        public String name, businessRegNumber, kraPin, category, repName, repPhone, repEmail, description, address, county;
+        public boolean canBuy, canSell;
+        public List<String> operatingCounties;
+    }
+    public static class CompanyDocument { public long id; public String type, fileName, uploadedAt; }
+    public static class CompanyView {
+        public long id; public String name, businessRegNumber, kraPin, category, repName, repPhone, repEmail, description, address, county;
+        public String status, rejectionReason, suspensionReason, submittedAt, reviewedAt;
+        public boolean canBuy, canSell, verified;
+        public String payoutType, payoutAccount, payoutReference; public boolean payoutApproved;
+        public List<String> operatingCounties; public List<CompanyDocument> documents;
+    }
+    public static class AdminCompanySummary { public long id; public String name, category, county, status, submittedAt; public int documents; }
+    public static class AdminCompanyDetail { public CompanyView company; public String ownerName, ownerEmail, ownerPhone, reviewedByName; }
+    public static class ReasonRequest { public String reason; public ReasonRequest(String r) { reason = r; } }
+
+    // ---- supplier listings and input orders ----
+    public static class SupplyProductRequest {
+        public String name, category, description, unit, licenceRef;
+        public double price; public int stockQty, minOrderQty; public boolean active;
+    }
+    public static class SupplyProduct {
+        public long id, companyId; public String companyName, county, name, category, description, unit, licenceRef;
+        public double price; public int stockQty, minOrderQty; public boolean active;
+    }
+    public static class SupplyLine { public long productId; public int quantity; public SupplyLine(long p, int q) { productId = p; quantity = q; } }
+    public static class PlaceSupplyOrder { public List<SupplyLine> items; public String deliveryAddress, deliveryPhone, deliveryNote; }
+    public static class SupplyItem { public long productId; public String name, unit; public int quantity; public double unitPrice, lineTotal; }
+    public static class SupplyOrder {
+        public long id, companyId; public String status, paymentStatus, companyName, buyerName, deliveryPhone, deliveryAddress, deliveryNote;
+        public String rejectionReason, createdAt, deliveredAt, paidAt, paymentMethod, mpesaReceipt;
+        public List<SupplyItem> items; public double total; public Double platformFee, countyFee, companyNet;
+    }
+    public static class SupplySummary {
+        public int newOrders, inProgress, delivered, activeProducts, lowStock;
+        public double grossDelivered, feesDelivered, netDelivered, netUnpaid;
+    }
+
+    // ---- supply payments and payouts ----
+    public static class PayoutAccountRequest { public String type, account, reference; }
+    public static class PayoutView { public long id, orderId, amountKes; public String companyName, status, failureReason, providerTransactionId, createdAt, completedAt; }
+    public static class PayRequest { public String phone; public PayRequest(String p) { phone = p; } }
+    public static class SupplyPaymentView { public long id, orderId, expectedKes, paidKes, excessKes; public String buyerName, status, receipt, phone, note, createdAt; }
+    public static class FlagResponse { public boolean enabled; }
+
+    // ---- bulk buying ----
+    public static class BulkRequestForm {
+        public String produce, description, unit, deliveryCounty, deliveryLocation, neededBy, closesAt;
+        public double quantity; public Double maxPrice;
+    }
+    public static class BulkRequest {
+        public long id, companyId, openQuotations;
+        public String companyName, companyCounty, produce, description, unit, deliveryCounty, deliveryLocation, neededBy, closesAt, status, createdAt;
+        public double quantity, remaining; public Double maxPrice;
+    }
+    public static class BulkQuoteForm { public double quantity, pricePerUnit; public String availableFrom, message; }
+    public static class BulkQuote {
+        public long id, requestId;
+        public String produce, unit, companyName, farmerName, farmerPhone, availableFrom, message, status, rejectionReason, createdAt;
+        public double quantity, pricePerUnit, total;
+    }
+    public static class BulkOrder {
+        public long id, requestId;
+        public String produce, unit, companyName, farmerName, contactName, contactPhone, deliveryCounty, deliveryLocation, neededBy;
+        public String status, paymentStatus, cancelReason, createdAt, deliveredAt, paidAt;
+        public double quantity, pricePerUnit, total; public Double platformFee, countyFee, farmerNet;
+    }
+
+    // ---- team, services, invoices, admin overview ----
+    public static class TeamMemberForm { public String name, phone, email, role; public boolean active; }
+    public static class TeamMember { public long id; public String name, phone, email, role, createdAt; public boolean active; }
+    public static class HireServiceForm {
+        public String name, category, description, priceBasis; public Double price; public List<String> counties; public boolean active;
+    }
+    public static class HireService {
+        public long id, companyId; public String companyName, companyCounty, name, category, description, priceBasis;
+        public Double price; public List<String> counties; public boolean active;
+    }
+    public static class HireRequestForm { public String details, preferredDate, location, phone; }
+    public static class HireAccept { public Double quotedPrice; public String note; }
+    public static class HireRequest {
+        public long id, serviceId;
+        public String serviceName, category, companyName, companyPhone, farmerName, phone, details, preferredDate, location, status, companyNote, createdAt, updatedAt;
+        public Double quotedPrice;
+    }
+    public static class InvoiceLine { public String description, unit; public int quantity; public double unitPrice, lineTotal; }
+    public static class Invoice {
+        public String number, issuedAt, sellerName, sellerRegNumber, sellerKraPin, sellerAddress, sellerPhone, sellerEmail;
+        public String buyerName, buyerPhone, deliveryAddress, paymentStatus, paymentMethod, receipt, paidAt, orderStatus;
+        public List<InvoiceLine> lines; public double total;
+    }
+    public static class MarketOverview {
+        public java.util.Map<String, Long> companies, supplyOrders, produceRequests, quotations, purchaseOrders, serviceRequests;
+        public double supplyDeliveredGross;
+    }
 }

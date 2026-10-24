@@ -205,6 +205,7 @@
     <string name="t_fbac13ad">Don\'t have an account? Sign up</string>
     <string name="login_forgot">Forgot password?</string>
     <string name="login_or">or</string>
+    <string name="role_company">Company</string>
     <string name="login_google">Sign up / Log in with Google</string>
     <string name="role_pick_sub">Choose how you will use FarmConnect</string>
     <string name="role_buyer_sub">Buy fresh produce directly from farmers</string>

@@ -60,6 +60,25 @@
         <activity android:name=".ui.VerificationActivity" android:theme="@style/Theme.FarmConnect.Farmer"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".ui.ReviewerHomeActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.CompanyHomeActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.CompanyDocsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.AdminCompaniesActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.CompanyProductsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.CompanyOrdersActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.CompanyPayoutsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.CompanyRequestsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.CompanyQuotesActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.CompanyBulkOrdersActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.BulkRequestsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.MyBulkActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.CompanyTeamActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.CompanyServicesActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.CompanyServiceRequestsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.ServiceHireActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.MyServiceRequestsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.AdminMarketplaceActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.FarmInputsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.MySupplyOrdersActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.ReviewDetailActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <service android:name=".push.FarmMessagingService" android:exported="false">
             <intent-filter>

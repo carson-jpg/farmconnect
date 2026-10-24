@@ -23,7 +23,7 @@ public class RegisterActivity extends AppCompatActivity {
             String phone = b.etPhone.getText().toString().trim();
             String pass = b.etPassword.getText().toString();
             String confirm = b.etConfirm.getText().toString();
-            String role = b.rbFarmer.isChecked() ? "FARMER" : "BUYER";
+            String role = b.rbFarmer.isChecked() ? "FARMER" : b.rbCompany.isChecked() ? "COMPANY" : "BUYER";
             if (name.isEmpty() || email.isEmpty() || pass.length() < 6) {
                 Ui.toast(this, I18n.t("Fill all fields (password min 6 characters)"));
                 return;
@@ -40,7 +40,10 @@ public class RegisterActivity extends AppCompatActivity {
 
         // Sign up with Google: uses the Buyer/Farmer choice made above for a new account
         GoogleAuth googleAuth = new GoogleAuth(this, vm, b.progress);
-        b.btnGoogle.setOnClickListener(v -> googleAuth.start(b.rbFarmer.isChecked() ? "FARMER" : "BUYER"));
+        b.btnGoogle.setOnClickListener(v -> {
+            if (b.rbCompany.isChecked()) { Ui.toast(this, I18n.t("Companies register with email and password")); return; }
+            googleAuth.start(b.rbFarmer.isChecked() ? "FARMER" : "BUYER");
+        });
 
         b.tvLogin.setOnClickListener(v -> finish());
     }

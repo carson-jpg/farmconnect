@@ -79,7 +79,28 @@ public class FileStorageService {
         } catch (IOException ignored) { }
     }
 
-    public static String contentType(String relative) { return relative.endsWith(".png") ? "image/png" : "image/jpeg"; }
+    /** Company verification documents: JPG, PNG or PDF (checked by file signature), private, max 6 MB. */
+    public String saveCompanyDocument(Long companyId, String prefix, MultipartFile f) {
+        if (f == null || f.isEmpty()) throw bad("Empty file");
+        if (f.getSize() > 6L * 1024 * 1024) throw bad("File too large (max 6 MB)");
+        try {
+            byte[] data = f.getBytes();
+            String ext = ext(data);
+            if (ext == null && data.length > 4 && data[0] == '%' && data[1] == 'P' && data[2] == 'D' && data[3] == 'F') ext = ".pdf";
+            if (ext == null) throw bad("Only JPG, PNG or PDF files are allowed");
+            Path dir = root.resolve("company").resolve(String.valueOf(companyId));
+            Files.createDirectories(dir);
+            String name = prefix.toLowerCase() + "-" + UUID.randomUUID() + ext;
+            Files.write(dir.resolve(name), data);
+            return "company/" + companyId + "/" + name;
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not store file");
+        }
+    }
+
+    public static String contentType(String relative) {
+        return relative.endsWith(".png") ? "image/png" : relative.endsWith(".pdf") ? "application/pdf" : "image/jpeg";
+    }
 
     private static String ext(byte[] d) {
         if (d.length > 3 && (d[0] & 0xFF) == 0xFF && (d[1] & 0xFF) == 0xD8 && (d[2] & 0xFF) == 0xFF) return ".jpg";

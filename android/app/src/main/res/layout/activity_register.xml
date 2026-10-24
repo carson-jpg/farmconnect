@@ -111,6 +111,9 @@
                 <RadioButton android:id="@+id/rbFarmer" android:layout_width="wrap_content"
                     android:layout_height="wrap_content" android:layout_marginStart="24dp" android:text="@string/t_8bf7aa45"
                     android:textColor="#FFFFFF" android:buttonTint="#FFFFFF" />
+                <RadioButton android:id="@+id/rbCompany" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:layout_marginStart="24dp" android:text="@string/role_company"
+                    android:textColor="#FFFFFF" android:buttonTint="#FFFFFF" />
             </RadioGroup>
 
             <ProgressBar android:id="@+id/progress" android:layout_width="wrap_content"

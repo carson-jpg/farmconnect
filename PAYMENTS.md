@@ -44,3 +44,25 @@ Farmer API: `GET /api/payments/farmer/earnings`, `GET|PUT /api/payments/farmer/a
 3. Set `payments.county.account-type/reference` once the County gives its destination. Until then the county share is recorded and held.
 4. Register the C2B URLs with Safaricom if you want direct till payments; get the contract/legal approval for splitting funds on behalf of the County.
 5. Test in the Daraja sandbox end to end (STK, B2C result, B2C timeout, duplicate callback) before production. This code has not been run against Safaricom.
+
+## Farm-input (supply) payments
+
+Companies sell farm inputs to farmers (Phase 2). Money for those orders follows its own, separate path so the produce
+payments above are never touched. It is OFF until you set `supply.payments.enabled=true`.
+
+- **Collect after delivery.** A farmer can pay by M-Pesa only once the order is DELIVERED, so no money is held for goods
+  that were not handed over. The amount always comes from the server (order total rounded up to whole shillings).
+- **Same safety rules as produce:** payment row locked, receipt must be new (checked against produce receipts too),
+  underpaid / duplicate / no-receipt payments go to NEEDS_REVIEW, and the collection, the split and the ledger lines are
+  written in one database transaction.
+- **Split:** the rate in force when the order was placed (Commission tab). Platform and county shares are worked out in
+  whole shillings; the company gets the remainder. The county share is only recorded (`PAYABLE:COUNTY:SUPPLY`); settle it by hand.
+- **Company payout:** the company's share is sent by B2C (phone) or B2B (paybill/till) to the payout account the
+  super admin approved. Same rules as produce payouts: atomic claim, origin id saved before sending, unclear outcomes become
+  UNKNOWN and are never retried automatically.
+- **Overpayment, duplicates and refunds are recorded, not sent.** Excess is booked as `PAYABLE:BUYER:{id}`; refund it by hand
+  from the admin screen's list of payments needing attention.
+- **Admin (super admin only):** `GET /api/admin/supply-payments/payments`, `.../payouts`, `POST .../payments/{id}/confirm`,
+  `POST .../payouts/{id}/requeue`, `POST .../payouts/{id}/mark-paid`, `GET .../ledger-check` (must say `balanced: true`).
+- **Callbacks:** farm-input payments reuse your existing STK and B2C result/timeout URLs. Supply payouts use an
+  originator id starting `SUP-`, so results are routed to the right place automatically.

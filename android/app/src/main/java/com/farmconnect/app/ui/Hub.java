@@ -59,6 +59,11 @@ public final class Hub {
                     new Link("📒", "Records", null, open(RecordsActivity.class)),
                     new Link("⭐", "My reviews", null, () -> a.startActivity(new Intent(a, ReviewsActivity.class).putExtra("sellerId", Session.id()))),
                     new Link("👥", "Groups", null, open(GroupsActivity.class)),
+                    new Link("🌾", "Farm inputs", null, open(FarmInputsActivity.class)),
+                    new Link("🧾", "Input orders", null, open(MySupplyOrdersActivity.class)),
+                    new Link("🏭", "Bulk buyers", null, open(BulkRequestsActivity.class)),
+                    new Link("📑", "Bulk orders", null, open(MyBulkActivity.class)),
+                    new Link("🛠", "Hire services", null, open(ServiceHireActivity.class)),
                     new Link("🧰", "Services", null, open(ServicesActivity.class))));
         } else if (staff) {
             links.addAll(Arrays.asList(
@@ -72,6 +77,8 @@ public final class Hub {
             if (role.equals("ADMIN")) {
                 links.add(0, new Link("🔐", "Security", null, open(SecurityActivity.class)));
                 links.add(0, new Link("🗺", "County admins", null, open(CountyAdminsActivity.class)));
+                links.add(0, new Link("🏢", "Companies", null, open(AdminCompaniesActivity.class)));
+                links.add(1, new Link("📊", "Marketplace", null, open(AdminMarketplaceActivity.class)));
             }
         } else {
             links.addAll(Arrays.asList(

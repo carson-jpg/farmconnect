@@ -186,3 +186,7 @@ label.check input { width: 16px; height: 16px; }
 .st-QUEUED, .st-PROCESSING, .st-RECORDED, .st-ELIGIBLE, .st-SETTLING { background: #1e88e5; }
 .st-ON_HOLD, .st-REVERSED, .st-CANCELLED { background: #78909c; }
 textarea.wide { width: 100%; box-sizing: border-box; font: inherit; padding: 8px; border: 1px solid #b9d0b4; border-radius: 8px; }
+
+/* company statuses */
+.pill.st-PENDING_VERIFICATION { background: #fff3cd; color: #7a5b00; }
+.pill.st-SUSPENDED { background: #e5e7eb; color: #374151; }

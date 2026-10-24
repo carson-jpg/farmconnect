@@ -44,6 +44,9 @@ public class PaymentService {
     private final PaymentPolicy policy;
     private final NotificationService notifier;
     private final TransactionTemplate tx;
+    /** Optional: farm-input payments share the STK callback URL. Field injection keeps the constructor unchanged. */
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private com.farmconnect.service.SupplyPaymentService supplyPayments;
 
     /** What the buyer must pay: the order total rounded UP to whole shillings (M-Pesa has no cents), in cents. */
     public static long dueCents(CustomerOrder o) {
@@ -82,7 +85,12 @@ public class PaymentService {
         if (checkoutId.isBlank()) { log.warn("STK callback without CheckoutRequestID"); return; }
 
         Payment p = payments.lockByCheckoutRequestId(checkoutId).orElseGet(() -> legacyPayment(checkoutId));
-        if (p == null) { log.warn("M-Pesa callback for unknown CheckoutRequestID {}", checkoutId); return; }
+        if (p == null) {
+            // not a produce payment: it may be a farm-input (supply) payment
+            if (supplyPayments != null && supplyPayments.onStkCallback(body)) return;
+            log.warn("M-Pesa callback for unknown CheckoutRequestID {}", checkoutId);
+            return;
+        }
 
         boolean open = p.getStatus() == PaymentStatus.PENDING
                 || (p.getStatus() == PaymentStatus.NEEDS_REVIEW && p.getMpesaReceiptNumber() == null);

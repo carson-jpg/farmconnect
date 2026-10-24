@@ -57,7 +57,11 @@
     payments: ['M12 1v22', 'M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6'],
     cash: ['M12 1v22', 'M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6'],
     book: ['M4 19.5A2.5 2.5 0 0 1 6.5 17H20', 'M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z'],
-    group: ['M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2', 'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z']
+    group: ['M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2', 'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z'],
+    marketplace: ['M3 9l9-6 9 6v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z', 'M9 21V12h6v9'],
+    supplymoney: ['M12 1v22', 'M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6'],
+    commission: ['M19 5L5 19', 'M6.5 9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z', 'M17.5 20a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z'],
+    companies: ['M3 21h18', 'M5 21V7l8-4v18', 'M19 21V11l-6-4', 'M9 9v.01', 'M9 13v.01', 'M9 17v.01']
   };
   function icon(name) {
     var s = svg('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true' });
@@ -434,6 +438,29 @@
     document.addEventListener('keydown', esc);
     return { modal: modal, close: close, urls: urls };
   }
+  /** Confirm / prompt dialogs in the dashboard's own style. Resolve true / false (confirm) or the typed text (prompt). */
+  function dialogBox(o) {
+    return new Promise(function (resolve) {
+      var m = modalShell(), modal = m.modal, input = null;
+      modal.textContent = '';
+      if (o.input) input = o.multiline ? h('textarea', { rows: 3, maxlength: 500 }) : h('input', { maxlength: 500, value: o.value || '' });
+      var err = h('div', { class: 'error' });
+      var ok = h('button', { class: 'btn' + (o.danger ? ' danger' : ''), type: 'submit', text: o.ok || 'OK' });
+      modal.appendChild(h('form', { onsubmit: function (ev) {
+        ev.preventDefault();
+        if (!o.input) { m.close(); resolve(true); return; }
+        var v = input.value.trim();
+        if (v.length < (o.min || 1)) { err.textContent = o.min > 1 ? 'Please enter at least ' + o.min + ' characters' : 'This is required'; return; }
+        m.close(); resolve(v);
+      } }, h('h2', { text: o.title }), o.message ? h('p', { class: 'muted', text: o.message }) : null,
+        o.input ? [h('label', { text: o.label || '' }), input] : null, err,
+        h('div', { class: 'actions' }, h('button', { class: 'btn secondary', type: 'button', text: 'Cancel', onclick: function () { m.close(); resolve(o.input ? null : false); } }), ok)));
+      setTimeout(function () { (input || ok).focus(); }, 30);
+    });
+  }
+  function confirmDialog(title, message, okLabel, danger) { return dialogBox({ title: title, message: message, ok: okLabel || 'Confirm', danger: danger }); }
+  function promptDialog(title, label, opts) { opts = opts || {}; opts.title = title; opts.label = label; opts.input = true; return dialogBox(opts); }
+
   function fact(k, v) { return h('div', {}, h('span', { text: k }), document.createTextNode(v == null || v === '' ? '-' : String(v))); }
 
   function openReview(id, done) {
@@ -1187,16 +1214,297 @@
     load();
   }
 
+  // ---------- companies (super admin only) ----------
+  var CO_STATUS = { PENDING_VERIFICATION: 'Waiting', UNDER_REVIEW: 'Under review', VERIFIED: 'Verified', REJECTED: 'Rejected', SUSPENDED: 'Suspended' };
+  var CO_CATEGORY = { AGRI_SUPPLIER: 'Agricultural supplier', PRODUCE_BUYER: 'Bulk produce buyer', TRANSPORT: 'Transport', SERVICE_PROVIDER: 'Service provider' };
+  var CO_DOC = { REGISTRATION_CERT: 'Registration certificate', KRA_PIN_CERT: 'KRA PIN certificate', TRADE_LICENCE: 'Trade licence', SECTOR_LICENCE: 'Sector licence', REP_ID: 'Representative ID', OTHER: 'Other' };
+
+  function companiesView(box) {
+    var current = 'PENDING_VERIFICATION', list = h('div');
+    var select = h('select', { onchange: function () { current = select.value; load(); } },
+      Object.keys(CO_STATUS).map(function (k) { return h('option', { value: k, text: CO_STATUS[k] }); }));
+    box.appendChild(h('div', { class: 'toolbar' }, h('div', {}, h('label', { text: 'Show' }), select),
+      h('div', { class: 'muted' }, 'Only the super admin can verify companies.')));
+    box.appendChild(list);
+    function load() {
+      loading(list);
+      getJson('/api/admin/companies?status=' + encodeURIComponent(current)).then(function (rows) {
+        list.textContent = '';
+        if (!rows.length) { list.appendChild(emptyBox('Nothing here')); return; }
+        list.appendChild(table(['Company', 'Category', 'County', 'Documents', 'Submitted', 'Status', ''], rows.map(function (r) {
+          return h('tr', {},
+            h('td', {}, h('b', { text: r.name })), h('td', { text: CO_CATEGORY[r.category] || r.category }), h('td', { text: r.county || '-' }),
+            h('td', { text: String(r.documents) }), h('td', { text: when(r.submittedAt) }), h('td', {}, pill(CO_STATUS[r.status] || r.status, 'st-' + r.status)),
+            h('td', { class: 'actions' }, h('button', { class: 'btn small', text: 'Open', onclick: function () { openCompany(r.id, load); } })));
+        })));
+      }).catch(function (e) { failed(list, e); });
+    }
+    load();
+  }
+
+  function openCompany(id, done) {
+    var m = modalShell(), modal = m.modal, close = m.close;
+    getJson('/api/admin/companies/' + id).then(function (d) {
+      var c = d.company;
+      modal.textContent = '';
+      function act(path, json, okMsg) {
+        return api('/api/admin/companies/' + id + '/' + path, { method: 'POST', json: json }).then(function () { toast(okMsg); close(); done(); })
+          .catch(function (e) { toast(e.message, true); });
+      }
+      function ask(label, path, okMsg) {
+        promptDialog(label, 'Reason (at least 5 characters)', { min: 5, multiline: true, ok: 'Send', danger: true }).then(function (reason) { if (reason) act(path, { reason: reason }, okMsg); });
+      }
+      var acts = h('div', { class: 'actions' }, h('button', { class: 'btn secondary', text: 'Close', onclick: close }));
+      if (c.status === 'PENDING_VERIFICATION') acts.appendChild(h('button', { class: 'btn', text: 'Start review', onclick: function () { act('start-review', undefined, 'Review started'); } }));
+      if (c.status === 'UNDER_REVIEW') {
+        acts.appendChild(h('button', { class: 'btn danger', text: 'Reject…', onclick: function () { ask('Reason shown to the company', 'reject', 'Rejected. The company can fix and resubmit'); } }));
+        acts.appendChild(h('button', { class: 'btn', text: 'Verify', onclick: function () {
+          confirmDialog('Verify this company?', 'Confirm that the registration number, KRA PIN and documents are genuine and match the company details.', 'Verify company').then(function (ok) { if (ok) act('verify', undefined, 'Company verified'); });
+        } }));
+      }
+      if (c.status === 'VERIFIED') acts.appendChild(h('button', { class: 'btn danger', text: 'Suspend…', onclick: function () { ask('Reason for suspending', 'suspend', 'Company suspended'); } }));
+      if (c.status === 'SUSPENDED') acts.appendChild(h('button', { class: 'btn', text: 'Reinstate', onclick: function () { act('reinstate', undefined, 'Company reinstated'); } }));
+
+      if (c.status === 'VERIFIED' && c.payoutAccount && !c.payoutApproved)
+        acts.appendChild(h('button', { class: 'btn', text: 'Approve payout account', onclick: function () {
+          confirmDialog('Approve payout account?', 'FarmConnect will send this company\'s money to ' + c.payoutType + ' ' + c.payoutAccount + '. Check that the account really belongs to the company.', 'Approve').then(function (ok) { if (ok) act('payout-account/approve', undefined, 'Payout account approved'); });
+        } }));
+      if (c.status === 'VERIFIED' && c.payoutApproved)
+        acts.appendChild(h('button', { class: 'btn secondary', text: 'Revoke payout approval', onclick: function () { act('payout-account/revoke', undefined, 'Payout approval revoked'); } }));
+      var docs = h('div', { class: 'facts' });
+      if (!c.documents.length) docs.appendChild(h('div', { class: 'muted', text: 'No documents uploaded' }));
+      c.documents.forEach(function (x) {
+        docs.appendChild(h('div', {}, h('span', { text: CO_DOC[x.type] || x.type }),
+          h('button', { class: 'btn secondary small', text: 'Open ' + (x.fileName || ''), onclick: function () {
+            api('/api/admin/companies/' + id + '/documents/' + x.id).then(function (r) { return r.blob(); }).then(function (b) {
+              var u = URL.createObjectURL(b); m.urls.push(u); window.open(u, '_blank', 'noopener');
+            }).catch(function (e) { toast(e.message, true); });
+          } })));
+      });
+      modal.appendChild(h('div', {}, h('h2', { text: c.name }), pill(CO_STATUS[c.status] || c.status, 'st-' + c.status)));
+      modal.appendChild(h('div', { class: 'facts' },
+        fact('Registration no.', c.businessRegNumber), fact('KRA PIN', c.kraPin), fact('Category', CO_CATEGORY[c.category] || c.category),
+        fact('Role', [c.canBuy ? 'Buys produce' : '', c.canSell ? 'Sells products/services' : ''].filter(Boolean).join(' · ')),
+        fact('Representative', [c.repName, c.repPhone, c.repEmail].filter(Boolean).join(' · ')),
+        fact('Account', (d.ownerName || '') + ' · ' + (d.ownerEmail || '') + (d.ownerPhone ? ' · ' + d.ownerPhone : '')),
+        fact('Address', [c.address, c.county].filter(Boolean).join(', ')),
+        fact('Operates in', (c.operatingCounties || []).join(', ')), fact('About', c.description),
+        fact('Payout account', c.payoutAccount ? (c.payoutType + ' ' + c.payoutAccount + (c.payoutReference ? ' / ' + c.payoutReference : '') + (c.payoutApproved ? '  (approved)' : '  (NOT approved)')) : 'Not set'),
+        fact('Submitted', when(c.submittedAt)),
+        fact('Reviewed', c.reviewedAt ? when(c.reviewedAt) + ' by ' + (d.reviewedByName || '') : '-'),
+        c.rejectionReason ? fact('Rejection reason', c.rejectionReason) : null,
+        c.suspensionReason ? fact('Suspension reason', c.suspensionReason) : null));
+      modal.appendChild(h('h3', { text: 'Documents' }));
+      modal.appendChild(docs);
+      modal.appendChild(acts);
+    }).catch(function (e) { toast(e.message, true); close(); });
+  }
+
+  // ---------- commission rates (super admin only) ----------
+  var CM_TYPE = { SUPPLY_SALE: 'Supplier sells inputs to a farmer', BULK_PURCHASE: 'Company buys produce in bulk', SERVICE_FEE: 'Service or transport fee' };
+  function pct(bps) { return (bps / 100).toFixed(2).replace(/\.?0+$/, '') + '%'; }
+
+  function commissionView(box) {
+    var list = h('div');
+    box.appendChild(h('div', { class: 'toolbar' }, h('div', { class: 'muted' },
+      'A change applies to NEW orders only. Orders keep the rate they were placed with. The 5% / 5% / 90% produce split is separate and is not changed here.')));
+    box.appendChild(list);
+    function load() {
+      loading(list);
+      getJson('/api/admin/commission-policies').then(function (rows) {
+        list.textContent = '';
+        list.appendChild(table(['Transaction', 'FarmConnect', 'County', 'County agreement', 'Since', ''], rows.map(function (r) {
+          return h('tr', {}, h('td', {}, h('b', { text: CM_TYPE[r.type] || r.type })), h('td', { text: pct(r.platformBps) }), h('td', { text: pct(r.countyBps) }),
+            h('td', { text: r.countyAgreementRef || '-' }), h('td', { text: when(r.effectiveFrom) }),
+            h('td', { class: 'actions' },
+              h('button', { class: 'btn small', text: 'Change', onclick: function () { editPolicy(r, load); } }),
+              h('button', { class: 'btn secondary small', text: 'History', onclick: function () { policyHistory(r.type); } })));
+        })));
+      }).catch(function (e) { failed(list, e); });
+    }
+    load();
+  }
+
+  function editPolicy(r, done) {
+    var m = modalShell(), modal = m.modal, close = m.close;
+    var plat = h('input', { type: 'number', min: '0', max: '100', step: '0.01', value: String(r.platformBps / 100) });
+    var county = h('input', { type: 'number', min: '0', max: '100', step: '0.01', value: String(r.countyBps / 100) });
+    var ref = h('input', { maxlength: 200, placeholder: 'Required if the county share is above 0', value: r.countyAgreementRef || '' });
+    var note = h('input', { maxlength: 300, placeholder: 'Why the rate is changing' });
+    var err = h('div', { class: 'error' });
+    modal.appendChild(h('form', { onsubmit: function (ev) {
+      ev.preventDefault(); err.textContent = '';
+      var body = { type: r.type, platformBps: Math.round(Number(plat.value) * 100), countyBps: Math.round(Number(county.value) * 100), countyAgreementRef: ref.value.trim(), note: note.value.trim() };
+      api('/api/admin/commission-policies', { method: 'POST', json: body }).then(function () { toast('New rate saved'); close(); done(); })
+        .catch(function (e) { err.textContent = e.message; });
+    } }, h('h2', { text: CM_TYPE[r.type] || r.type }),
+      h('label', { text: 'FarmConnect share (%)' }), plat, h('label', { text: 'County share (%) — only under a formally approved agreement' }), county,
+      h('label', { text: 'County agreement reference' }), ref, h('label', { text: 'Note' }), note,
+      h('div', { class: 'actions' }, h('button', { class: 'btn secondary', type: 'button', text: 'Cancel', onclick: close }), h('button', { class: 'btn', type: 'submit', text: 'Save new rate' })), err));
+  }
+
+  function policyHistory(type) {
+    var m = modalShell(), modal = m.modal, close = m.close;
+    modal.appendChild(h('h2', { text: 'Rate history' }));
+    var box = h('div'); modal.appendChild(box);
+    modal.appendChild(h('div', { class: 'actions' }, h('button', { class: 'btn secondary', text: 'Close', onclick: close })));
+    getJson('/api/admin/commission-policies/' + encodeURIComponent(type) + '/history').then(function (rows) {
+      box.appendChild(table(['From', 'To', 'FarmConnect', 'County', 'Set by', 'Note'], rows.map(function (r) {
+        return h('tr', {}, h('td', { text: when(r.effectiveFrom) }), h('td', { text: r.effectiveTo ? when(r.effectiveTo) : 'now' }),
+          h('td', { text: pct(r.platformBps) }), h('td', { text: pct(r.countyBps) }), h('td', { text: r.createdBy || '-' }), h('td', { text: r.note || '' }));
+      })));
+    }).catch(function (e) { failed(box, e); });
+  }
+
+  // ---------- farm-input money (super admin only) ----------
+  function kes(n) { return 'KSh ' + Number(n || 0).toLocaleString('en-KE'); }
+
+  function supplyMoneyView(box) {
+    box.appendChild(h('div', { class: 'toolbar' }, h('div', { class: 'muted' },
+      'Farm-input orders are paid after delivery. Payments that need a person, and the payouts to companies, are here.'),
+      h('button', { class: 'btn secondary small', text: 'Check ledger', onclick: function () {
+        getJson('/api/admin/supply-payments/ledger-check').then(function (r) {
+          toast(r.balanced ? 'Ledger balances: every payment has equal debits and credits' : 'LEDGER DOES NOT BALANCE for payments: ' + r.unbalancedPayments.join(', '), !r.balanced);
+        }).catch(function (e) { toast(e.message, true); });
+      } })));
+
+    var payBox = h('div'), payFilter = h('select', { onchange: loadPay },
+      [['NEEDS_REVIEW', 'Needs review'], ['PENDING', 'Pending'], ['SUCCESS', 'Successful'], ['FAILED', 'Failed'], ['', 'Latest 100']].map(function (o) { return h('option', { value: o[0], text: o[1] }); }));
+    box.appendChild(h('h3', { text: 'Collections from farmers' }));
+    box.appendChild(h('div', { class: 'toolbar' }, h('div', {}, h('label', { text: 'Show' }), payFilter)));
+    box.appendChild(payBox);
+    function loadPay() {
+      loading(payBox);
+      getJson('/api/admin/supply-payments/payments' + (payFilter.value ? '?status=' + payFilter.value : '')).then(function (rows) {
+        payBox.textContent = '';
+        if (!rows.length) { payBox.appendChild(emptyBox('Nothing here')); return; }
+        payBox.appendChild(table(['#', 'Order', 'Farmer', 'Expected', 'Paid', 'Owed back', 'Receipt', 'Status', 'Note', ''], rows.map(function (p) {
+          var canConfirm = (p.status === 'NEEDS_REVIEW' || p.status === 'PENDING') && !p.receipt;
+          return h('tr', {}, h('td', { text: String(p.id) }), h('td', { text: '#' + p.orderId }), h('td', { text: p.buyerName }), h('td', { text: kes(p.expectedKes) }),
+            h('td', { text: kes(p.paidKes) }), h('td', { text: p.excessKes ? kes(p.excessKes) : '-' }), h('td', { text: p.receipt || '-' }),
+            h('td', {}, h('span', { class: 'pill', text: p.status })), h('td', { text: p.note || '' }),
+            h('td', { class: 'actions' }, canConfirm ? h('button', { class: 'btn small', text: 'Confirm…', onclick: function () {
+              promptDialog('Confirm payment #' + p.id, 'M-Pesa receipt from the statement (e.g. SJK1ABC234)', { ok: 'Next' }).then(function (receipt) {
+                if (!receipt) return;
+                promptDialog('Confirm payment #' + p.id, 'Amount received in KSh (whole shillings)', { value: String(p.expectedKes), ok: 'Confirm payment' }).then(function (amt) {
+                  if (!amt) return;
+                  api('/api/admin/supply-payments/payments/' + p.id + '/confirm', { method: 'POST', json: { receipt: receipt, amountKes: parseInt(amt, 10) } })
+                    .then(function () { toast('Payment confirmed'); loadPay(); loadOut(); }).catch(function (e) { toast(e.message, true); });
+                });
+              });
+            } }) : null));
+        })));
+      }).catch(function (e) { failed(payBox, e); });
+    }
+
+    var outBox = h('div'), outFilter = h('select', { onchange: loadOut },
+      [['', 'Latest 100'], ['QUEUED', 'Queued'], ['PROCESSING', 'Sending'], ['UNKNOWN', 'Unknown (check statement)'], ['FAILED', 'Failed'], ['SUCCESS', 'Paid out']].map(function (o) { return h('option', { value: o[0], text: o[1] }); }));
+    box.appendChild(h('h3', { text: 'Payouts to companies' }));
+    box.appendChild(h('div', { class: 'toolbar' }, h('div', {}, h('label', { text: 'Show' }), outFilter)));
+    box.appendChild(outBox);
+    function loadOut() {
+      loading(outBox);
+      getJson('/api/admin/supply-payments/payouts' + (outFilter.value ? '?status=' + outFilter.value : '')).then(function (rows) {
+        outBox.textContent = '';
+        if (!rows.length) { outBox.appendChild(emptyBox('Nothing here')); return; }
+        outBox.appendChild(table(['#', 'Order', 'Company', 'Amount', 'Status', 'Note', ''], rows.map(function (p) {
+          var fixable = p.status === 'FAILED' || p.status === 'UNKNOWN';
+          return h('tr', {}, h('td', { text: String(p.id) }), h('td', { text: '#' + p.orderId }), h('td', { text: p.companyName }), h('td', { text: kes(p.amountKes) }),
+            h('td', {}, h('span', { class: 'pill', text: p.status })), h('td', { text: p.status === 'SUCCESS' ? (p.providerTransactionId || '') : (p.failureReason || '') }),
+            h('td', { class: 'actions' },
+              fixable ? h('button', { class: 'btn small', text: 'Retry', onclick: function () {
+                var go = function () {
+                  api('/api/admin/supply-payments/payouts/' + p.id + '/requeue?confirmedNotSent=' + (p.status === 'UNKNOWN'), { method: 'POST' })
+                    .then(function () { toast('Queued again'); loadOut(); }).catch(function (e) { toast(e.message, true); });
+                };
+                if (p.status !== 'UNKNOWN') go();
+                else confirmDialog('Retry this payout?', 'Open the M-Pesa statement first. Retry ONLY if the money was NOT sent, or the company will be paid twice.', 'The money was not sent. Retry', true).then(function (ok) { if (ok) go(); });
+              } }) : null,
+              (fixable || p.status === 'QUEUED') ? h('button', { class: 'btn secondary small', text: 'Mark paid…', onclick: function () {
+                promptDialog('Mark payout #' + p.id + ' as paid', 'M-Pesa reference of the payment you made by hand', { ok: 'Record as paid' }).then(function (ref) {
+                  if (!ref) return;
+                  api('/api/admin/supply-payments/payouts/' + p.id + '/mark-paid', { method: 'POST', json: { reference: ref } })
+                    .then(function () { toast('Recorded as paid'); loadOut(); }).catch(function (e) { toast(e.message, true); });
+                });
+              } }) : null));
+        })));
+      }).catch(function (e) { failed(outBox, e); });
+    }
+    loadPay(); loadOut();
+  }
+
+  // ---------- marketplace oversight (super admin only) ----------
+  var MK_TABS = [
+    ['supply-orders', 'Input orders', ['', 'PLACED', 'CONFIRMED', 'DISPATCHED', 'DELIVERED', 'CANCELLED', 'REJECTED']],
+    ['produce-requests', 'Produce requests', ['', 'OPEN', 'FULFILLED', 'CLOSED', 'CANCELLED']],
+    ['purchase-orders', 'Purchase orders', ['', 'ISSUED', 'CONFIRMED', 'DELIVERED', 'DECLINED', 'CANCELLED']],
+    ['service-requests', 'Service requests', ['', 'REQUESTED', 'ACCEPTED', 'COMPLETED', 'DECLINED', 'CANCELLED']]
+  ];
+
+  function marketplaceView(box) {
+    var kpis = h('div'), tabs = h('div', { class: 'toolbar' }), body = h('div');
+    var current = MK_TABS[0], status = '';
+    box.appendChild(kpis); box.appendChild(tabs); box.appendChild(body);
+
+    function kpi(label, value, note) { return h('div', { class: 'kpi' }, h('div', {}, h('div', { class: 'label', text: label }), h('div', { class: 'value', text: String(value) }), note ? h('div', { class: 'note', text: note }) : null)); }
+    getJson('/api/admin/marketplace/overview').then(function (o) {
+      kpis.textContent = '';
+      kpis.appendChild(h('div', { class: 'kpis' },
+        kpi('Verified companies', o.companies.VERIFIED || 0, (o.companies.PENDING_VERIFICATION || 0) + ' waiting, ' + (o.companies.UNDER_REVIEW || 0) + ' in review'),
+        kpi('Input orders delivered', o.supplyOrders.DELIVERED || 0, 'KSh ' + Number(o.supplyDeliveredGross || 0).toLocaleString('en-KE')),
+        kpi('Input orders open', (o.supplyOrders.PLACED || 0) + (o.supplyOrders.CONFIRMED || 0) + (o.supplyOrders.DISPATCHED || 0), 'new, confirmed or dispatched'),
+        kpi('Produce requests open', o.produceRequests.OPEN || 0, (o.quotations.SUBMITTED || 0) + ' quotations waiting'),
+        kpi('Purchase orders', (o.purchaseOrders.ISSUED || 0) + (o.purchaseOrders.CONFIRMED || 0), 'issued or confirmed'),
+        kpi('Service requests open', (o.serviceRequests.REQUESTED || 0) + (o.serviceRequests.ACCEPTED || 0), 'new or accepted')));
+    }).catch(function (e) { failed(kpis, e); });
+
+    function draw() {
+      tabs.textContent = '';
+      var select = h('select', { onchange: function () { status = select.value; load(); } }, current[2].map(function (st) { return h('option', { value: st, text: st || 'All statuses' }); }));
+      select.value = status;
+      tabs.appendChild(h('div', { class: 'left' }, MK_TABS.map(function (t) {
+        return h('button', { class: 'btn small' + (t === current ? '' : ' secondary'), text: t[1], onclick: function () { current = t; status = ''; draw(); load(); } });
+      })));
+      tabs.appendChild(h('div', {}, h('label', { text: 'Status' }), select));
+    }
+    function money2(n) { return 'KSh ' + Number(n || 0).toLocaleString('en-KE'); }
+    var SPECS = {
+      'supply-orders': [['#', 'Company', 'Farmer', 'Items', 'Total', 'FarmConnect fee', 'Payment', 'Status', 'Date'], function (o) {
+        return [o.id, o.companyName, o.buyerName, o.items.map(function (i) { return i.quantity + ' ' + i.name; }).join(', '), money2(o.total), money2(Number(o.platformFee) + Number(o.countyFee)), o.paymentStatus + (o.paymentMethod ? ' (' + o.paymentMethod + ')' : ''), o.status, when(o.createdAt)];
+      }],
+      'produce-requests': [['#', 'Company', 'Produce', 'Quantity', 'Still needed', 'Deliver to', 'Closes', 'Status', 'Quotes waiting'], function (r) {
+        return [r.id, r.companyName, r.produce, r.quantity + ' ' + r.unit, r.remaining + ' ' + r.unit, r.deliveryCounty, r.closesAt, r.status, r.openQuotations];
+      }],
+      'purchase-orders': [['#', 'Company', 'Farmer', 'Produce', 'Quantity', 'Total', 'FarmConnect fee', 'Payment', 'Status'], function (o) {
+        return [o.id, o.companyName, o.farmerName, o.produce, o.quantity + ' ' + o.unit, money2(o.total), money2(Number(o.platformFee) + Number(o.countyFee)), o.paymentStatus, o.status];
+      }],
+      'service-requests': [['#', 'Company', 'Service', 'Farmer', 'Location', 'Price', 'Status', 'Date'], function (r) {
+        return [r.id, r.companyName, r.serviceName, r.farmerName, r.location, r.quotedPrice != null ? money2(r.quotedPrice) : '-', r.status, when(r.createdAt)];
+      }]
+    };
+    function load() {
+      loading(body);
+      getJson('/api/admin/marketplace/' + current[0] + (status ? '?status=' + status : '')).then(function (rows) {
+        body.textContent = '';
+        if (!rows.length) { body.appendChild(emptyBox('Nothing here')); return; }
+        var spec = SPECS[current[0]];
+        body.appendChild(table(spec[0], rows.map(function (r) { return h('tr', {}, spec[1](r).map(function (c) { return h('td', { text: c == null ? '' : String(c) }); })); })));
+        body.appendChild(h('p', { class: 'muted', text: 'Showing the latest ' + rows.length + '. Read-only.' }));
+      }).catch(function (e) { failed(body, e); });
+    }
+    draw(); load();
+  }
+
   // ---------- frame ----------
   var NAV = [
     { group: 'Dashboard', items: [['overview', 'Overview', 'Overview']] },
     { group: 'County work', items: [['verifications', 'Verification', 'Farmer verification'], ['prices', 'Market prices', 'Market price board'], ['reports', 'Reports', 'Reports']] },
     { group: 'Administration', admin: true, items: [['users', 'Users', 'Users'], ['officers', 'Officers', 'County officers'], ['products', 'Products', 'Product moderation'], ['orders', 'Orders', 'Orders'], ['payments', 'Payments', 'Payments & payouts']] },
-    { group: 'Super admin', superOnly: true, items: [['countyadmins', 'County admins', 'County admins'], ['security', 'Security', 'Security and audit log']] }
+    { group: 'Super admin', superOnly: true, items: [['companies', 'Companies', 'Company verification'], ['marketplace', 'Marketplace', 'Marketplace overview'], ['commission', 'Commission', 'Commission rates'], ['supplymoney', 'Farm-input money', 'Farm-input payments and payouts'], ['countyadmins', 'County admins', 'County admins'], ['security', 'Security', 'Security and audit log']] }
   ];
-  var VIEWS = { overview: overview, verifications: verifications, prices: prices, reports: reports, users: function (b) { usersView(b); }, officers: officersView, products: productsView, orders: ordersView, payments: paymentsView, countyadmins: countyAdminsView, security: securityView };
-  var ADMIN_ONLY = { users: 1, officers: 1, products: 1, orders: 1, payments: 1, countyadmins: 1, security: 1 };
-  var SUPER_ONLY = { countyadmins: 1, security: 1 };
+  var VIEWS = { overview: overview, verifications: verifications, prices: prices, reports: reports, users: function (b) { usersView(b); }, officers: officersView, products: productsView, orders: ordersView, payments: paymentsView, companies: companiesView, marketplace: marketplaceView, commission: commissionView, supplymoney: supplyMoneyView, countyadmins: countyAdminsView, security: securityView };
+  var ADMIN_ONLY = { users: 1, officers: 1, products: 1, orders: 1, payments: 1, companies: 1, marketplace: 1, commission: 1, supplymoney: 1, countyadmins: 1, security: 1 };
+  var SUPER_ONLY = { companies: 1, marketplace: 1, commission: 1, supplymoney: 1, countyadmins: 1, security: 1 };
 
   function currentView() {
     var v = (location.hash || '').replace('#', '');

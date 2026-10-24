@@ -31,19 +31,22 @@ public class MpesaCallbackController {
     private final PaymentService payments;
     private final PayoutService payouts;
     private final CallbackLogRepository callbackLogs;
+    /** Optional: farm-input payouts share the payout result URLs. Field injection keeps the constructor unchanged. */
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private com.farmconnect.service.SupplyPayoutService supplyPayouts;
 
     /** Final outcome of a B2C / B2B payout. */
     @PostMapping("/b2c/result/{secret}")
     public Map<String, Object> payoutResult(@PathVariable String secret, @RequestBody JsonNode body) {
         guard(secret, "PAYOUT_RESULT", body);
-        try { payouts.onResult(body); } catch (Exception e) { log.error("Could not process payout result {}", body, e); }
+        try { if (supplyPayouts == null || !supplyPayouts.onResult(body)) payouts.onResult(body); } catch (Exception e) { log.error("Could not process payout result {}", body, e); }
         return OK;
     }
 
     @PostMapping("/b2c/timeout/{secret}")
     public Map<String, Object> payoutTimeout(@PathVariable String secret, @RequestBody JsonNode body) {
         guard(secret, "PAYOUT_TIMEOUT", body);
-        try { payouts.onTimeout(body); } catch (Exception e) { log.error("Could not process payout timeout {}", body, e); }
+        try { if (supplyPayouts == null || !supplyPayouts.onTimeout(body)) payouts.onTimeout(body); } catch (Exception e) { log.error("Could not process payout timeout {}", body, e); }
         return OK;
     }
 

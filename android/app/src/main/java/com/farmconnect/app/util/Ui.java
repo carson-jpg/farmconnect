@@ -14,6 +14,7 @@ import com.farmconnect.app.data.Resource;
 import com.farmconnect.app.data.Session;
 import com.farmconnect.app.ui.AdminHomeActivity;
 import com.farmconnect.app.ui.BuyerHomeActivity;
+import com.farmconnect.app.ui.CompanyHomeActivity;
 import com.farmconnect.app.ui.FarmerHomeActivity;
 import com.farmconnect.app.ui.LoginActivity;
 import com.farmconnect.app.ui.ReviewerHomeActivity;
@@ -132,6 +133,7 @@ public class Ui {
         if ("FARMER".equals(role)) target = FarmerHomeActivity.class;
         else if ("ADMIN".equals(role) || "COUNTY_ADMIN".equals(role)) target = AdminHomeActivity.class;
         else if ("OFFICER".equals(role)) target = ReviewerHomeActivity.class;
+        else if ("COMPANY".equals(role)) target = CompanyHomeActivity.class;
         else target = BuyerHomeActivity.class;
         Intent i = new Intent(a, target);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

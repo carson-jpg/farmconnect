@@ -139,4 +139,103 @@ public interface ApiService {
     @POST("api/admin/verifications/{id}/start-review") Call<ReviewDetail> startReview(@Path("id") long id);
     @POST("api/admin/verifications/{id}/approve") Call<ReviewDetail> approve(@Path("id") long id);
     @POST("api/admin/verifications/{id}/reject") Call<ReviewDetail> reject(@Path("id") long id, @Body RejectRequest r);
+
+    // company portal
+    @GET("api/company/me") Call<CompanyView> myCompany();
+    @POST("api/company/me") Call<CompanyView> registerCompany(@Body CompanyRequest r);
+    @PUT("api/company/me") Call<CompanyView> updateCompany(@Body CompanyRequest r);
+    @Multipart @POST("api/company/me/documents")
+    Call<CompanyView> uploadCompanyDoc(@Part("type") RequestBody type, @Part MultipartBody.Part file);
+    @DELETE("api/company/me/documents/{id}") Call<CompanyView> deleteCompanyDoc(@Path("id") long id);
+    @GET("api/company/me/documents/{id}") Call<ResponseBody> companyDocFile(@Path("id") long id);
+
+    // company verification (super admin only)
+    @GET("api/admin/companies") Call<List<AdminCompanySummary>> adminCompanies(@Query("status") String status);
+    @GET("api/admin/companies/{id}") Call<AdminCompanyDetail> adminCompany(@Path("id") long id);
+    @GET("api/admin/companies/{id}/documents/{docId}") Call<ResponseBody> adminCompanyDoc(@Path("id") long id, @Path("docId") long docId);
+    @POST("api/admin/companies/{id}/start-review") Call<AdminCompanyDetail> companyStartReview(@Path("id") long id);
+    @POST("api/admin/companies/{id}/verify") Call<AdminCompanyDetail> companyVerify(@Path("id") long id);
+    @POST("api/admin/companies/{id}/reject") Call<AdminCompanyDetail> companyReject(@Path("id") long id, @Body ReasonRequest r);
+    @POST("api/admin/companies/{id}/suspend") Call<AdminCompanyDetail> companySuspend(@Path("id") long id, @Body ReasonRequest r);
+    @POST("api/admin/companies/{id}/reinstate") Call<AdminCompanyDetail> companyReinstate(@Path("id") long id);
+
+    // supplier listings and orders (company side)
+    @GET("api/company/products") Call<List<SupplyProduct>> companyProducts();
+    @POST("api/company/products") Call<SupplyProduct> createSupplyProduct(@Body SupplyProductRequest r);
+    @PUT("api/company/products/{id}") Call<SupplyProduct> updateSupplyProduct(@Path("id") long id, @Body SupplyProductRequest r);
+    @GET("api/company/supply-orders") Call<List<SupplyOrder>> companySupplyOrders(@Query("status") String status);
+    @POST("api/company/supply-orders/{id}/confirm") Call<SupplyOrder> supplyConfirm(@Path("id") long id);
+    @POST("api/company/supply-orders/{id}/dispatch") Call<SupplyOrder> supplyDispatch(@Path("id") long id);
+    @POST("api/company/supply-orders/{id}/deliver") Call<SupplyOrder> supplyDeliver(@Path("id") long id);
+    @POST("api/company/supply-orders/{id}/mark-paid") Call<SupplyOrder> supplyMarkPaid(@Path("id") long id);
+    @POST("api/company/supply-orders/{id}/reject") Call<SupplyOrder> supplyReject(@Path("id") long id, @Body ReasonRequest r);
+    @GET("api/company/summary") Call<SupplySummary> companySummary();
+
+    // farmer side
+    @GET("api/supplies/products") Call<List<SupplyProduct>> browseSupplies(@Query("category") String category, @Query("q") String q);
+    @POST("api/supplies/orders") Call<SupplyOrder> placeSupplyOrder(@Body PlaceSupplyOrder r);
+    @GET("api/supplies/orders") Call<List<SupplyOrder>> mySupplyOrders();
+    @POST("api/supplies/orders/{id}/cancel") Call<SupplyOrder> cancelSupplyOrder(@Path("id") long id);
+
+    // supply payments and payouts
+    @PUT("api/company/payout-account") Call<CompanyView> setPayoutAccount(@Body PayoutAccountRequest r);
+    @GET("api/company/payouts") Call<List<PayoutView>> companyPayouts();
+    @POST("api/supplies/orders/{id}/pay") Call<SupplyPaymentView> paySupplyOrder(@Path("id") long id, @Body PayRequest r);
+    @GET("api/supplies/payments-enabled") Call<FlagResponse> supplyPaymentsEnabled();
+    @POST("api/admin/companies/{id}/payout-account/approve") Call<AdminCompanyDetail> companyApprovePayout(@Path("id") long id);
+    @POST("api/admin/companies/{id}/payout-account/revoke") Call<AdminCompanyDetail> companyRevokePayout(@Path("id") long id);
+
+    // bulk buying: company side
+    @GET("api/company/requests") Call<List<BulkRequest>> companyRequests();
+    @POST("api/company/requests") Call<BulkRequest> createBulkRequest(@Body BulkRequestForm f);
+    @POST("api/company/requests/{id}/close") Call<BulkRequest> closeBulkRequest(@Path("id") long id);
+    @GET("api/company/requests/{id}/quotations") Call<List<BulkQuote>> requestQuotations(@Path("id") long id);
+    @POST("api/company/quotations/{id}/accept") Call<BulkOrder> acceptQuotation(@Path("id") long id);
+    @POST("api/company/quotations/{id}/reject") Call<BulkQuote> rejectQuotation(@Path("id") long id, @Body ReasonRequest r);
+    @GET("api/company/purchase-orders") Call<List<BulkOrder>> companyPurchaseOrders();
+    @POST("api/company/purchase-orders/{id}/deliver") Call<BulkOrder> poDeliver(@Path("id") long id);
+    @POST("api/company/purchase-orders/{id}/mark-paid") Call<BulkOrder> poMarkPaid(@Path("id") long id);
+    @POST("api/company/purchase-orders/{id}/cancel") Call<BulkOrder> poCancel(@Path("id") long id, @Body ReasonRequest r);
+
+    // bulk buying: farmer side
+    @GET("api/bulk/requests") Call<List<BulkRequest>> browseBulk(@Query("produce") String produce, @Query("county") String county);
+    @POST("api/bulk/requests/{id}/quotations") Call<BulkQuote> sendQuote(@Path("id") long id, @Body BulkQuoteForm f);
+    @GET("api/bulk/quotations") Call<List<BulkQuote>> myQuotes();
+    @POST("api/bulk/quotations/{id}/withdraw") Call<BulkQuote> withdrawQuote(@Path("id") long id);
+    @GET("api/bulk/purchase-orders") Call<List<BulkOrder>> myPurchaseOrders();
+    @POST("api/bulk/purchase-orders/{id}/confirm") Call<BulkOrder> poConfirm(@Path("id") long id);
+    @POST("api/bulk/purchase-orders/{id}/decline") Call<BulkOrder> poDecline(@Path("id") long id, @Body ReasonRequest r);
+
+    // team
+    @GET("api/company/team") Call<List<TeamMember>> companyTeam();
+    @POST("api/company/team") Call<TeamMember> addTeamMember(@Body TeamMemberForm f);
+    @PUT("api/company/team/{id}") Call<TeamMember> updateTeamMember(@Path("id") long id, @Body TeamMemberForm f);
+    @DELETE("api/company/team/{id}") Call<Void> deleteTeamMember(@Path("id") long id);
+
+    // services the company offers, and requests for them
+    @GET("api/company/services") Call<List<HireService>> companyServices();
+    @POST("api/company/services") Call<HireService> createHireService(@Body HireServiceForm f);
+    @PUT("api/company/services/{id}") Call<HireService> updateHireService(@Path("id") long id, @Body HireServiceForm f);
+    @DELETE("api/company/services/{id}") Call<HireService> hideHireService(@Path("id") long id);
+    @GET("api/company/service-requests") Call<List<HireRequest>> companyServiceRequests(@Query("status") String status);
+    @POST("api/company/service-requests/{id}/accept") Call<HireRequest> acceptServiceRequest(@Path("id") long id, @Body HireAccept f);
+    @POST("api/company/service-requests/{id}/decline") Call<HireRequest> declineServiceRequest(@Path("id") long id, @Body ReasonRequest r);
+    @POST("api/company/service-requests/{id}/complete") Call<HireRequest> completeServiceRequest(@Path("id") long id);
+
+    // invoice and request editing
+    @GET("api/company/supply-orders/{id}/invoice") Call<Invoice> supplyInvoice(@Path("id") long id);
+    @PUT("api/company/requests/{id}") Call<BulkRequest> updateBulkRequest(@Path("id") long id, @Body BulkRequestForm f);
+
+    // farmers hire services
+    @GET("api/marketplace/services") Call<List<HireService>> browseHire(@Query("category") String category, @Query("q") String q);
+    @POST("api/marketplace/services/{id}/requests") Call<HireRequest> requestHire(@Path("id") long id, @Body HireRequestForm f);
+    @GET("api/marketplace/service-requests") Call<List<HireRequest>> myHireRequests();
+    @POST("api/marketplace/service-requests/{id}/cancel") Call<HireRequest> cancelHireRequest(@Path("id") long id);
+
+    // super admin oversight
+    @GET("api/admin/marketplace/overview") Call<MarketOverview> marketOverview();
+    @GET("api/admin/marketplace/supply-orders") Call<List<SupplyOrder>> adminSupplyOrders(@Query("status") String status);
+    @GET("api/admin/marketplace/produce-requests") Call<List<BulkRequest>> adminProduceRequests(@Query("status") String status);
+    @GET("api/admin/marketplace/purchase-orders") Call<List<BulkOrder>> adminPurchaseOrders(@Query("status") String status);
+    @GET("api/admin/marketplace/service-requests") Call<List<HireRequest>> adminServiceRequests(@Query("status") String status);
 }

@@ -53,8 +53,9 @@ public class AuthController {
     public AuthResponse register(@Valid @RequestBody RegisterRequest r, HttpServletRequest http) {
         guard.limit("register", ClientIp.of(http), 100, Duration.ofHours(1));   // many farmers share one mobile-network address
         PasswordPolicy.require(r.password(), r.email());
-        // Only farmers and buyers can self-register. ADMIN is seeded, OFFICER is created by an admin.
-        if (r.role() != Role.FARMER && r.role() != Role.BUYER)
+        // Farmers, buyers and companies can self-register. ADMIN is seeded, OFFICER is created by an admin.
+        // A company has no privileges until the super admin verifies it.
+        if (r.role() != Role.FARMER && r.role() != Role.BUYER && r.role() != Role.COMPANY)
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This role cannot be self-registered");
         if (r.confirmPassword() != null && !r.confirmPassword().equals(r.password()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Passwords do not match");
