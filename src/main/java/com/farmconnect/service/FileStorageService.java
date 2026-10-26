@@ -57,6 +57,26 @@ public class FileStorageService {
         }
     }
 
+    /** Crop doctor photos: private (served only through a signed, short-lived link). Returns "caseId/name.jpg". */
+    public String saveCropPhoto(Long caseId, MultipartFile f) {
+        if (f == null || f.isEmpty()) throw bad("Empty file");
+        if (f.getSize() > 6L * 1024 * 1024) throw bad("File too large (max 6 MB)");
+        try {
+            byte[] data = f.getBytes();
+            String ext = ext(data);
+            if (ext == null) throw bad("Only JPG or PNG images are allowed");
+            Path dir = root.resolve("crop").resolve(String.valueOf(caseId));
+            Files.createDirectories(dir);
+            String name = UUID.randomUUID() + ext;
+            Files.write(dir.resolve(name), data);
+            return caseId + "/" + name;
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not store file");
+        }
+    }
+
+    public byte[] readCropPhoto(String relative) { return read("crop/" + relative); }
+
     public byte[] readProductImage(String relative) { return read("products/" + relative); }
 
     public void deleteProductImage(String relative) { if (relative != null) delete("products/" + relative); }

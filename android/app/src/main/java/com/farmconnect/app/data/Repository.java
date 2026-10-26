@@ -149,6 +149,9 @@ public class Repository {
     public LiveData<Resource<List<Product>>> adminProducts(String q) { return run(api().adminProducts(q == null || q.isEmpty() ? null : q)); }
     public LiveData<Resource<Product>> adminSetProductActive(long id, boolean active) { return run(api().adminSetProductActive(id, new ActiveRequest(active))); }
     public LiveData<Resource<AuthResponse>> createOfficer(OfficerRequest r) { return run(api().createOfficer(r)); }
+    public LiveData<Resource<MessageResponse>> emailReport() { return run(api().emailReport()); }
+    public LiveData<Resource<TrendResponse>> priceTrend(String crop, String market, int days) { return run(api().priceTrend(crop, market, days)); }
+    public LiveData<Resource<CalendarResponse>> calendar() { return run(api().calendar()); }
     public LiveData<Resource<AuthResponse>> changePassword(String current, String next) { return run(api().changePassword(new ChangePasswordRequest(current, next))); }
     public LiveData<Resource<SecuritySummary>> securitySummary() { return run(api().securitySummary()); }
     public LiveData<Resource<List<AuditEntry>>> securityAudit(String action, String q) { return run(api().securityAudit(action, q, 200)); }
@@ -182,7 +185,7 @@ public class Repository {
                 });
             }
             @Override public void onFailure(Call<ResponseBody> c, Throwable t) {
-                live.setValue(Resource.error(I18n.t("Network error: ") + t.getMessage()));
+                live.setValue(Resource.error(Offline.isOnline() ? I18n.t("Network error: ") + t.getMessage() : I18n.t("No internet. Please try again when you are online.")));
             }
         });
         return live;
@@ -222,7 +225,7 @@ public class Repository {
                 });
             }
             @Override public void onFailure(Call<ResponseBody> c, Throwable t) {
-                live.setValue(Resource.error(I18n.t("Network error: ") + t.getMessage()));
+                live.setValue(Resource.error(Offline.isOnline() ? I18n.t("Network error: ") + t.getMessage() : I18n.t("No internet. Please try again when you are online.")));
             }
         });
         return live;
@@ -309,7 +312,7 @@ public class Repository {
                 else live.setValue(Resource.error(errorText(r)));
             }
             @Override public void onFailure(Call<T> c, Throwable t) {
-                live.setValue(Resource.error(I18n.t("Network error: ") + t.getMessage()));
+                live.setValue(Resource.error(Offline.isOnline() ? I18n.t("Network error: ") + t.getMessage() : I18n.t("No internet. Please try again when you are online.")));
             }
         });
         return live;
@@ -325,4 +328,45 @@ public class Repository {
         if (r.code() == 403) return I18n.t("Not allowed");
         return I18n.t("Error ") + r.code();
     }
+    // crop doctor
+    public LiveData<Resource<CropGuide>> cropGuide() { return run(api().cropGuide()); }
+    public LiveData<Resource<CropDiagnosis>> cropDiagnose(String crop, List<String> symptoms) { return run(api().cropDiagnose(new CropDiagnoseRequest(crop, symptoms))); }
+    public LiveData<Resource<CropCase>> cropSend(String crop, List<String> symptoms, String description) { return run(api().cropSend(new CropCaseRequest(crop, symptoms, description))); }
+    public LiveData<Resource<CropCase>> cropPhoto(long id, byte[] jpeg) {
+        RequestBody body = RequestBody.create(jpeg, MediaType.parse("image/jpeg"));
+        return run(api().cropPhoto(id, MultipartBody.Part.createFormData("file", "plant.jpg", body)));
+    }
+    public LiveData<Resource<List<CropCase>>> cropCases(String status) { return run(api().cropCases(status)); }
+    public LiveData<Resource<CropCase>> cropCase(long id) { return run(api().cropCase(id)); }
+    public LiveData<Resource<CropCase>> cropReview(long id, String note, String confirmed) { return run(api().cropReview(id, new CropReviewRequest(note, confirmed))); }
+    public LiveData<Resource<CropCase>> cropClose(long id) { return run(api().cropClose(id)); }
+    // cash payments
+    public LiveData<Resource<List<CashSale>>> cashMine() { return run(api().cashMine()); }
+    public LiveData<Resource<List<CashSale>>> cashForOrder(long id) { return run(api().cashForOrder(id)); }
+    public LiveData<Resource<CashSale>> cashRecord(long orderId, String note) { return run(api().cashRecord(orderId, new CashNote(note))); }
+    public LiveData<Resource<CashSale>> cashConfirm(long id) { return run(api().cashConfirm(id, new CashNote(null))); }
+    public LiveData<Resource<CashSale>> cashDispute(long id, String note) { return run(api().cashDispute(id, new CashNote(note))); }
+    public LiveData<Resource<List<CashBill>>> cashBills() { return run(api().cashBills()); }
+    public LiveData<Resource<CashBill>> cashPay(long id, String phone) { return run(api().cashPay(id, new CashPayRequest(phone))); }
+    // group deals
+    public LiveData<Resource<List<Deal>>> deals(Long groupId, String kind) { return run(api().deals(groupId, kind)); }
+    public LiveData<Resource<List<Deal>>> dealMarket() { return run(api().dealMarket()); }
+    public LiveData<Resource<DealDetail>> deal(long id) { return run(api().deal(id)); }
+    public LiveData<Resource<DealDetail>> dealCreate(DealRequest r) { return run(api().dealCreate(r)); }
+    public LiveData<Resource<DealDetail>> dealShare(long id, double qty) { return run(api().dealShare(id, new DealShareRequest(qty))); }
+    public LiveData<Resource<DealDetail>> dealClose(long id) { return run(api().dealClose(id)); }
+    public LiveData<Resource<DealDetail>> dealComplete(long id, Double price, String note) { return run(api().dealComplete(id, new DealCompleteRequest(price, note))); }
+    public LiveData<Resource<DealDetail>> dealCancel(long id) { return run(api().dealCancel(id)); }
+    // delivery
+    public LiveData<Resource<DeliveryRates>> deliveryRates() { return run(api().deliveryRates()); }
+    public LiveData<Resource<DeliveryRates>> setDeliveryRates(double base, double perKm, Double factor, Double maxKm) { return run(api().setDeliveryRates(new DeliveryRatesRequest(base, perKm, factor, maxKm))); }
+    public LiveData<Resource<DeliveryOptions>> deliveryOptions(long orderId, Double lat, Double lng) { return run(api().deliveryOptions(orderId, lat, lng)); }
+    public LiveData<Resource<DeliveryJob>> deliveryRequest(long orderId, long transporterId, Double lat, Double lng, String note) { return run(api().deliveryRequest(new DeliveryJobRequest(orderId, transporterId, lat, lng, note))); }
+    public LiveData<Resource<List<DeliveryJob>>> deliveryJobs(String status) { return run(api().deliveryJobs(status)); }
+    public LiveData<Resource<DeliveryJob>> deliveryCancel(long id) { return run(api().deliveryCancel(id)); }
+    public LiveData<Resource<DeliveryJob>> deliveryAccept(long id, Double km) { return run(api().deliveryAccept(id, new DeliveryAcceptRequest(km))); }
+    public LiveData<Resource<DeliveryJob>> deliveryDecline(long id, String reason) { return run(api().deliveryDecline(id, new DeliveryDeclineRequest(reason))); }
+    public LiveData<Resource<DeliveryJob>> deliveryPickup(long id) { return run(api().deliveryPickup(id)); }
+    public LiveData<Resource<DeliveryJob>> deliveryDeliver(long id) { return run(api().deliveryDeliver(id)); }
+    public LiveData<Resource<DeliveryJob>> deliveryFeeReceived(long id) { return run(api().deliveryFeeReceived(id)); }
 }

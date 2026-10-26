@@ -74,14 +74,11 @@
                     <RadioGroup android:id="@+id/rgPay" android:layout_width="match_parent"
                         android:layout_height="wrap_content" android:layout_marginTop="6dp">
                         <RadioButton android:id="@+id/rbMpesaNow" android:layout_width="match_parent"
-                            android:layout_height="wrap_content" android:padding="8dp"
+                            android:layout_height="wrap_content" android:checked="true" android:padding="8dp"
                             android:text="@string/pay_now_mpesa" android:textColor="@color/fc_text" android:textSize="15sp" />
                         <RadioButton android:id="@+id/rbCash" android:layout_width="match_parent"
-                            android:layout_height="wrap_content" android:checked="true" android:padding="8dp"
-                            android:text="@string/t_91cc4ab8" android:textColor="@color/fc_text" android:textSize="15sp" />
-                        <RadioButton android:id="@+id/rbMpesa" android:layout_width="match_parent"
                             android:layout_height="wrap_content" android:padding="8dp"
-                            android:text="@string/t_8e89e2a1" android:textColor="@color/fc_text" android:textSize="15sp" />
+                            android:text="@string/t_91cc4ab8" android:textColor="@color/fc_text" android:textSize="15sp" />
                     </RadioGroup>
                     <TextView android:id="@+id/tvPayNote" android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:layout_marginTop="6dp" android:background="@drawable/bg_chip"

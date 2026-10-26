@@ -17,6 +17,10 @@ public final class Trust {
     public record PriceResponse(Long id, String crop, String market, String unit, BigDecimal price, LocalDate date,
                                 BigDecimal previousPrice, Double changePct, String postedBy, boolean subscribed,
                                 BigDecimal alertTarget, String alertDirection) {}
+    public record TrendPoint(String date, double price) {}
+    public record TrendResponse(String crop, String market, String unit, String direction, double changePct, double low, double high,
+                                double average, java.util.List<TrendPoint> history, java.util.List<TrendPoint> forecast,
+                                String confidence, String summary) {}
     public record PricePoint(Long id, LocalDate date, BigDecimal price, String unit, String market) {}
     public record AlertToggle(String crop, boolean subscribed) {}
     /** One of my crop alerts; targetPrice/direction are null for a plain "every new price" alert. */

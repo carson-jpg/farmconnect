@@ -126,6 +126,28 @@ final class Sheet {
         return this;
     }
 
+    /** A row of photos (loaded from signed links). */
+    Sheet photos(java.util.List<String> urls) {
+        if (urls == null || urls.isEmpty()) return this;
+        android.widget.HorizontalScrollView sv = new android.widget.HorizontalScrollView(a);
+        sv.setHorizontalScrollBarEnabled(false);
+        LinearLayout strip = new LinearLayout(a);
+        strip.setOrientation(LinearLayout.HORIZONTAL);
+        for (String u : urls) {
+            android.widget.ImageView iv = new android.widget.ImageView(a);
+            iv.setScaleType(android.widget.ImageView.ScaleType.CENTER_CROP);
+            LinearLayout.LayoutParams ip = new LinearLayout.LayoutParams(dp(130), dp(130));
+            ip.setMarginEnd(dp(8));
+            strip.addView(iv, ip);
+            com.bumptech.glide.Glide.with(a).load(com.farmconnect.app.data.ApiClient.absolute(u)).centerCrop().into(iv);
+        }
+        sv.addView(strip);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.topMargin = dp(14);
+        root.addView(sv, lp);
+        return this;
+    }
+
     Sheet divider() {
         View d = new View(a);
         d.setBackgroundColor(LINE);

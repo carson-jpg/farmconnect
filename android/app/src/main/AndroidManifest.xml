@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
@@ -49,6 +50,13 @@
         <activity android:name=".ui.ReviewsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.AdminHomeActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.AdminUsersActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.PriceTrendActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.CalendarActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.CropDoctorActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.GroupDealsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.CashActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.DeliveryActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.ArrangeDeliveryActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.SecurityActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.CountyAdminsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.AdminProductsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
@@ -77,6 +85,7 @@
         <activity android:name=".ui.ServiceHireActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.MyServiceRequestsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.AdminMarketplaceActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
+        <activity android:name=".ui.BuyerInsightsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.FarmInputsActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.MySupplyOrdersActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />
         <activity android:name=".ui.ReviewDetailActivity" android:theme="@style/Theme.FarmConnect.FarmerDash" />

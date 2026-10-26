@@ -28,6 +28,11 @@ public class NotificationsActivity extends BaseListActivity {
             case "GROUP": return "👥";
             case "PRICE": return "💹";
             case "REVIEW": return "⭐";
+            case "CALENDAR": return "📅";
+            case "CROP_CASE": return "🩺";
+            case "GROUP_POOL": return "🤝";
+            case "DELIVERY": return "🚚";
+            case "CASH": return "💵";
             default: return "🔔";
         }
     }
@@ -58,6 +63,21 @@ public class NotificationsActivity extends BaseListActivity {
                 break;
             case "PRICE":
                 i = new Intent(this, PricesActivity.class);
+                break;
+            case "CALENDAR":
+                i = new Intent(this, CalendarActivity.class);
+                break;
+            case "CROP_CASE":
+                i = new Intent(this, CropDoctorActivity.class);
+                break;
+            case "GROUP_POOL":
+                i = new Intent(this, GroupDealsActivity.class);
+                break;
+            case "DELIVERY":
+                i = new Intent(this, DeliveryActivity.class);
+                break;
+            case "CASH":
+                i = new Intent(this, CashActivity.class);
                 break;
             case "REVIEW":
                 i = new Intent(this, ReviewsActivity.class).putExtra("sellerId", n.refId);

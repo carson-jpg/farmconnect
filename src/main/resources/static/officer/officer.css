@@ -190,3 +190,5 @@ textarea.wide { width: 100%; box-sizing: border-box; font: inherit; padding: 8px
 /* company statuses */
 .pill.st-PENDING_VERIFICATION { background: #fff3cd; color: #7a5b00; }
 .pill.st-SUSPENDED { background: #e5e7eb; color: #374151; }
+.modal .note { background: var(--pale); border-radius: 10px; padding: 10px 14px; margin: 10px 0; font-size: 14px; }
+.modal .note ul { margin: 6px 0 0 18px; padding: 0; }

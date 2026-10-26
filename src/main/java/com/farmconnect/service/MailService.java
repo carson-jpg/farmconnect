@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -22,6 +24,31 @@ public class MailService {
     @Value("${app.mail.from:}") private String from;
 
     public MailService(ObjectProvider<JavaMailSender> sender) { this.sender = sender; }
+
+    public record Attachment(String filename, String contentType, byte[] data) {}
+
+    /** Plain-text email with files attached (the weekly county reports). Printed to the console when no mail server is set. */
+    public void sendWithAttachments(String to, String subject, String text, java.util.List<Attachment> files) {
+        JavaMailSender s = sender.getIfAvailable();
+        if (s == null) {
+            log.warn("[MAIL-DEV] to {} | {} | {} | attachments: {}", to, subject, text,
+                    files.stream().map(f -> f.filename() + " (" + f.data().length + " bytes)").toList());
+            return;
+        }
+        try {
+            var m = s.createMimeMessage();
+            var h = new MimeMessageHelper(m, true, "UTF-8");
+            if (from != null && !from.isBlank()) h.setFrom(from);
+            h.setTo(to);
+            h.setSubject(subject);
+            h.setText(text, false);
+            for (Attachment a : files) h.addAttachment(a.filename(), new ByteArrayResource(a.data()), a.contentType());
+            s.send(m);
+        } catch (Exception e) {
+            log.error("Email with attachments failed", e);
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Could not send email");
+        }
+    }
 
     public void send(String to, String subject, String text) {
         JavaMailSender s = sender.getIfAvailable();

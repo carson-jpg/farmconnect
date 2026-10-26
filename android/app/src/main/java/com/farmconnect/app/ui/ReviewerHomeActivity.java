@@ -1,5 +1,6 @@
 package com.farmconnect.app.ui;
 
+import android.widget.LinearLayout;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -29,6 +30,7 @@ public class ReviewerHomeActivity extends AppCompatActivity implements ReviewAda
     private ReviewViewModel vm;
     private ReviewAdapter adapter;
     private String status = "PENDING";
+    private final java.util.Map<String, List<ReviewSummary>> queues = new java.util.LinkedHashMap<>();
 
     @Override protected void onCreate(Bundle s) {
         super.onCreate(s);
@@ -93,6 +95,8 @@ public class ReviewerHomeActivity extends AppCompatActivity implements ReviewAda
                 ld.removeObserver(this);
                 if (r.status != Resource.Status.SUCCESS || r.data == null) return;
                 target.setText(String.valueOf(r.data.size()));
+                queues.put(st, r.data);
+                showInsights();
                 if (isPending) showAttention(r.data.size());
             }
         });
@@ -117,4 +121,26 @@ public class ReviewerHomeActivity extends AppCompatActivity implements ReviewAda
         if (i.getItemId() == R.id.action_logout) Ui.logout(this);
         return true;
     }
+
+    /** Where the applications are in the process, when they arrive and where they come from. */
+    private void showInsights() {
+        LinearLayout box = b.insightsContainer;
+        box.removeAllViews();
+        UiKit.section(this, box, I18n.t("Insights"));
+        java.util.LinkedHashMap<String, Long> byStatus = new java.util.LinkedHashMap<>();
+        byStatus.put(I18n.t("Pending"), (long) size("PENDING"));
+        byStatus.put(I18n.t("Under review"), (long) size("UNDER_REVIEW"));
+        byStatus.put(I18n.t("Verified"), (long) size("VERIFIED"));
+        byStatus.put(I18n.t("Rejected"), (long) size("REJECTED"));
+        Charts.donut(this, UiKit.chartCard(this, box, I18n.t("Applications by status")), byStatus, I18n.t("applications"));
+        java.util.LinkedHashMap<String, Double> months = Insights.months(6);
+        List<ReviewSummary> all = new java.util.ArrayList<>();
+        for (List<ReviewSummary> l : queues.values()) all.addAll(l);
+        for (ReviewSummary r : all) Insights.add(months, r.submittedAt, 1);
+        LinearLayout c = UiKit.chartCard(this, box, I18n.t("Applications per month"));
+        c.addView(Charts.columns(this, months, 0xFF1E88E5));
+        Cards.bars(this, UiKit.chartCard(this, box, I18n.t("Applications by sub-county")), Insights.topCounts(all, r -> r.subCounty, 8), 0xFF2E7D32, null);
+    }
+
+    private int size(String st) { List<ReviewSummary> l = queues.get(st); return l == null ? 0 : l.size(); }
 }

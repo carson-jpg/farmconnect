@@ -924,3 +924,252 @@ Sign out	Toka
 Issue a new temporary password	Toa nenosiri jipya la muda
 Their old password stops working and they are signed out everywhere.	Nenosiri lao la zamani halitafanya kazi na watatolewa kila mahali.
 Issue password	Toa nenosiri
+Farm calendar	Kalenda ya shamba
+Calendar	Kalenda
+No jobs due yet.\nRecord what you plant in Records and your jobs will appear here.	Hakuna kazi bado.\nRekodi unachopanda kwenye Rekodi na kazi zako zitaonekana hapa.
+Usually planted around now	Kwa kawaida hupandwa wakati huu
+Planted	Kupandwa
+do it	fanya
+Overdue	Imechelewa
+Do now	Fanya sasa
+Soon	Karibuni
+no forecast right now	hakuna utabiri sasa
+Rain is expected, so soil moisture should be good for planting.	Mvua inatarajiwa, kwa hivyo unyevu wa udongo utafaa kupanda.
+A dry week is ahead. Wait for the rains, or plant only where you can irrigate.	Wiki kavu inakuja. Subiri mvua, au panda pale unapoweza kumwagilia.
+Plant if the soil is moist enough to keep the seed damp.	Panda ikiwa udongo una unyevu wa kutosha kuweka mbegu nyevunyevu.
+This is a general guide. Your county agricultural officer's advice for this season comes first.	Huu ni mwongozo wa jumla. Ushauri wa afisa wa kilimo wa kaunti yako kwa msimu huu una kipaumbele.
+Western Kenya	Kenya Magharibi
+Eastern and Central Kenya	Kenya Mashariki na Kati
+Rift Valley highlands	Nyanda za juu za Bonde la Ufa
+📈 Trend	📈 Mwelekeo
+All markets	Masoko yote
+Rising	Inapanda
+Falling	Inashuka
+Steady	Imetulia
+Not enough data yet	Data haitoshi bado
+over this period	katika kipindi hiki
+Price per	Bei kwa
+Green: recorded prices.   Amber dashed: estimate for the next 1 to 2 weeks.	Kijani: bei zilizorekodiwa.   Chungwa: makadirio ya wiki 1 hadi 2 zijazo.
+In this period	Katika kipindi hiki
+Lowest:	Chini kabisa:
+Highest:	Juu kabisa:
+Average:	Wastani:
+Estimates (	Makadirio (
+confidence)	uhakika)
+HIGH	JUU
+MEDIUM	WASTANI
+LOW	CHINI
+This is a guide worked out from recorded prices. It cannot know about weather, supply or holidays.	Huu ni mwongozo kutokana na bei zilizorekodiwa. Hauwezi kujua kuhusu hali ya hewa, upatikanaji au sikukuu.
+📧 Email me the PDF and Excel report	📧 Nitumie ripoti ya PDF na Excel kwa barua pepe
+Share as text (CSV)	Shiriki kama maandishi (CSV)
+Crop doctor	Daktari wa mimea
+Crop cases	Kesi za mimea
+No cases yet. Tap the button to check a sick plant.	Hakuna kesi bado. Gusa kitufe kukagua mmea mgonjwa.
+No crop cases here	Hakuna kesi za mimea hapa
+🩺 Check a plant	🩺 Kagua mmea
+Waiting	Inasubiri
+Answered	Imejibiwa
+Closed	Imefungwa
+Sent to officer	Imetumwa kwa afisa
+No guess from the guide	Mwongozo haujakisia
+ cases	 kesi
+Another crop	Zao lingine
+Which crop is it?	Ni zao gani?
+Crop name	Jina la zao
+What do you see? (up to 12)	Unaona nini? (hadi 12)
+Find the cause	Tafuta chanzo
+Tick at least one sign	Chagua angalau dalili moja
+Possible causes	Visababishi vinavyowezekana
+Act quickly	Chukua hatua haraka
+The guide could not match these signs. Send the case to your county officer and add photos.	Mwongozo haukuweza kulinganisha dalili hizi. Tuma kesi kwa afisa wa kaunti na uongeze picha.
+This guide gives likely causes from the signs you chose. It is not a laboratory test. If the problem is spreading fast, or you are unsure, send it to your county officer.	Mwongozo huu unatoa visababishi vinavyowezekana kutokana na dalili ulizochagua. Si kipimo cha maabara. Tatizo likienea haraka, au huna uhakika, litume kwa afisa wa kaunti.
+Send to my county officer	Tuma kwa afisa wa kaunti yangu
+Send to county officer	Tuma kwa afisa wa kaunti
+Anything else the officer should know? (optional)	Kuna jambo lingine afisa anapaswa kujua? (si lazima)
+Sent. Add photos so the officer can see the plant.	Imetumwa. Ongeza picha ili afisa aone mmea.
+Place	Mahali
+Signs	Dalili
+The guide thinks	Mwongozo unadhani
+Answer from 	Jibu kutoka kwa 
+the officer	afisa
+Confirmed problem	Tatizo lililothibitishwa
+Your county officer will reply here. You will get an alert.	Afisa wa kaunti yako atajibu hapa. Utapata arifa.
+📷 Add a photo	📷 Ongeza picha
+Reply to the farmer	Jibu mkulima
+Close this case	Funga kesi hii
+Case closed	Kesi imefungwa
+What do you think it is?	Unadhani ni nini?
+Not sure yet	Bado sina uhakika
+Your advice to the farmer	Ushauri wako kwa mkulima
+Answer sent	Jibu limetumwa
+Photo added	Picha imeongezwa
+Leaves turning yellow	Majani yanageuka manjano
+Pale yellow stripes along the leaves	Michirizi ya manjano hafifu kwenye majani
+Patchy light and dark green leaves (mosaic)	Majani yenye madoa ya kijani kibichi na hafifu (mosaic)
+Brown or grey spots on leaves	Madoa ya kahawia au kijivu kwenye majani
+Dark, wet-looking patches that spread fast	Madoa meusi yanayoonekana kuloa na kusambaa haraka
+Orange or rust-coloured powder on leaves	Unga wa rangi ya machungwa au kutu kwenye majani
+White powder or mould on leaves	Unga mweupe au ukungu kwenye majani
+Holes or chewed leaves	Mashimo au majani yaliyoliwa
+Sawdust-like droppings in the leaf funnel or on leaves	Kinyesi kama vumbi la mbao kwenye kitovu cha jani au majani
+Small holes in the stem, or the centre shoot dies	Mashimo madogo kwenye shina, au chipukizi la kati hufa
+Clusters of tiny insects, sticky leaves	Makundi ya wadudu wadogo, majani yanayonata
+Fine webbing, leaves look dusty or bronzed	Utando mwembamba, majani yanaonekana yenye vumbi au shaba
+Curled or twisted leaves	Majani yaliyojikunja au kupindika
+White winding tracks inside the leaf	Njia nyeupe zinazopinda ndani ya jani
+Plant wilts even when the soil is moist	Mmea unanyauka hata udongo ukiwa na unyevu
+Wilting in dry soil or hot weather	Kunyauka kwenye udongo mkavu au joto kali
+Leaf edges drying and turning brown	Kingo za majani zinakauka na kuwa kahawia
+Purple or reddish leaves	Majani ya zambarau au nyekundu
+Plants small and slow growing	Mimea midogo na inayokua polepole
+Rotting stem base or roots	Msingi wa shina au mizizi inaoza
+Swollen, knobbly roots	Mizizi iliyovimba na yenye vinundu
+Dark sunken patch at the bottom of the fruit	Doa jeusi lililozama chini ya tunda
+Holes or tunnels in fruit or pods	Mashimo au mitaro kwenye matunda au maganda
+Yellow V-shaped patch from the leaf edge	Doa la manjano lenye umbo la V kutoka ukingo wa jani
+Small pink or purple weed flowers growing beside the crop	Maua madogo ya rangi ya waridi au zambarau ya gugu karibu na zao
+Mouldy or discoloured grain or cobs	Nafaka au magunzi yenye ukungu au rangi iliyobadilika
+Group deals	Biashara za kikundi
+Group produce	Mazao ya vikundi
+Group produce for sale	Mazao ya vikundi yanauzwa
+No group produce is open right now	Hakuna mazao ya vikundi yaliyo wazi sasa
+No deals yet. The group leader can start one.	Hakuna biashara bado. Kiongozi wa kikundi anaweza kuanzisha.
+Selling together	Kuuza pamoja
+Buying together	Kununua pamoja
+➕ New deal	➕ Biashara mpya
+Open	Wazi
+Price not set	Bei haijawekwa
+You: 	Wewe: 
+Asking price	Bei ya kuuza
+Group price	Bei ya kikundi
+Normal price	Bei ya kawaida
+Closes	Inafungwa
+Your share	Sehemu yako
+Final note	Maelezo ya mwisho
+Who is in	Walioshiriki
+FarmConnect only keeps the record. Money is settled between members and the buyer or dealer.	FarmConnect inatunza rekodi tu. Pesa zinalipwa kati ya wanachama na mnunuzi au muuzaji.
+Add my produce	Ongeza mazao yangu
+Add my order	Ongeza oda yangu
+Change my quantity	Badilisha kiasi changu
+Stop taking quantities	Acha kupokea kiasi
+Deal closed	Biashara imefungwa
+Mark as done	Weka kama imekamilika
+Cancel this deal	Ghairi biashara hii
+Cancel this deal?	Ghairi biashara hii?
+Members who joined will be told.	Wanachama waliojiunga wataarifiwa.
+Cancel deal	Ghairi biashara
+Deal cancelled	Biashara imeghairiwa
+💬 Message the group leader	💬 Mwandikie kiongozi wa kikundi
+How many 	Ngapi 
+ (0 to leave the deal)	 (0 kuondoka kwenye biashara)
+Enter a number	Weka nambari
+Final price per unit (optional)	Bei ya mwisho kwa kipimo (si lazima)
+Note for members (optional)	Ujumbe kwa wanachama (si lazima)
+Deal marked as done	Biashara imekamilika
+What is this deal?	Hii ni biashara gani?
+Sell produce together	Uzeni mazao pamoja
+Buy seeds, fertilizer or tools together	Nunueni mbegu, mbolea au zana pamoja
+Produce or input (e.g. Maize, DAP fertilizer)	Mazao au pembejeo (mf. Mahindi, mbolea ya DAP)
+Unit (e.g. 90 kg bag, kg, litre)	Kipimo (mf. gunia la kilo 90, kilo, lita)
+Target quantity	Kiasi unachotarajia
+Price per unit (optional)	Bei kwa kipimo (si lazima)
+Normal price per unit, to show the saving (buying only, optional)	Bei ya kawaida kwa kipimo, kuonyesha akiba (kununua tu, si lazima)
+Last day to join (optional)	Siku ya mwisho kujiunga (si lazima)
+Notes, e.g. buyer, dealer or pick-up place (optional)	Maelezo, mf. mnunuzi, muuzaji au mahali pa kuchukua (si lazima)
+New group deal	Biashara mpya ya kikundi
+Start deal	Anzisha biashara
+Deal started. Members were told.	Biashara imeanzishwa. Wanachama wameambiwa.
+🤝 Group deals (sell or buy together)	🤝 Biashara za kikundi (uza au nunua pamoja)
+Deliveries	Usafirishaji
+Delivery jobs	Kazi za usafirishaji
+Delivery rates	Viwango vya usafirishaji
+No deliveries yet	Hakuna usafirishaji bado
+Accepted	Imekubaliwa
+Declined	Imekataliwa
+Fee to be confirmed	Ada itathibitishwa
+Fee paid	Ada imelipwa
+ deliveries	 usafirishaji
+Collect from	Chukua kutoka
+Deliver to	Peleka kwa
+Transporter	Msafirishaji
+Distance	Umbali
+Delivery fee	Ada ya usafirishaji
+How it was worked out	Ilivyokokotolewa
+ per km	 kwa km
+Reason	Sababu
+Fee	Ada
+The delivery fee is paid between the buyer and the transporter. FarmConnect only keeps the record.	Ada ya usafirishaji inalipwa kati ya mnunuzi na msafirishaji. FarmConnect inatunza rekodi tu.
+Accept this job	Kubali kazi hii
+Accept	Kubali
+Decline	Kataa
+I have collected the order	Nimechukua oda
+I have delivered the order	Nimefikisha oda
+I received the fee	Nimepokea ada
+Marked as collected	Imewekwa kama imechukuliwa
+Marked as delivered	Imewekwa kama imefikishwa
+Fee recorded as paid	Ada imerekodiwa kama imelipwa
+Cancel delivery	Ghairi usafirishaji
+Cancel this delivery?	Ghairi usafirishaji huu?
+Delivery cancelled	Usafirishaji umeghairiwa
+Job accepted	Kazi imekubaliwa
+Job declined	Kazi imekataliwa
+Distance in km from the farm to the buyer	Umbali kwa km kutoka shambani hadi kwa mnunuzi
+Reason (optional)	Sababu (si lazima)
+Base fee (KES)	Ada ya msingi (KES)
+Rate per km (KES)	Kiwango kwa km (KES)
+Road factor (1.3 = roads are 30% longer than a straight line)	Kigezo cha barabara (1.3 = barabara ni ndefu kwa 30% kuliko mstari ulionyooka)
+Longest delivery (km)	Usafirishaji mrefu zaidi (km)
+Delivery rates saved	Viwango vya usafirishaji vimehifadhiwa
+Choose a transporter	Chagua msafirishaji
+No verified transporters serve this area yet	Hakuna wasafirishaji waliothibitishwa wanaohudumia eneo hili bado
+This order already has a delivery	Oda hii tayari ina usafirishaji
+ deliveries done	 usafirishaji uliofanywa
+Fee: 	Ada: 
+ per km. The transporter confirms the distance.	 kwa km. Msafirishaji atathibitisha umbali.
+Note for the transporter (optional)	Ujumbe kwa msafirishaji (si lazima)
+Request sent. You will get an alert when the transporter answers.	Ombi limetumwa. Utapata arifa msafirishaji atakapojibu.
+🚚 Arrange delivery	🚚 Panga usafirishaji
+Requests from buyers, collections and deliveries	Maombi ya wanunuzi, kuchukua na kufikisha
+📴 No internet. Showing information saved on your phone from 	📴 Hakuna intaneti. Inaonyesha taarifa zilizohifadhiwa kwenye simu yako za 
+📴 Saved on your phone. It will be sent when you are back online.	📴 Imehifadhiwa kwenye simu yako. Itatumwa ukipata intaneti tena.
+✅ Sent the changes saved on your phone: 	✅ Mabadiliko yaliyohifadhiwa kwenye simu yametumwa: 
+⚠ Some saved changes were refused by the server and removed: 	⚠ Baadhi ya mabadiliko yaliyohifadhiwa yalikataliwa na seva na kuondolewa: 
+That record is no longer available. Refresh the list.	Rekodi hiyo haipatikani tena. Onyesha upya orodha.
+No internet. Please try again when you are online.	Hakuna intaneti. Tafadhali jaribu tena ukiwa mtandaoni.
+Cash (recorded in the app)	Fedha taslimu (inarekodiwa kwenye programu)
+💵  Cash (recorded in the app)	💵  Fedha taslimu (inarekodiwa kwenye programu)
+You pay the seller in cash. The seller records it in the app, you confirm it, and the super admin approves it before the order can be delivered.	Unamlipa muuzaji fedha taslimu. Muuzaji anarekodi kwenye programu, wewe unathibitisha, na msimamizi mkuu anaidhinisha kabla oda kuwasilishwa.
+Cash payments	Malipo ya fedha taslimu
+No cash payments yet. Record cash from an order page.	Hakuna malipo ya fedha taslimu bado. Rekodi fedha kutoka ukurasa wa oda.
+No cash payments to confirm	Hakuna malipo ya fedha taslimu ya kuthibitisha
+➕ Record cash received	➕ Rekodi fedha zilizopokelewa
+Note (optional)	Maelezo (hiari)
+Cash received for this order	Fedha zilizopokelewa kwa oda hii
+Record	Rekodi
+Recorded. The buyer will be asked to confirm.	Imerekodiwa. Mnunuzi ataombwa kuthibitisha.
+Waiting for buyer	Inasubiri mnunuzi
+Waiting for approval	Inasubiri idhini
+Buyer disputed	Mnunuzi amepinga
+Approved	Imeidhinishwa
+Commission paid	Kamisheni imelipwa
+Waiting for M-Pesa	Inasubiri M-Pesa
+Commission unpaid	Kamisheni haijalipwa
+Commission to pay: 	Kamisheni ya kulipa: 
+ cash payments	 malipo ya fedha taslimu
+Commission (platform + county)	Kamisheni (jukwaa + kaunti)
+You keep	Unabaki na
+Buyer says	Mnunuzi anasema
+Decision	Uamuzi
+Yes, I paid this in cash	Ndiyo, nililipa hii kwa fedha taslimu
+No, this is wrong	Hapana, hii si sahihi
+Thank you. Waiting for approval.	Asante. Inasubiri idhini.
+The super admin must approve this before the order can be marked delivered.	Msimamizi mkuu lazima aidhinishe hii kabla oda kuwekwa imewasilishwa.
+Pay commission 	Lipa kamisheni 
+Dispute this payment	Pinga malipo haya
+What is wrong?	Nini kibaya?
+Sent	Imetumwa
+M-Pesa number (leave blank to use your account number)	Namba ya M-Pesa (iache wazi kutumia namba ya akaunti yako)
+Send M-Pesa prompt	Tuma ombi la M-Pesa
+Check your phone and enter your M-Pesa PIN	Angalia simu yako na uweke PIN ya M-Pesa
+💵 Cash payment: confirm	💵 Malipo ya fedha taslimu: thibitisha
+💵 Cash payment: record	💵 Malipo ya fedha taslimu: rekodi

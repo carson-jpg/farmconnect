@@ -106,6 +106,14 @@ public class Models {
             this.name = name; this.email = email; this.phone = phone; this.password = password;
         }
     }
+    // ---- farming calendar ----
+    public static class CalendarItem {
+        public long recordId; public String crop, icon, kind, title, advice, planted, from, to, status, weatherNote; public boolean goodToGo;
+    }
+    public static class CalendarResponse {
+        public String place, region, plantNowNote, disclaimer; public boolean weatherKnown;
+        public java.util.List<CalendarItem> items; public java.util.List<String> plantNow;
+    }
     // ---- security ----
     public static class AuditEntry { public long id; public String at, actorEmail, actorRole, action, target, detail, ip; public boolean success; }
     public static class LockInfo { public String kind, subject, until; }
@@ -251,6 +259,11 @@ public class Models {
         public Double alertTarget; public String alertDirection;
     }
     public static class PricePoint { public long id; public String date, unit, market; public double price; }
+    public static class TrendPoint { public String date; public double price; }
+    public static class TrendResponse {
+        public String crop, market, unit, direction, confidence, summary; public double changePct, low, high, average;
+        public java.util.List<TrendPoint> history, forecast;
+    }
     public static class AlertToggle { public String crop; public boolean subscribed; }
     public static class AlertInfo { public String crop, direction; public Double targetPrice; }
     public static class ReviewRequest {
@@ -362,5 +375,83 @@ public class Models {
     public static class MarketOverview {
         public java.util.Map<String, Long> companies, supplyOrders, produceRequests, quotations, purchaseOrders, serviceRequests;
         public double supplyDeliveredGross;
+    }
+    // ---- crop doctor ----
+    public static class CropSymptom { public String key, icon, label; }
+    public static class CropGuide { public java.util.List<String> crops; public java.util.List<CropSymptom> symptoms; public String disclaimer; }
+    public static class CropMatch {
+        public String key, name, kind, cause, urgency, confidence; public java.util.List<String> advice; public int score; public boolean seeOfficer;
+    }
+    public static class CropDiagnosis { public String crop, disclaimer; public java.util.List<CropMatch> matches; }
+    public static class CropCase {
+        public long id, farmerId;
+        public String farmerName, farmerPhone, crop, description, subCounty, county, status, reviewerName, reviewerNote,
+                confirmedProblem, confirmedName, reviewedAt, createdAt;
+        public java.util.List<String> symptomKeys, symptomLabels, photos; public java.util.List<CropMatch> matches;
+    }
+    public static class CropDiagnoseRequest {
+        public String crop; public java.util.List<String> symptoms;
+        public CropDiagnoseRequest(String crop, java.util.List<String> symptoms) { this.crop = crop; this.symptoms = symptoms; }
+    }
+    public static class CropCaseRequest {
+        public String crop, description; public java.util.List<String> symptoms;
+        public CropCaseRequest(String crop, java.util.List<String> symptoms, String description) { this.crop = crop; this.symptoms = symptoms; this.description = description; }
+    }
+    public static class CropReviewRequest {
+        public String note, confirmedProblem;
+        public CropReviewRequest(String note, String confirmedProblem) { this.note = note; this.confirmedProblem = confirmedProblem; }
+    }
+    // ---- cash payments ----
+    public static class CashBill {
+        public long id, cashSaleId, orderId, farmerId; public String farmerName, status, mpesaReceipt, paidVia, createdAt, paidAt;
+        public double saleAmount, platformAmount, countyAmount, amount; public boolean overdue;
+    }
+    public static class CashSale {
+        public long id, orderId, farmerId, buyerId; public String farmerName, farmerPhone, buyerName, buyerPhone, orderStatus, status,
+                farmerNote, buyerNote, decisionNote, recordedAt, buyerRespondedAt, decidedAt;
+        public double amount, platformAmount, countyAmount, farmerKeeps; public CashBill bill;
+    }
+    public static class CashNote { public String note; public CashNote(String note) { this.note = note; } }
+    public static class CashPayRequest { public String phone; public CashPayRequest(String phone) { this.phone = phone; } }
+    // ---- group deals ----
+    public static class Deal {
+        public long id, groupId, leaderId; public String groupName, subCounty, kind, item, unit, status, closesAt, notes, finalNote, leaderName, createdAt;
+        public double targetQty, committedQty; public int members, progressPct; public Double unitPrice, listPrice, myQty, myAmount; public Integer discountPct;
+        public boolean canManage, isMember;
+    }
+    public static class DealShare { public long userId; public String name, phone; public double qty; public Double amount; }
+    public static class DealDetail { public Deal pool; public java.util.List<DealShare> shares; }
+    public static class DealRequest {
+        public long groupId; public String kind, item, unit, closesAt, notes; public double targetQty; public Double unitPrice, listPrice;
+    }
+    public static class DealShareRequest { public double qty; public DealShareRequest(double qty) { this.qty = qty; } }
+    public static class DealCompleteRequest {
+        public Double finalUnitPrice; public String note;
+        public DealCompleteRequest(Double finalUnitPrice, String note) { this.finalUnitPrice = finalUnitPrice; this.note = note; }
+    }
+    // ---- delivery ----
+    public static class DeliveryRates { public double baseFee, perKmRate, roadFactor, maxKm; }
+    public static class DeliveryRatesRequest {
+        public double baseFee, perKmRate; public Double roadFactor, maxKm;
+        public DeliveryRatesRequest(double baseFee, double perKmRate, Double roadFactor, Double maxKm) {
+            this.baseFee = baseFee; this.perKmRate = perKmRate; this.roadFactor = roadFactor; this.maxKm = maxKm;
+        }
+    }
+    public static class DeliveryQuote { public Double distanceKm, fee; public double baseFee, perKmRate; public String pickupPlace; public boolean exact; }
+    public static class Transporter { public long id, delivered; public String name, phone, county, operatingCounties, description; }
+    public static class DeliveryOptions { public DeliveryQuote quote; public java.util.List<Transporter> transporters; public Long activeJobId; }
+    public static class DeliveryJobRequest {
+        public long orderId, transporterId; public Double dropLat, dropLng; public String note;
+        public DeliveryJobRequest(long orderId, long transporterId, Double dropLat, Double dropLng, String note) {
+            this.orderId = orderId; this.transporterId = transporterId; this.dropLat = dropLat; this.dropLng = dropLng; this.note = note;
+        }
+    }
+    public static class DeliveryAcceptRequest { public Double distanceKm; public DeliveryAcceptRequest(Double km) { this.distanceKm = km; } }
+    public static class DeliveryDeclineRequest { public String reason; public DeliveryDeclineRequest(String reason) { this.reason = reason; } }
+    public static class DeliveryJob {
+        public long id, orderId, transporterId;
+        public String status, buyerName, buyerPhone, farmerName, farmerPhone, transporterName, transporterPhone, pickupPlace, dropAddress,
+                note, declineReason, createdAt, acceptedAt, pickedUpAt, deliveredAt, feePaidAt;
+        public Double distanceKm, fee, baseFee, perKmRate; public boolean feePaid, needsDistance;
     }
 }

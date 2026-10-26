@@ -1,5 +1,6 @@
 package com.farmconnect.app.ui;
 
+import java.util.ArrayList;
 import com.farmconnect.app.util.I18n;
 
 import android.content.Intent;
@@ -112,7 +113,7 @@ public class FarmerHomeActivity extends AppCompatActivity {
                         + I18n.t(" running low on stock (5 or fewer). Tap to restock."));
                 showProducts(mine);
 
-                Ui.watch(this, vm.orders(), b.progress, orders -> showOrders(orders, myProductIds));
+                Ui.watch(this, vm.orders(), b.progress, orders -> { showOrders(orders, myProductIds); showInsights(orders, myProductIds); });
             });
         });
     }
@@ -210,5 +211,48 @@ public class FarmerHomeActivity extends AppCompatActivity {
                     startActivity(new Intent(this, OrdersActivity.class).putExtra("farmer", true)));
             b.ordersContainer.addView(m.getRoot());
         }
+    }
+
+    /** Numbers and charts for the farmer's own sales, like the other dashboards. */
+    private void showInsights(List<Order> orders, Set<Long> mine) {
+        LinearLayout box = b.insightsContainer;
+        box.removeAllViews();
+        UiKit.section(this, box, I18n.t("Insights"));
+        double revenue = 0;
+        int count = 0, delivered = 0, pending = 0;
+        java.util.LinkedHashMap<String, Double> sales = Insights.months(6);
+        java.util.LinkedHashMap<String, Long> status = new java.util.LinkedHashMap<>();
+        java.util.Map<String, Long> units = new java.util.LinkedHashMap<>();
+        for (Order o : orders) {
+            double share = 0;
+            boolean has = false;
+            for (OrderItem i : o.items) {
+                if (!mine.contains(i.productId)) continue;
+                has = true;
+                share += i.price * i.quantity;
+                if (!"CANCELLED".equals(o.status)) units.put(i.productName, (units.containsKey(i.productName) ? units.get(i.productName) : 0L) + i.quantity);
+            }
+            if (!has) continue;
+            count++;
+            String label = Insights.title(o.status);
+            status.put(label, (status.containsKey(label) ? status.get(label) : 0L) + 1);
+            if ("PENDING".equals(o.status)) pending++;
+            if ("DELIVERED".equals(o.status)) { revenue += share; delivered++; }
+            if (!"CANCELLED".equals(o.status)) Insights.add(sales, o.createdAt, share);
+        }
+        List<View> t = new ArrayList<>();
+        t.add(UiKit.statCard(this, "💰", I18n.t("Revenue (delivered)"), Ui.kes(revenue), null, 0xFF2E7D32, v -> startActivity(new Intent(this, EarningsActivity.class))));
+        t.add(UiKit.statCard(this, "🧾", I18n.t("Orders"), String.valueOf(count), delivered + I18n.t(" delivered"), 0xFF1E88E5, v -> startActivity(new Intent(this, OrdersActivity.class).putExtra("farmer", true))));
+        t.add(UiKit.statCard(this, "⏳", I18n.t("Waiting for you"), String.valueOf(pending), I18n.t("pending orders"), pending > 0 ? 0xFFF9A825 : 0xFF2E7D32, v -> startActivity(new Intent(this, OrdersActivity.class).putExtra("farmer", true))));
+        t.add(UiKit.statCard(this, "📦", I18n.t("Live products"), String.valueOf(units.size()), I18n.t("sold so far"), 0xFF8E24AA, v -> startActivity(new Intent(this, FarmerProductsActivity.class))));
+        UiKit.grid(this, box, t);
+        LinearLayout c1 = UiKit.chartCard(this, box, I18n.t("Sales per month (KSh)"));
+        c1.addView(Charts.columns(this, sales, 0xFF2E7D32));
+        Charts.donut(this, UiKit.chartCard(this, box, I18n.t("Orders by status")), status, I18n.t("orders"));
+        java.util.List<java.util.Map.Entry<String, Long>> es = new ArrayList<>(units.entrySet());
+        java.util.Collections.sort(es, (x, y) -> Long.compare(y.getValue(), x.getValue()));
+        java.util.LinkedHashMap<String, Long> top = new java.util.LinkedHashMap<>();
+        for (int k = 0; k < Math.min(5, es.size()); k++) top.put(es.get(k).getKey(), es.get(k).getValue());
+        Cards.bars(this, UiKit.chartCard(this, box, I18n.t("Top products (units sold)")), top, 0xFF2E7D32, null);
     }
 }

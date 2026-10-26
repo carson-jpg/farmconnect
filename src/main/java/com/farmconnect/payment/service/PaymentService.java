@@ -47,6 +47,9 @@ public class PaymentService {
     /** Optional: farm-input payments share the STK callback URL. Field injection keeps the constructor unchanged. */
     @org.springframework.beans.factory.annotation.Autowired(required = false)
     private com.farmconnect.service.SupplyPaymentService supplyPayments;
+    /** Commission bills (cash sales approved by the super admin) are paid through the same callback URL. */
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private com.farmconnect.service.CashPaymentService cashPayments;
 
     /** What the buyer must pay: the order total rounded UP to whole shillings (M-Pesa has no cents), in cents. */
     public static long dueCents(CustomerOrder o) {
@@ -88,6 +91,7 @@ public class PaymentService {
         if (p == null) {
             // not a produce payment: it may be a farm-input (supply) payment
             if (supplyPayments != null && supplyPayments.onStkCallback(body)) return;
+            if (cashPayments != null && cashPayments.onStkCallback(body)) return;
             log.warn("M-Pesa callback for unknown CheckoutRequestID {}", checkoutId);
             return;
         }

@@ -1,5 +1,7 @@
 package com.farmconnect.app.ui;
 
+import android.widget.LinearLayout;
+import com.farmconnect.app.data.Models.Order;
 import com.farmconnect.app.util.I18n;
 
 import android.content.Intent;
@@ -54,6 +56,7 @@ public class BuyerHomeActivity extends AppCompatActivity implements ProductAdapt
         super.onResume();
         if (hub != null) hub.refresh();
         load();
+        Ui.watch(this, vm.orders(), null, this::showStrip);
     }
 
     private void buildChips() {
@@ -110,5 +113,28 @@ public class BuyerHomeActivity extends AppCompatActivity implements ProductAdapt
 
     @Override public void onSecondary(Product p) {
         Ui.watch(this, vm.addWish(p.id), null, x -> Ui.toast(this, I18n.t("Saved to wishlist")));
+    }
+
+    /** Three numbers about my orders; tap for the full picture. */
+    private void showStrip(List<Order> orders) {
+        b.insightStrip.removeAllViews();
+        int active = 0;
+        double spent = 0;
+        for (Order o : orders) {
+            if ("CANCELLED".equals(o.status)) continue;
+            spent += o.total;
+            if (!"DELIVERED".equals(o.status)) active++;
+        }
+        LinearLayout row = Cards.statRow(this, b.insightStrip);
+        View.OnClickListener open = v -> startActivity(new Intent(this, BuyerInsightsActivity.class));
+        View a = Cards.stat(this, String.valueOf(orders.size()), I18n.t("Orders"));
+        View c = Cards.stat(this, String.valueOf(active), I18n.t("Active"));
+        View d = Cards.stat(this, Ui.kes(spent), I18n.t("Spent"));
+        a.setOnClickListener(open);
+        c.setOnClickListener(open);
+        d.setOnClickListener(open);
+        row.addView(a);
+        row.addView(c);
+        row.addView(d);
     }
 }

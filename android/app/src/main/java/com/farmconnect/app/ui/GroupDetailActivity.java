@@ -78,6 +78,8 @@ public class GroupDetailActivity extends BaseListActivity {
                     .setPositiveButton(I18n.t("Leave"), (x, y) -> Ui.watch(this, vm.leaveGroup(g.id), b.progress, r -> { load(); }))
                     .setNegativeButton(I18n.t("Stay"), null).show()));
         }
+        if (g.member || manager) in.addView(button(I18n.t("🤝 Group deals (sell or buy together)"), false, v ->
+                startActivity(new Intent(this, GroupDealsActivity.class).putExtra("groupId", g.id).putExtra("manager", manager))));
         if (g.leaderId != me && g.leaderId > 0) in.addView(button(I18n.t("💬 Message the leader"), true, v ->
                 startActivity(new Intent(this, ChatActivity.class).putExtra("userId", g.leaderId).putExtra("name", g.leaderName))));
         if (manager) {

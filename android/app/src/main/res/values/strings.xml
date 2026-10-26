@@ -115,7 +115,7 @@
     <string name="t_8e866a17">County: Trans Nzoia</string>
     <string name="t_8e89e2a1">📱  M-Pesa on delivery</string>
     <string name="t_91412465">Upload</string>
-    <string name="t_91cc4ab8">💵  Cash on delivery</string>
+    <string name="t_91cc4ab8">💵  Cash (recorded in the app)</string>
     <string name="t_92050c9a">3. Where you farm</string>
     <string name="t_930a9184">Friend</string>
     <string name="t_94966d90">Send</string>
@@ -136,7 +136,7 @@
     <string name="t_a7806cd5">Farm</string>
     <string name="t_a82be0f5">Information</string>
     <string name="t_a85eba4c">Cart</string>
-    <string name="t_afd0a624">You pay the seller when your order arrives. No money is taken inside the app.</string>
+    <string name="t_afd0a624">You will get an M-Pesa prompt on your phone. Enter your PIN to pay. The seller is paid after you receive your order.</string>
     <string name="t_b1c94ca2">All</string>
     <string name="t_b30eeae8">Search maize, tomatoes, milk...</string>
     <string name="t_b429b015">Pending orders</string>

@@ -63,6 +63,10 @@
     commission: ['M19 5L5 19', 'M6.5 9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z', 'M17.5 20a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z'],
     companies: ['M3 21h18', 'M5 21V7l8-4v18', 'M19 21V11l-6-4', 'M9 9v.01', 'M9 13v.01', 'M9 17v.01']
   };
+  ICONS.cropdoctor = ICONS.farmer;
+  ICONS.system = ICONS.pulse;
+  ICONS.cash = ICONS.supplymoney;
+  ICONS.delivery = ['M1 3h15v13H1z', 'M16 8h4l3 3v5h-7z', 'M5.5 21a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z', 'M18.5 21a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z'];
   function icon(name) {
     var s = svg('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true' });
     (ICONS[name] || []).forEach(function (d) { s.appendChild(svg('path', { d: d })); });
@@ -555,6 +559,17 @@
   }
 
   // ---------- reports ----------
+  function emailCard() {
+    var b = h('button', { class: 'btn secondary', text: 'Email it to me now', onclick: function () {
+      b.disabled = true;
+      api('/api/reports/email-me', { method: 'POST', json: {} }).then(function (r) { return r.json(); })
+        .then(function (r) { toast(r.message); })
+        .catch(function (e) { toast(e.message, true); })
+        .then(function () { b.disabled = false; });
+    } });
+    return h('div', { class: 'card' }, h('div', { class: 'big' }, icon('reports')), h('h3', { text: 'Weekly report by email' }),
+      h('p', { text: 'The PDF and Excel report for your area is emailed to you every Monday at 7:00. Send the latest one now.' }), b);
+  }
   function reports(box) {
     var stamp = new Date().toISOString().slice(0, 10);
     function dl(title, text, label, path, file, secondary) {
@@ -565,6 +580,8 @@
     }
     box.appendChild(h('div', { class: 'reports' },
       dl('County report (PDF)', 'Indicators, charts and the sub-county table, ready to print or send.', 'Download PDF', '/api/analytics/report.pdf', 'farmconnect-report-' + stamp + '.pdf'),
+      dl('County report (Excel)', 'The same report as an Excel workbook with a sheet for each table.', 'Download Excel', '/api/reports/county.xlsx', 'farmconnect-report-' + stamp + '.xlsx'),
+      emailCard(),
       dl('County report (CSV)', 'All indicators and chart data in one spreadsheet file.', 'Download CSV', '/api/analytics/report.csv', 'farmconnect-report-' + stamp + '.csv', true),
       dl('Farmers list (CSV)', 'Every farmer with phone, sub-county and verification status, for follow-up.', 'Download CSV', '/api/analytics/farmers.csv', 'farmconnect-farmers-' + stamp + '.csv', true),
       dl('Orders list (CSV)', 'Every order with status and payment method.', 'Download CSV', '/api/analytics/orders.csv', 'farmconnect-orders-' + stamp + '.csv', true)));
@@ -931,7 +948,7 @@
     m.modal.appendChild(h('div', {}, h('h2', { text: 'Order #' + o.id }), pill(o.status.charAt(0) + o.status.slice(1).toLowerCase(), 'st-' + o.status)));
     m.modal.appendChild(h('div', { class: 'facts' },
       fact('Buyer', (o.buyerName || '') + (o.buyerPhone ? ' · ' + o.buyerPhone : '')), fact('Placed', when(o.createdAt)),
-      fact('Deliver to', o.deliveryAddress), fact('Delivery phone', o.deliveryPhone), fact('Payment', (o.paymentMethod || '').replace(/_/g, ' ').toLowerCase() + (o.paymentMethod === 'MPESA_ONLINE' ? ' · ' + String(o.paymentStatus || 'UNPAID').toLowerCase() + (o.mpesaReceipt ? ' (' + o.mpesaReceipt + ')' : '') : '')),
+      fact('Deliver to', o.deliveryAddress), fact('Delivery phone', o.deliveryPhone), fact('Payment', (o.paymentMethod || '').replace(/_/g, ' ').toLowerCase() + (' · ' + String(o.paymentStatus || 'UNPAID').toLowerCase() + (o.mpesaReceipt ? ' (' + o.mpesaReceipt + ')' : ''))),
       fact('Note to seller', o.deliveryNote)));
     m.modal.appendChild(table(['Product', 'Farm', ['Qty', 'num'], ['Price', 'num'], ['Subtotal', 'num']], (o.items || []).map(function (i) {
       return h('tr', {}, h('td', { text: i.productName }), h('td', { text: i.farmName || '-' }), h('td', { class: 'num', text: num(i.quantity) + (i.unit ? ' ' + i.unit : '') }),
@@ -1495,16 +1512,274 @@
     draw(); load();
   }
 
+  // ---------- crop doctor ----------
+  var CROP_STATUS = { OPEN: 'Waiting for you', ANSWERED: 'Answered', CLOSED: 'Closed' };
+  var CROP_TONE = { OPEN: 'st-PENDING_VERIFICATION', ANSWERED: 'st-VERIFIED', CLOSED: 'st-SUSPENDED' };
+
+  function cropDoctorView(box) {
+    var current = 'OPEN', list = h('div');
+    var select = h('select', { onchange: function () { current = select.value; load(); } },
+      Object.keys(CROP_STATUS).concat(['ALL']).map(function (k) { return h('option', { value: k, text: CROP_STATUS[k] || 'Everything' }); }));
+    box.appendChild(h('div', { class: 'toolbar' }, h('div', {}, h('label', { text: 'Show' }), select),
+      state.scope && !state.scope.all ? h('div', { class: 'muted' }, 'Only cases from farmers in ' + state.scope.label + ' are listed.') : null));
+    box.appendChild(list);
+    function load() {
+      loading(list);
+      getJson('/api/crop-doctor/cases?status=' + encodeURIComponent(current)).then(function (rows) {
+        list.textContent = '';
+        if (!rows.length) { list.appendChild(emptyBox('No crop cases here')); return; }
+        paged(list, rows, 20, function (r) {
+          var top = r.matches && r.matches.length ? r.matches[0] : null;
+          return h('tr', {},
+            h('td', {}, h('b', { text: r.crop })), h('td', { text: r.farmerName }), h('td', { text: r.subCounty || '-' }),
+            h('td', { text: top ? top.name + ' (' + top.score + '%)' : 'No guess' }),
+            h('td', { text: String(r.photos.length) }), h('td', { text: when(r.createdAt) }),
+            h('td', {}, pill(CROP_STATUS[r.status] || r.status, CROP_TONE[r.status] || '')),
+            h('td', { class: 'actions' }, h('button', { class: 'btn small', text: 'Open', onclick: function () { openCropCase(r.id, load); } })));
+        }, ['Crop', 'Farmer', 'Sub-county', 'Guide thinks', 'Photos', 'Sent', 'Status', '']);
+      }).catch(function (e) { failed(list, e); });
+    }
+    load();
+  }
+
+  function openCropCase(id, done) {
+    var m = modalShell(), modal = m.modal;
+    getJson('/api/crop-doctor/cases/' + id).then(function (c) {
+      modal.textContent = '';
+      var err = h('div', { class: 'error' });
+      var photos = h('div', { class: 'docs' }, c.photos.map(function (u, i) {
+        return h('figure', {}, h('img', { src: u, alt: 'Photo ' + (i + 1) }), h('figcaption', { text: 'Photo ' + (i + 1) }));
+      }));
+      var picks = h('select', {}, [h('option', { value: '', text: 'Not sure yet' })].concat((c.matches || []).map(function (x) {
+        return h('option', { value: x.key, text: x.name });
+      })));
+      if (c.confirmedProblem) picks.value = c.confirmedProblem;
+      var note = h('textarea', { rows: 4, maxlength: 1500, placeholder: 'What the farmer should do (plain words)' });
+      note.value = c.reviewerNote || '';
+      modal.appendChild(h('h2', { text: c.crop + ' - ' + c.farmerName }));
+      modal.appendChild(h('div', { class: 'facts' },
+        fact('Phone', c.farmerPhone), fact('Place', (c.subCounty || '-') + (c.county ? ', ' + c.county : '')),
+        fact('Sent', when(c.createdAt)), fact('Status', CROP_STATUS[c.status] || c.status),
+        fact('Signs ticked', (c.symptomLabels || []).join('; ')), fact('Farmer says', c.description)));
+      if (c.photos.length) modal.appendChild(photos);
+      (c.matches || []).forEach(function (x) {
+        modal.appendChild(h('div', { class: 'note' }, h('b', { text: x.name + ' - ' + x.score + '% (' + x.confidence.toLowerCase() + ')' }),
+          h('div', { text: x.cause }), h('ul', {}, x.advice.map(function (a) { return h('li', { text: a }); }))));
+      });
+      if (c.status !== 'CLOSED') {
+        modal.appendChild(h('form', { onsubmit: function (ev) {
+          ev.preventDefault();
+          var text = note.value.trim();
+          if (text.length < 5) { err.textContent = 'Please write a short answer for the farmer'; return; }
+          api('/api/crop-doctor/cases/' + id + '/review', { method: 'POST', json: { note: text, confirmedProblem: picks.value || null } })
+            .then(function () { toast('Answer sent to the farmer'); m.close(); if (done) done(); })
+            .catch(function (e) { err.textContent = e.message; });
+        } }, h('label', { text: 'What do you think it is?' }), picks, h('label', { text: 'Your answer to the farmer' }), note, err,
+          h('div', { class: 'actions' },
+            h('button', { class: 'btn secondary', type: 'button', text: 'Close case', onclick: function () {
+              api('/api/crop-doctor/cases/' + id + '/close', { method: 'POST' }).then(function () { m.close(); if (done) done(); })
+                .catch(function (e) { err.textContent = e.message; });
+            } }),
+            h('button', { class: 'btn', type: 'submit', text: c.status === 'ANSWERED' ? 'Update answer' : 'Send answer' }))));
+      } else if (c.reviewerNote) {
+        modal.appendChild(h('div', { class: 'note' }, h('b', { text: (c.reviewerName || 'Officer') + ' answered' }), h('div', { text: c.reviewerNote })));
+      }
+      if (c.status === 'CLOSED') modal.appendChild(h('div', { class: 'actions' }, h('button', { class: 'btn secondary', text: 'Close', onclick: m.close })));
+    }).catch(function (e) { modal.textContent = ''; modal.appendChild(h('div', { class: 'table-empty', text: e.message })); });
+  }
+
+
+  // ---------- delivery (super admin) ----------
+  var DELIVERY_STATUS = { REQUESTED: 'Waiting', ACCEPTED: 'Accepted', PICKED_UP: 'On the way', DELIVERED: 'Delivered', DECLINED: 'Declined', CANCELLED: 'Cancelled' };
+  var DELIVERY_TONE = { REQUESTED: 'st-PENDING_VERIFICATION', ACCEPTED: 'st-UNDER_REVIEW', PICKED_UP: 'st-UNDER_REVIEW', DELIVERED: 'st-VERIFIED', DECLINED: 'st-SUSPENDED', CANCELLED: 'st-SUSPENDED' };
+
+  function deliveryView(box) {
+    var form = h('div', { class: 'card' }), list = h('div');
+    box.appendChild(form);
+    box.appendChild(h('h3', { text: 'All deliveries' }));
+    box.appendChild(list);
+    loading(form);
+    getJson('/api/delivery/settings').then(function (r) {
+      form.textContent = '';
+      var base = h('input', { type: 'number', min: '0', step: '1', value: String(r.baseFee) });
+      var perKm = h('input', { type: 'number', min: '0', step: '1', value: String(r.perKmRate) });
+      var factor = h('input', { type: 'number', min: '1', max: '3', step: '0.05', value: String(r.roadFactor) });
+      var max = h('input', { type: 'number', min: '1', max: '2000', step: '10', value: String(r.maxKm) });
+      var err = h('div', { class: 'error' });
+      form.appendChild(h('h3', { text: 'Delivery price list' }));
+      form.appendChild(h('p', { class: 'muted', text: 'Fee = base fee + rate per km x distance from the farm to the buyer, rounded up to a whole shilling. The buyer pays the transporter directly; FarmConnect only records it.' }));
+      form.appendChild(h('form', { onsubmit: function (ev) {
+        ev.preventDefault();
+        api('/api/delivery/settings', { method: 'PUT', json: { baseFee: Number(base.value), perKmRate: Number(perKm.value), roadFactor: Number(factor.value), maxKm: Number(max.value) } })
+          .then(function () { toast('Delivery rates saved'); err.textContent = ''; })
+          .catch(function (e) { err.textContent = e.message; });
+      } }, h('div', { class: 'facts' },
+        h('div', {}, h('label', { text: 'Base fee (KES)' }), base), h('div', {}, h('label', { text: 'Rate per km (KES)' }), perKm),
+        h('div', {}, h('label', { text: 'Road factor (roads are longer than a straight line)' }), factor), h('div', {}, h('label', { text: 'Longest delivery (km)' }), max)),
+        err, h('div', { class: 'actions' }, h('button', { class: 'btn', type: 'submit', text: 'Save rates' }))));
+    }).catch(function (e) { failed(form, e); });
+    loading(list);
+    getJson('/api/delivery/jobs?status=ALL').then(function (rows) {
+      list.textContent = '';
+      if (!rows.length) { list.appendChild(emptyBox('No deliveries yet')); return; }
+      paged(list, rows, 20, function (j) {
+        return h('tr', {},
+          h('td', { text: '#' + j.orderId }), h('td', { text: j.transporterName }), h('td', { text: j.buyerName }),
+          h('td', { text: (j.pickupPlace || '-') + ' to ' + (j.dropAddress || '-') }),
+          h('td', { text: j.distanceKm == null ? '-' : j.distanceKm + ' km' }), h('td', { text: j.fee == null ? '-' : 'KES ' + num(j.fee) + (j.feePaid ? ' (paid)' : '') }),
+          h('td', { text: when(j.createdAt) }), h('td', {}, pill(DELIVERY_STATUS[j.status] || j.status, DELIVERY_TONE[j.status] || '')));
+      }, ['Order', 'Transporter', 'Buyer', 'Route', 'Distance', 'Fee', 'Requested', 'Status']);
+    }).catch(function (e) { failed(list, e); });
+  }
+
+
+  // ---------- cash approvals and commission bills (super admin) ----------
+  var CASH_STATUS = { RECORDED: 'Waiting for buyer', BUYER_CONFIRMED: 'Buyer confirmed', BUYER_DISPUTED: 'Buyer disputed', APPROVED: 'Approved', REJECTED: 'Rejected' };
+  var CASH_TONE = { RECORDED: 'st-PENDING_VERIFICATION', BUYER_CONFIRMED: 'st-UNDER_REVIEW', BUYER_DISPUTED: 'st-SUSPENDED', APPROVED: 'st-VERIFIED', REJECTED: 'st-SUSPENDED' };
+  var BILL_STATUS = { UNPAID: 'Unpaid', PENDING: 'Waiting for M-Pesa', PAID: 'Paid' };
+  var BILL_TONE = { UNPAID: 'st-SUSPENDED', PENDING: 'st-UNDER_REVIEW', PAID: 'st-VERIFIED' };
+  function cashKes(n) { return 'KES ' + Number(n || 0).toLocaleString('en-KE', { maximumFractionDigits: 2 }); }
+
+  function cashView(box) {
+    var pendingBox = h('div'), billsBox = h('div'), historyBox = h('div');
+    box.appendChild(h('p', { class: 'muted', text: 'Every payment goes through the app. When a farmer is paid in cash, the farmer records it, the buyer confirms it and you approve it here. Approval marks the order paid and sends the farmer a commission bill, which the farmer pays by M-Pesa in the app.' }));
+    box.appendChild(h('h3', { text: 'Waiting for your decision' }));
+    box.appendChild(pendingBox);
+    box.appendChild(h('h3', { text: 'Commission bills' }));
+    box.appendChild(billsBox);
+    box.appendChild(h('h3', { text: 'Recent cash payments' }));
+    box.appendChild(historyBox);
+
+    function decide(c, approve) {
+      var ask = approve
+        ? confirmDialog('Approve this cash payment?', cashKes(c.amount) + ' from ' + c.buyerName + ' to ' + c.farmerName + ' for order #' + c.orderId + '. The order becomes paid and ' + c.farmerName + ' gets a commission bill of ' + cashKes(c.platformAmount + c.countyAmount) + '.' + (c.status === 'BUYER_DISPUTED' ? ' The buyer disputed it: "' + (c.buyerNote || '') + '".' : c.status === 'RECORDED' ? ' The buyer has not answered yet.' : ''), 'Approve')
+        : promptDialog('Reject this cash payment', 'Reason (the farmer and buyer will see it)', { ok: 'Reject', danger: true, min: 3 });
+      ask.then(function (v) {
+        if (!v) return;
+        api('/api/cash/' + c.id + (approve ? '/approve' : '/reject'), { method: 'POST', json: { note: approve ? null : v } })
+          .then(function () { toast(approve ? 'Approved. The farmer was sent the commission bill.' : 'Rejected'); load(); })
+          .catch(function (e) { toast(e.message, true); });
+      });
+    }
+    function markPaid(b) {
+      promptDialog('Mark commission as paid', 'How was it received? (M-Pesa code, till, bank)', { ok: 'Mark paid', min: 3 }).then(function (v) {
+        if (!v) return;
+        api('/api/cash/bills/' + b.id + '/mark-paid', { method: 'POST', json: { note: v } })
+          .then(function () { toast('Marked paid'); load(); }).catch(function (e) { toast(e.message, true); });
+      });
+    }
+    function load() {
+      loading(pendingBox); loading(billsBox); loading(historyBox);
+      getJson('/api/cash/admin?status=PENDING').then(function (rows) {
+        pendingBox.textContent = '';
+        if (!rows.length) { pendingBox.appendChild(emptyBox('Nothing is waiting for approval')); return; }
+        pendingBox.appendChild(table(['Order', 'Farmer', 'Buyer', 'Cash', 'Commission', 'Buyer says', 'Recorded', ''], rows.map(function (c) {
+          return h('tr', {},
+            h('td', { text: '#' + c.orderId }), h('td', { text: c.farmerName + (c.farmerPhone ? ' · ' + c.farmerPhone : '') }),
+            h('td', { text: c.buyerName + (c.buyerPhone ? ' · ' + c.buyerPhone : '') }), h('td', { text: cashKes(c.amount) }),
+            h('td', { text: cashKes(c.platformAmount + c.countyAmount) }),
+            h('td', {}, pill(CASH_STATUS[c.status] || c.status, CASH_TONE[c.status] || ''), c.buyerNote ? h('div', { class: 'muted', text: c.buyerNote }) : null),
+            h('td', { text: when(c.recordedAt) }),
+            h('td', {}, h('button', { class: 'btn', text: 'Approve', onclick: function () { decide(c, true); } }),
+              h('button', { class: 'btn secondary', text: 'Reject', onclick: function () { decide(c, false); } })));
+        })));
+      }).catch(function (e) { failed(pendingBox, e); });
+      getJson('/api/cash/admin/bills?status=ALL').then(function (rows) {
+        billsBox.textContent = '';
+        var owed = rows.filter(function (b) { return b.status !== 'PAID'; }).reduce(function (a, b) { return a + b.amount; }, 0);
+        var got = rows.filter(function (b) { return b.status === 'PAID'; }).reduce(function (a, b) { return a + b.amount; }, 0);
+        billsBox.appendChild(h('div', { class: 'kpis' }, kpi('commission', 'amber', 'Commission still owed', cashKes(owed), 'unpaid + waiting for M-Pesa'), kpi('commission', '', 'Commission received', cashKes(got), 'from cash sales')));
+        if (!rows.length) { billsBox.appendChild(emptyBox('No commission bills yet')); return; }
+        var billTable = h('div');
+        billsBox.appendChild(billTable);
+        paged(billTable, rows, 15, function (b) {
+          return h('tr', {},
+            h('td', { text: '#' + b.id }), h('td', { text: 'Order #' + b.orderId }), h('td', { text: b.farmerName }),
+            h('td', { text: cashKes(b.saleAmount) }), h('td', { text: cashKes(b.platformAmount) + ' + ' + cashKes(b.countyAmount) }),
+            h('td', { text: cashKes(b.amount) }), h('td', { text: when(b.createdAt) }),
+            h('td', {}, pill(BILL_STATUS[b.status] || b.status, BILL_TONE[b.status] || ''), b.overdue ? h('div', { class: 'error', text: 'Overdue' }) : null,
+              b.mpesaReceipt ? h('div', { class: 'muted', text: b.mpesaReceipt }) : b.paidVia === 'ADMIN' ? h('div', { class: 'muted', text: 'by admin' }) : null),
+            h('td', {}, b.status === 'PAID' ? null : h('button', { class: 'btn secondary', text: 'Mark paid', onclick: function () { markPaid(b); } })));
+        }, ['Bill', 'Order', 'Farmer', 'Cash sale', 'Platform + county', 'Farmer owes', 'Created', 'Status', '']);
+      }).catch(function (e) { failed(billsBox, e); });
+      getJson('/api/cash/admin?status=ALL').then(function (rows) {
+        historyBox.textContent = '';
+        rows = rows.filter(function (c) { return c.status === 'APPROVED' || c.status === 'REJECTED'; });
+        if (!rows.length) { historyBox.appendChild(emptyBox('No decisions yet')); return; }
+        paged(historyBox, rows, 15, function (c) {
+          return h('tr', {}, h('td', { text: '#' + c.orderId }), h('td', { text: c.farmerName }), h('td', { text: c.buyerName }),
+            h('td', { text: cashKes(c.amount) }), h('td', { text: when(c.decidedAt) }),
+            h('td', {}, pill(CASH_STATUS[c.status], CASH_TONE[c.status]), c.decisionNote ? h('div', { class: 'muted', text: c.decisionNote }) : null));
+        }, ['Order', 'Farmer', 'Buyer', 'Cash', 'Decided', 'Result']);
+      }).catch(function (e) { failed(historyBox, e); });
+    }
+    load();
+  }
+
+
+  // ---------- system health and backups (super admin) ----------
+  function bytesText(n) {
+    if (n == null) return '-';
+    var u = ['B', 'KB', 'MB', 'GB', 'TB'], i = 0, v = Number(n);
+    while (v >= 1024 && i < u.length - 1) { v /= 1024; i++; }
+    return (i === 0 ? v : v.toFixed(1)) + ' ' + u[i];
+  }
+  function ago(sec) {
+    if (sec < 120) return sec + ' seconds';
+    if (sec < 7200) return Math.round(sec / 60) + ' minutes';
+    if (sec < 172800) return Math.round(sec / 3600) + ' hours';
+    return Math.round(sec / 86400) + ' days';
+  }
+
+  function systemView(box) {
+    var top = h('div'), files = h('div'), note = h('div', { class: 'muted' });
+    var btn = h('button', { class: 'btn', text: 'Back up now', onclick: function () {
+      btn.disabled = true;
+      api('/api/admin/backups/run', { method: 'POST' }).then(function () { toast('Backup started. This page refreshes in a moment.'); setTimeout(load, 4000); })
+        .catch(function (e) { toast(e.message, true); btn.disabled = false; });
+    } });
+    box.appendChild(h('div', { class: 'toolbar' }, btn, h('button', { class: 'btn secondary', text: 'Refresh', onclick: load })));
+    box.appendChild(top);
+    box.appendChild(note);
+    box.appendChild(h('h3', { text: 'Backup files' }));
+    box.appendChild(files);
+    function load() {
+      loading(top);
+      getJson('/api/admin/health').then(function (d) {
+        btn.disabled = !!d.backupRunning;
+        top.textContent = '';
+        top.appendChild(h('div', { class: 'kpis' },
+          kpi('system', d.database === 'UP' ? '' : 'amber', 'Database', d.database === 'UP' ? 'Working' : 'DOWN', d.databaseMillis + ' ms'),
+          kpi('products', d.diskLow ? 'amber' : '', 'Disk free', bytesText(d.diskFreeBytes), 'of ' + bytesText(d.diskTotalBytes)),
+          kpi('reports', 'blue', 'Memory used', bytesText(d.memoryUsedBytes), 'of ' + bytesText(d.memoryMaxBytes)),
+          kpi('pulse', 'purple', 'Running for', ago(d.uptimeSeconds), d.profile),
+          kpi('book', d.lastBackupOk === false || !d.backupsEnabled ? 'amber' : '', 'Last good backup',
+            d.lastSuccessfulBackupAt ? when(d.lastSuccessfulBackupAt) : 'None yet', d.backupsEnabled ? 'Every night at 02:30' : 'Nightly backups are OFF')));
+        note.textContent = (d.backupRunning ? 'A backup is running now. ' : '') + (d.lastBackupMessage || 'No backup has run since the server started.') + '  Folder: ' + d.backupFolder;
+      }).catch(function (e) { failed(top, e); });
+      loading(files);
+      getJson('/api/admin/backups').then(function (rows) {
+        files.textContent = '';
+        if (!rows.length) { files.appendChild(emptyBox('No backup files yet')); return; }
+        files.appendChild(table(['File', 'Size', 'Made'], rows.map(function (f) {
+          return h('tr', {}, h('td', { text: f.name }), h('td', { text: bytesText(f.bytes) }), h('td', { text: when(f.modified) }));
+        })));
+      }).catch(function (e) { failed(files, e); });
+    }
+    load();
+  }
+
+
   // ---------- frame ----------
   var NAV = [
     { group: 'Dashboard', items: [['overview', 'Overview', 'Overview']] },
-    { group: 'County work', items: [['verifications', 'Verification', 'Farmer verification'], ['prices', 'Market prices', 'Market price board'], ['reports', 'Reports', 'Reports']] },
+    { group: 'County work', items: [['verifications', 'Verification', 'Farmer verification'], ['prices', 'Market prices', 'Market price board'], ['reports', 'Reports', 'Reports'], ['cropdoctor', 'Crop doctor', 'Crop doctor cases']] },
     { group: 'Administration', admin: true, items: [['users', 'Users', 'Users'], ['officers', 'Officers', 'County officers'], ['products', 'Products', 'Product moderation'], ['orders', 'Orders', 'Orders'], ['payments', 'Payments', 'Payments & payouts']] },
-    { group: 'Super admin', superOnly: true, items: [['companies', 'Companies', 'Company verification'], ['marketplace', 'Marketplace', 'Marketplace overview'], ['commission', 'Commission', 'Commission rates'], ['supplymoney', 'Farm-input money', 'Farm-input payments and payouts'], ['countyadmins', 'County admins', 'County admins'], ['security', 'Security', 'Security and audit log']] }
+    { group: 'Super admin', superOnly: true, items: [['companies', 'Companies', 'Company verification'], ['marketplace', 'Marketplace', 'Marketplace overview'], ['commission', 'Commission', 'Commission rates'], ['supplymoney', 'Farm-input money', 'Farm-input payments and payouts'], ['cash', 'Cash approvals', 'Cash payments and commission bills'], ['delivery', 'Delivery', 'Delivery rates and jobs'], ['system', 'System health', 'System health and backups'], ['countyadmins', 'County admins', 'County admins'], ['security', 'Security', 'Security and audit log']] }
   ];
-  var VIEWS = { overview: overview, verifications: verifications, prices: prices, reports: reports, users: function (b) { usersView(b); }, officers: officersView, products: productsView, orders: ordersView, payments: paymentsView, companies: companiesView, marketplace: marketplaceView, commission: commissionView, supplymoney: supplyMoneyView, countyadmins: countyAdminsView, security: securityView };
-  var ADMIN_ONLY = { users: 1, officers: 1, products: 1, orders: 1, payments: 1, companies: 1, marketplace: 1, commission: 1, supplymoney: 1, countyadmins: 1, security: 1 };
-  var SUPER_ONLY = { companies: 1, marketplace: 1, commission: 1, supplymoney: 1, countyadmins: 1, security: 1 };
+  var VIEWS = { overview: overview, verifications: verifications, prices: prices, reports: reports, cropdoctor: cropDoctorView, users: function (b) { usersView(b); }, officers: officersView, products: productsView, orders: ordersView, payments: paymentsView, companies: companiesView, marketplace: marketplaceView, commission: commissionView, supplymoney: supplyMoneyView, countyadmins: countyAdminsView, delivery: deliveryView, cash: cashView, system: systemView, security: securityView };
+  var ADMIN_ONLY = { users: 1, officers: 1, products: 1, orders: 1, payments: 1, companies: 1, marketplace: 1, commission: 1, supplymoney: 1, countyadmins: 1, delivery: 1, cash: 1, system: 1, security: 1 };
+  var SUPER_ONLY = { companies: 1, marketplace: 1, commission: 1, supplymoney: 1, countyadmins: 1, delivery: 1, cash: 1, system: 1, security: 1 };
 
   function currentView() {
     var v = (location.hash || '').replace('#', '');

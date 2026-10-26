@@ -40,9 +40,10 @@ public class OrderController {
         o.setDeliveryAddress(r.deliveryAddress().trim());
         o.setDeliveryPhone(r.deliveryPhone() == null ? null : r.deliveryPhone().trim());
         o.setDeliveryNote(r.deliveryNote() == null || r.deliveryNote().isBlank() ? null : r.deliveryNote().trim());
-        String pay = r.paymentMethod() == null ? "CASH_ON_DELIVERY" : r.paymentMethod().trim().toUpperCase();
-        if (!pay.equals("CASH_ON_DELIVERY") && !pay.equals("MPESA_ON_DELIVERY") && !pay.equals("MPESA_ONLINE"))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown payment method");
+        String pay = r.paymentMethod() == null ? "MPESA_ONLINE" : r.paymentMethod().trim().toUpperCase();
+        // every payment goes through the app: M-Pesa now, or cash that is recorded in the app and approved by the super admin
+        if (!pay.equals("CASH_RECORDED") && !pay.equals("MPESA_ONLINE"))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Choose M-Pesa in the app or cash recorded in the app");
         o.setPaymentMethod(pay);
         o.setPaymentStatus("UNPAID");
         o.setCreatedAt(Instant.now());
@@ -120,6 +121,10 @@ public class OrderController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Use buyer cancel endpoint");
         if ("MPESA_ONLINE".equals(o.getPaymentMethod()) && !"PAID".equals(o.getPaymentStatus()))
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Wait for the buyer's M-Pesa payment first");
+        if (r.status() == OrderStatus.DELIVERED && !"PAID".equals(o.getPaymentStatus()))
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "MPESA_ONLINE".equals(o.getPaymentMethod())
+                    ? "Wait for the buyer's M-Pesa payment first"
+                    : "Record the cash payment in the app and wait for the super admin to approve it before marking this delivered");
         o.setStatus(r.status());
         o.setUpdatedAt(Instant.now());
         if (r.status() == OrderStatus.DELIVERED && o.getDeliveredAt() == null) o.setDeliveredAt(o.getUpdatedAt());

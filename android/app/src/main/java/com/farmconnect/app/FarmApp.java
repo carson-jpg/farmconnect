@@ -7,6 +7,7 @@ public class FarmApp extends Application {
     @Override public void onCreate() {
         super.onCreate();
         Session.init(this);
+        com.farmconnect.app.data.Offline.init(this);
         com.farmconnect.app.util.I18n.init(this);
         com.farmconnect.app.push.Push.createChannel(this);
     }

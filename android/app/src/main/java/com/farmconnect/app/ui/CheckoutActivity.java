@@ -35,7 +35,7 @@ public class CheckoutActivity extends AppCompatActivity {
         b.btnPlace.setOnClickListener(v -> place());
         b.rgPay.setOnCheckedChangeListener((g, id) -> b.tvPayNote.setText(id == b.rbMpesaNow.getId()
                 ? I18n.t("You will get an M-Pesa prompt on your phone. Enter your PIN to pay. The seller is paid after you receive your order.")
-                : I18n.t("You pay the seller when your order arrives. No money is taken inside the app.")));
+                : I18n.t("You pay the seller in cash. The seller records it in the app, you confirm it, and the super admin approves it before the order can be delivered.")));
         Ui.watch(this, vm.cart(), b.progress, this::showSummary);
     }
 
@@ -80,7 +80,7 @@ public class CheckoutActivity extends AppCompatActivity {
         String note = b.etNote.getText().toString().trim();
         if (!phone.matches("\\+?\\d{9,13}")) { b.tilPhone.setError(I18n.t("Enter a valid phone number")); b.etPhone.requestFocus(); return; }
         if (address.length() < 5) { b.tilAddress.setError(I18n.t("Enter where we should deliver")); b.etAddress.requestFocus(); return; }
-        String pay = b.rbMpesaNow.isChecked() ? "MPESA_ONLINE" : b.rbMpesa.isChecked() ? "MPESA_ON_DELIVERY" : "CASH_ON_DELIVERY";
+        String pay = b.rbMpesaNow.isChecked() ? "MPESA_ONLINE" : "CASH_RECORDED";
 
         b.btnPlace.setEnabled(false);
         vm.placeOrder(new OrderRequest(address, phone, note, pay)).observe(this, res -> {

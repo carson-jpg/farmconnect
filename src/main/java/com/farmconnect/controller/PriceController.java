@@ -4,6 +4,7 @@ import com.farmconnect.dto.Trust.*;
 import com.farmconnect.model.*;
 import com.farmconnect.repository.*;
 import com.farmconnect.service.NotificationService;
+import com.farmconnect.service.PriceTrend;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -70,6 +71,30 @@ public class PriceController {
                 .filter(p -> market == null || market.isBlank() || p.getMarket().equalsIgnoreCase(market))
                 .limit(Math.max(1, Math.min(limit, 90)))
                 .map(p -> new PricePoint(p.getId(), p.getPriceDate(), p.getPrice(), p.getUnit(), p.getMarket())).toList();
+    }
+
+    /**
+     * Trend and a simple forecast for one crop (optionally one market) over the last {@code days} days.
+     * With no market, prices from every market in the crop's most recent unit are averaged per day.
+     */
+    @GetMapping("/trend")
+    @Transactional(readOnly = true)
+    public TrendResponse trend(@RequestParam String crop, @RequestParam(required = false) String market,
+                               @RequestParam(defaultValue = "60") int days) {
+        LocalDate since = LocalDate.now().minusDays(Math.max(7, Math.min(days, 365)));
+        List<MarketPrice> all = prices.findAllByOrderByPriceDateDescIdDesc().stream()
+                .filter(p -> p.getCrop().equalsIgnoreCase(crop.trim()))
+                .filter(p -> market == null || market.isBlank() || p.getMarket().equalsIgnoreCase(market.trim()))
+                .toList();
+        String unit = all.isEmpty() ? "" : all.get(0).getUnit();            // newest first: keep one unit so prices compare
+        List<PriceTrend.Point> pts = all.stream().filter(p -> p.getUnit().equalsIgnoreCase(unit))
+                .filter(p -> !p.getPriceDate().isBefore(since))
+                .map(p -> new PriceTrend.Point(p.getPriceDate(), p.getPrice().doubleValue())).toList();
+        String name = all.isEmpty() ? pretty(crop) : all.get(0).getCrop();
+        PriceTrend.Result r = PriceTrend.compute(name, unit, pts);
+        return new TrendResponse(name, market == null || market.isBlank() ? null : pretty(market), unit, r.direction(), r.changePct(), r.low(), r.high(),
+                r.average(), r.history().stream().map(x -> new TrendPoint(x.date().toString(), x.price())).toList(),
+                r.forecast().stream().map(x -> new TrendPoint(x.date().toString(), x.price())).toList(), r.confidence(), r.summary());
     }
 
     @PostMapping

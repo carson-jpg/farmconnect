@@ -154,6 +154,9 @@
                     </HorizontalScrollView>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
+
+            <LinearLayout android:id="@+id/insightsContainer" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:paddingStart="9dp" android:paddingEnd="9dp" />
         </LinearLayout>
 
         <!-- Stays pinned while the list scrolls: section title + filters -->

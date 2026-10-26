@@ -30,6 +30,7 @@ public class ApiClient {
                         if (t != null) rb.header("Authorization", "Bearer " + t);
                         return chain.proceed(rb.build());
                     })
+                    .addInterceptor(new OfflineInterceptor())
                     .addInterceptor(log)
                     .build();
             service = new Retrofit.Builder()

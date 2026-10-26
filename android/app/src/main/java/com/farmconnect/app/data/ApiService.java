@@ -78,6 +78,7 @@ public interface ApiService {
     @POST("api/notifications/read-all") Call<Counts> readAllNotifications();
     @POST("api/notifications/{id}/read") Call<Counts> readNotification(@Path("id") long id);
     @GET("api/weather") Call<Weather> weather();
+    @GET("api/calendar") Call<CalendarResponse> calendar();
     @GET("api/records") Call<List<FarmRecord>> records(@Query("type") String type);
     @POST("api/records") Call<FarmRecord> createRecord(@Body RecordRequest r);
     @PUT("api/records/{id}") Call<FarmRecord> updateRecord(@Path("id") long id, @Body RecordRequest r);
@@ -96,11 +97,13 @@ public interface ApiService {
     @POST("api/groups/{id}/announce") Call<Void> announceToGroup(@Path("id") long id, @Body AnnounceRequest r);
     @POST("api/feedback") Call<Void> sendFeedback(@Body FeedbackRequest r);
     @GET("api/analytics") Call<Analytics> analytics();
+    @POST("api/reports/email-me") Call<MessageResponse> emailReport();
     @GET("api/analytics/report.csv") Call<okhttp3.ResponseBody> analyticsCsv();
 
     // prices & reviews
     @GET("api/prices") Call<List<Price>> prices(@Query("q") String q);
     @GET("api/prices/history") Call<List<PricePoint>> priceHistory(@Query("crop") String crop, @Query("market") String market);
+    @GET("api/prices/trend") Call<TrendResponse> priceTrend(@Query("crop") String crop, @Query("market") String market, @Query("days") int days);
     @POST("api/prices") Call<Price> postPrice(@Body PriceRequest r);
     @DELETE("api/prices/{id}") Call<Void> deletePrice(@Path("id") long id);
     @POST("api/prices/alerts/toggle") Call<AlertToggle> togglePriceAlert(@Query("crop") String crop);
@@ -238,4 +241,39 @@ public interface ApiService {
     @GET("api/admin/marketplace/produce-requests") Call<List<BulkRequest>> adminProduceRequests(@Query("status") String status);
     @GET("api/admin/marketplace/purchase-orders") Call<List<BulkOrder>> adminPurchaseOrders(@Query("status") String status);
     @GET("api/admin/marketplace/service-requests") Call<List<HireRequest>> adminServiceRequests(@Query("status") String status);
+    @GET("api/crop-doctor/guide") Call<CropGuide> cropGuide();
+    @POST("api/crop-doctor/diagnose") Call<CropDiagnosis> cropDiagnose(@Body CropDiagnoseRequest r);
+    @POST("api/crop-doctor/cases") Call<CropCase> cropSend(@Body CropCaseRequest r);
+    @Multipart @POST("api/crop-doctor/cases/{id}/photos")
+    Call<CropCase> cropPhoto(@Path("id") long id, @Part MultipartBody.Part file);
+    @GET("api/crop-doctor/cases") Call<List<CropCase>> cropCases(@Query("status") String status);
+    @GET("api/crop-doctor/cases/{id}") Call<CropCase> cropCase(@Path("id") long id);
+    @POST("api/crop-doctor/cases/{id}/review") Call<CropCase> cropReview(@Path("id") long id, @Body CropReviewRequest r);
+    @POST("api/crop-doctor/cases/{id}/close") Call<CropCase> cropClose(@Path("id") long id);
+    @GET("api/cash") Call<List<CashSale>> cashMine();
+    @GET("api/cash/orders/{id}") Call<List<CashSale>> cashForOrder(@Path("id") long id);
+    @POST("api/cash/orders/{id}/record") Call<CashSale> cashRecord(@Path("id") long id, @Body CashNote r);
+    @POST("api/cash/{id}/confirm") Call<CashSale> cashConfirm(@Path("id") long id, @Body CashNote r);
+    @POST("api/cash/{id}/dispute") Call<CashSale> cashDispute(@Path("id") long id, @Body CashNote r);
+    @GET("api/cash/bills") Call<List<CashBill>> cashBills();
+    @POST("api/cash/bills/{id}/pay") Call<CashBill> cashPay(@Path("id") long id, @Body CashPayRequest r);
+    @GET("api/group-deals") Call<List<Deal>> deals(@Query("groupId") Long groupId, @Query("kind") String kind);
+    @GET("api/group-deals/market") Call<List<Deal>> dealMarket();
+    @GET("api/group-deals/{id}") Call<DealDetail> deal(@Path("id") long id);
+    @POST("api/group-deals") Call<DealDetail> dealCreate(@Body DealRequest r);
+    @POST("api/group-deals/{id}/share") Call<DealDetail> dealShare(@Path("id") long id, @Body DealShareRequest r);
+    @POST("api/group-deals/{id}/close") Call<DealDetail> dealClose(@Path("id") long id);
+    @POST("api/group-deals/{id}/complete") Call<DealDetail> dealComplete(@Path("id") long id, @Body DealCompleteRequest r);
+    @POST("api/group-deals/{id}/cancel") Call<DealDetail> dealCancel(@Path("id") long id);
+    @GET("api/delivery/settings") Call<DeliveryRates> deliveryRates();
+    @PUT("api/delivery/settings") Call<DeliveryRates> setDeliveryRates(@Body DeliveryRatesRequest r);
+    @GET("api/delivery/options") Call<DeliveryOptions> deliveryOptions(@Query("orderId") long orderId, @Query("dropLat") Double lat, @Query("dropLng") Double lng);
+    @POST("api/delivery/jobs") Call<DeliveryJob> deliveryRequest(@Body DeliveryJobRequest r);
+    @GET("api/delivery/jobs") Call<List<DeliveryJob>> deliveryJobs(@Query("status") String status);
+    @POST("api/delivery/jobs/{id}/cancel") Call<DeliveryJob> deliveryCancel(@Path("id") long id);
+    @POST("api/delivery/jobs/{id}/accept") Call<DeliveryJob> deliveryAccept(@Path("id") long id, @Body DeliveryAcceptRequest r);
+    @POST("api/delivery/jobs/{id}/decline") Call<DeliveryJob> deliveryDecline(@Path("id") long id, @Body DeliveryDeclineRequest r);
+    @POST("api/delivery/jobs/{id}/pickup") Call<DeliveryJob> deliveryPickup(@Path("id") long id);
+    @POST("api/delivery/jobs/{id}/deliver") Call<DeliveryJob> deliveryDeliver(@Path("id") long id);
+    @POST("api/delivery/jobs/{id}/fee-received") Call<DeliveryJob> deliveryFeeReceived(@Path("id") long id);
 }

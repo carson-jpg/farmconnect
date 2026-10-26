@@ -35,7 +35,13 @@ public class AnalyticsActivity extends AppCompatActivity {
         b.btnBack.setOnClickListener(v -> finish());
         b.btnHeaderAction.setVisibility(View.VISIBLE);
         b.btnHeaderAction.setText(I18n.t("Share report"));
-        b.btnHeaderAction.setOnClickListener(v -> shareCsv());
+        b.btnHeaderAction.setOnClickListener(v -> new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle(I18n.t("Share report"))
+                .setItems(new String[]{I18n.t("📧 Email me the PDF and Excel report"), I18n.t("Share as text (CSV)")}, (d, which) -> {
+                    if (which == 0) Ui.watch(this, vm.emailReport(), b.progress, r -> Ui.toast(this, r.message));
+                    else shareCsv();
+                })
+                .setNegativeButton(I18n.t("Cancel"), null).show());
     }
 
     @Override protected void onResume() {

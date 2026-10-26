@@ -81,7 +81,8 @@ public class Ui {
     public static String paymentLabel(String m) {
         if ("MPESA_ONLINE".equals(m)) return I18n.t("M-Pesa (paid in the app)");
         if ("MPESA_ON_DELIVERY".equals(m)) return I18n.t("M-Pesa on delivery");
-        return I18n.t("Cash on delivery");
+        if ("CASH_ON_DELIVERY".equals(m)) return I18n.t("Cash on delivery");
+        return I18n.t("Cash (recorded in the app)");
     }
 
     /** First letter of a name, for avatar circles. */

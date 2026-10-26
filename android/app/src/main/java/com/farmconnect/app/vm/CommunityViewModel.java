@@ -49,6 +49,9 @@ public class CommunityViewModel extends ViewModel {
     public LiveData<Resource<Void>> deletePrice(long id) { return repo.deletePrice(id); }
     public LiveData<Resource<AlertToggle>> togglePriceAlert(String crop) { return repo.togglePriceAlert(crop); }
     public LiveData<Resource<AlertInfo>> setPriceTarget(String crop, Double price, String direction) { return repo.setPriceTarget(crop, price, direction); }
+    public LiveData<Resource<MessageResponse>> emailReport() { return repo.emailReport(); }
+    public LiveData<Resource<TrendResponse>> priceTrend(String crop, String market, int days) { return repo.priceTrend(crop, market, days); }
+    public LiveData<Resource<CalendarResponse>> calendar() { return repo.calendar(); }
     public LiveData<Resource<AuthResponse>> changePassword(String current, String next) { return repo.changePassword(current, next); }
     public LiveData<Resource<SecuritySummary>> securitySummary() { return repo.securitySummary(); }
     public LiveData<Resource<List<AuditEntry>>> securityAudit(String action, String q) { return repo.securityAudit(action, q); }
@@ -64,4 +67,38 @@ public class CommunityViewModel extends ViewModel {
     public LiveData<Resource<Review>> replyReview(long id, String text) { return repo.replyReview(id, text); }
     public LiveData<Resource<Void>> deleteReview(long id) { return repo.deleteReview(id); }
     public LiveData<Resource<List<Farm>>> myFarms() { return repo.myFarms(); }
+    public LiveData<Resource<CropGuide>> cropGuide() { return repo.cropGuide(); }
+    public LiveData<Resource<CropDiagnosis>> cropDiagnose(String crop, List<String> symptoms) { return repo.cropDiagnose(crop, symptoms); }
+    public LiveData<Resource<CropCase>> cropSend(String crop, List<String> symptoms, String description) { return repo.cropSend(crop, symptoms, description); }
+    public LiveData<Resource<CropCase>> cropPhoto(long id, byte[] jpeg) { return repo.cropPhoto(id, jpeg); }
+    public LiveData<Resource<List<CropCase>>> cropCases(String status) { return repo.cropCases(status); }
+    public LiveData<Resource<CropCase>> cropCase(long id) { return repo.cropCase(id); }
+    public LiveData<Resource<CropCase>> cropReview(long id, String note, String confirmed) { return repo.cropReview(id, note, confirmed); }
+    public LiveData<Resource<CropCase>> cropClose(long id) { return repo.cropClose(id); }
+    public LiveData<Resource<List<CashSale>>> cashMine() { return repo.cashMine(); }
+    public LiveData<Resource<List<CashSale>>> cashForOrder(long id) { return repo.cashForOrder(id); }
+    public LiveData<Resource<CashSale>> cashRecord(long orderId, String note) { return repo.cashRecord(orderId, note); }
+    public LiveData<Resource<CashSale>> cashConfirm(long id) { return repo.cashConfirm(id); }
+    public LiveData<Resource<CashSale>> cashDispute(long id, String note) { return repo.cashDispute(id, note); }
+    public LiveData<Resource<List<CashBill>>> cashBills() { return repo.cashBills(); }
+    public LiveData<Resource<CashBill>> cashPay(long id, String phone) { return repo.cashPay(id, phone); }
+    public LiveData<Resource<List<Deal>>> deals(Long groupId, String kind) { return repo.deals(groupId, kind); }
+    public LiveData<Resource<List<Deal>>> dealMarket() { return repo.dealMarket(); }
+    public LiveData<Resource<DealDetail>> deal(long id) { return repo.deal(id); }
+    public LiveData<Resource<DealDetail>> dealCreate(DealRequest r) { return repo.dealCreate(r); }
+    public LiveData<Resource<DealDetail>> dealShare(long id, double qty) { return repo.dealShare(id, qty); }
+    public LiveData<Resource<DealDetail>> dealClose(long id) { return repo.dealClose(id); }
+    public LiveData<Resource<DealDetail>> dealComplete(long id, Double price, String note) { return repo.dealComplete(id, price, note); }
+    public LiveData<Resource<DealDetail>> dealCancel(long id) { return repo.dealCancel(id); }
+    public LiveData<Resource<DeliveryRates>> deliveryRates() { return repo.deliveryRates(); }
+    public LiveData<Resource<DeliveryRates>> setDeliveryRates(double base, double perKm, Double factor, Double maxKm) { return repo.setDeliveryRates(base, perKm, factor, maxKm); }
+    public LiveData<Resource<DeliveryOptions>> deliveryOptions(long orderId, Double lat, Double lng) { return repo.deliveryOptions(orderId, lat, lng); }
+    public LiveData<Resource<DeliveryJob>> deliveryRequest(long orderId, long transporterId, Double lat, Double lng, String note) { return repo.deliveryRequest(orderId, transporterId, lat, lng, note); }
+    public LiveData<Resource<List<DeliveryJob>>> deliveryJobs(String status) { return repo.deliveryJobs(status); }
+    public LiveData<Resource<DeliveryJob>> deliveryCancel(long id) { return repo.deliveryCancel(id); }
+    public LiveData<Resource<DeliveryJob>> deliveryAccept(long id, Double km) { return repo.deliveryAccept(id, km); }
+    public LiveData<Resource<DeliveryJob>> deliveryDecline(long id, String reason) { return repo.deliveryDecline(id, reason); }
+    public LiveData<Resource<DeliveryJob>> deliveryPickup(long id) { return repo.deliveryPickup(id); }
+    public LiveData<Resource<DeliveryJob>> deliveryDeliver(long id) { return repo.deliveryDeliver(id); }
+    public LiveData<Resource<DeliveryJob>> deliveryFeeReceived(long id) { return repo.deliveryFeeReceived(id); }
 }

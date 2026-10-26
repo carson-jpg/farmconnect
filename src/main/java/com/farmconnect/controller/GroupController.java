@@ -26,6 +26,8 @@ public class GroupController {
     private final FarmerGroupRepository groups;
     private final GroupMemberRepository members;
     private final NotificationService notifier;
+    private final GroupPoolRepository pools;
+    private final GroupPoolShareRepository poolShares;
 
     @GetMapping
     @Transactional(readOnly = true)
@@ -80,6 +82,8 @@ public class GroupController {
     public void delete(@PathVariable Long id, @AuthenticationPrincipal User me) {
         FarmerGroup g = find(id);
         requireManager(g, me);
+        poolShares.deleteByPoolGroupId(id);
+        pools.deleteByGroupId(id);
         members.deleteByGroupId(id);
         groups.delete(g);
     }

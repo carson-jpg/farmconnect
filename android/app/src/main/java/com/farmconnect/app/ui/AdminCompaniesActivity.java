@@ -79,6 +79,23 @@ public class AdminCompaniesActivity extends BaseListActivity {
         s.show();
     }
 
+    /** The company's payout account: the super admin approves it before any money is sent there. */
+    private void payoutDialog(CompanyView c) {
+        Sheet s = Sheet.of(this, I18n.t("Payout account"));
+        if (c.payoutAccount == null) {
+            s.note(I18n.t("This company has not entered a payout account yet.")).show();
+            return;
+        }
+        s.badge(c.payoutApproved ? I18n.t("Approved") : I18n.t("Not approved"), c.payoutApproved ? 0xFF2E7D32 : 0xFFF9A825)
+                .field(I18n.t("Type"), CompanyLabels.name(CompanyLabels.PAYOUT_TYPES, CompanyLabels.PAYOUT_TYPE_NAMES, c.payoutType))
+                .field(I18n.t("Number"), c.payoutAccount)
+                .field(I18n.t("Account no."), c.payoutReference)
+                .note(I18n.t("Approve only if this account really belongs to the company."));
+        if (c.payoutApproved) s.danger(I18n.t("Revoke approval"), () -> act(cvm.revokePayout(c.id), I18n.t("Payout approval revoked")));
+        else s.primary(I18n.t("Approve payout account"), () -> act(cvm.approvePayout(c.id), I18n.t("Payout account approved")));
+        s.show();
+    }
+
     private void confirmVerify(CompanyView c) {
         new AlertDialog.Builder(this).setTitle(I18n.t("Verify ") + c.name + "?")
                 .setMessage(I18n.t("Confirm that the registration number, KRA PIN and documents are genuine and match the company details."))
@@ -112,11 +129,7 @@ public class AdminCompaniesActivity extends BaseListActivity {
                 .setItems(names, (x, which) -> showDoc(c.id, c.documents.get(which).id))
                 .setNegativeButton(I18n.t("Close"), null).show();
     }
-    private void payoutDialog(CompanyView c) {
-        // Implement your payout account dialog logic here.
-        // For now, a simple toast or an empty AlertDialog to confirm it compiles:
-        Ui.toast(this, I18n.t("Payout account for ") + c.name);
-    }
+
     private void showDoc(long companyId, long docId) {
         Ui.watch(this, cvm.doc(true, companyId, docId), b.progress, bm -> {
             ImageView iv = new ImageView(this);

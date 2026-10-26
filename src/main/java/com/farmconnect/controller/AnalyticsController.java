@@ -190,7 +190,9 @@ public class AnalyticsController {
         sb.append('"').append(section).append("\",\"").append(item.replace("\"", "'")).append("\",\"").append(v).append("\"\n");
     }
 
-    private Analytics compute(AreaScope sc) {
+    /** Used by the report mailer too (no logged-in user then), so it must not require one; it is not an HTTP endpoint. */
+    @PreAuthorize("permitAll()")
+    public Analytics compute(AreaScope sc) {
         final boolean scoped = !sc.all();
         List<User> all = users.findAll();
         List<Farm> farmList = farms.findAll();

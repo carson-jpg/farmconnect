@@ -56,9 +56,14 @@ public final class Hub {
                     new Link("💹", "Prices", null, open(PricesActivity.class)),
                     new Link("📚", "Learn", null, open(InfoHubActivity.class)),
                     new Link("🌦", "Weather", null, open(WeatherActivity.class)),
+                    new Link("📅", "Calendar", null, open(CalendarActivity.class)),
                     new Link("📒", "Records", null, open(RecordsActivity.class)),
+                    new Link("🩺", "Crop doctor", null, open(CropDoctorActivity.class)),
                     new Link("⭐", "My reviews", null, () -> a.startActivity(new Intent(a, ReviewsActivity.class).putExtra("sellerId", Session.id()))),
                     new Link("👥", "Groups", null, open(GroupsActivity.class)),
+                    new Link("🤝", "Group deals", null, open(GroupDealsActivity.class)),
+                    new Link("🚚", "Deliveries", null, open(DeliveryActivity.class)),
+                    new Link("💵", "Cash payments", null, open(CashActivity.class)),
                     new Link("🌾", "Farm inputs", null, open(FarmInputsActivity.class)),
                     new Link("🧾", "Input orders", null, open(MySupplyOrdersActivity.class)),
                     new Link("🏭", "Bulk buyers", null, open(BulkRequestsActivity.class)),
@@ -70,11 +75,13 @@ public final class Hub {
                     new Link("📢", "Publish", null, open(InfoHubActivity.class)),
                     new Link("💹", "Prices", null, open(PricesActivity.class)),
                     new Link("📊", "Analytics", null, open(AnalyticsActivity.class)),
+                    new Link("🩺", "Crop cases", null, open(CropDoctorActivity.class)),
                     new Link("👥", "Groups", null, open(GroupsActivity.class)),
                     new Link("🧰", "Directory", null, open(ServicesActivity.class)),
                     new Link("🌦", "Weather", null, open(WeatherActivity.class))));
             // only the super admin appoints county admins
             if (role.equals("ADMIN")) {
+                links.add(0, new Link("🚚", "Delivery rates", null, () -> DeliveryActivity.ratesDialog(a, vm)));
                 links.add(0, new Link("🔐", "Security", null, open(SecurityActivity.class)));
                 links.add(0, new Link("🗺", "County admins", null, open(CountyAdminsActivity.class)));
                 links.add(0, new Link("🏢", "Companies", null, open(AdminCompaniesActivity.class)));
@@ -83,6 +90,9 @@ public final class Hub {
         } else {
             links.addAll(Arrays.asList(
                     new Link("💹", "Prices", null, open(PricesActivity.class)),
+                    new Link("🤝", "Group produce", null, () -> a.startActivity(new Intent(a, GroupDealsActivity.class).putExtra("market", true))),
+                    new Link("🚚", "Deliveries", null, open(DeliveryActivity.class)),
+                    new Link("💵", "Cash payments", null, open(CashActivity.class)),
                     new Link("📚", "Learn", null, open(InfoHubActivity.class)),
                     new Link("🧰", "Services", null, open(ServicesActivity.class)),
                     new Link("🌦", "Weather", null, open(WeatherActivity.class))));

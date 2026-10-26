@@ -7,15 +7,24 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 import androidx.lifecycle.ViewModelProvider;
+import com.farmconnect.app.data.Models.BulkOrder;
+import com.farmconnect.app.data.Models.BulkRequest;
 import com.farmconnect.app.data.Models.CompanyRequest;
+import com.farmconnect.app.data.Models.HireRequest;
+import com.farmconnect.app.data.Models.SupplyItem;
+import com.farmconnect.app.data.Models.SupplyOrder;
 import com.farmconnect.app.data.Models.CompanyView;
 import com.farmconnect.app.data.Models.SupplySummary;
 import com.farmconnect.app.data.Resource;
 import com.farmconnect.app.util.Ui;
+import com.farmconnect.app.vm.BulkViewModel;
 import com.farmconnect.app.vm.CompanyViewModel;
+import com.farmconnect.app.vm.MarketViewModel;
 import com.farmconnect.app.vm.SupplyViewModel;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /** Company portal home: verification progress, key numbers and shortcuts. The super admin verifies every company. */
 public class CompanyHomeActivity extends BaseListActivity {
@@ -24,6 +33,11 @@ public class CompanyHomeActivity extends BaseListActivity {
     private boolean askedDetails;
     private SupplySummary summary;
     private boolean summaryAsked;
+    private List<SupplyOrder> orderList = new ArrayList<>();
+    private List<HireRequest> serviceList = new ArrayList<>();
+    private List<BulkRequest> requestList = new ArrayList<>();
+    private List<BulkOrder> poList = new ArrayList<>();
+    private LinearLayout insights;
 
     @Override protected String screenTitle() { return I18n.t("Company portal"); }
     @Override protected String headerActionLabel() { return I18n.t("Log out"); }
@@ -95,23 +109,12 @@ public class CompanyHomeActivity extends BaseListActivity {
         top.setPadding(Cards.dp(this, 12), Cards.dp(this, 6), Cards.dp(this, 12), 0);
         UiKit.hero(this, top, c.name, statusMessage(c), CompanyLabels.status(c.status), CompanyLabels.statusColor(c.status));
         if (!"VERIFIED".equals(c.status)) progress(c);
-        if (c.verified && c.canSell) {
-            if (summary != null) {
-                LinearLayout r1 = Cards.statRow(this, top);
-                r1.addView(Cards.stat(this, String.valueOf(summary.newOrders), I18n.t("New orders")));
-                r1.addView(Cards.stat(this, String.valueOf(summary.inProgress), I18n.t("In progress")));
-                r1.addView(Cards.stat(this, String.valueOf(summary.delivered), I18n.t("Delivered")));
-                LinearLayout r2 = Cards.statRow(this, top);
-                r2.addView(Cards.stat(this, Ui.kes(summary.grossDelivered), I18n.t("Sales")));
-                r2.addView(Cards.stat(this, Ui.kes(summary.netDelivered), I18n.t("You earn")));
-                r2.addView(Cards.stat(this, Ui.kes(summary.netUnpaid), I18n.t("To collect")));
-            }
-            if (!summaryAsked) {
-                summaryAsked = true;
-                new ViewModelProvider(this).get(SupplyViewModel.class).summary().observe(this, r -> {
-                    if (r.status == Resource.Status.SUCCESS) { summary = r.data; showHome(); }
-                });
-            }
+        insights = new LinearLayout(this);
+        insights.setOrientation(LinearLayout.VERTICAL);
+        top.addView(insights, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        if (c.verified) {
+            renderInsights();
+            if (!summaryAsked) { summaryAsked = true; loadInsights(c); }
         }
 
         List<Row> rows = new ArrayList<>();
@@ -136,6 +139,9 @@ public class CompanyHomeActivity extends BaseListActivity {
             rows.add(Row.of("💸", I18n.t("Payouts")).sub(I18n.t("What FarmConnect sent to your account"))
                     .click(() -> startActivity(new Intent(this, CompanyPayoutsActivity.class))));
         }
+        if (c.verified && "TRANSPORT".equals(c.category))
+            rows.add(Row.of("🚚", I18n.t("Delivery jobs")).sub(I18n.t("Requests from buyers, collections and deliveries"))
+                    .click(() -> startActivity(new Intent(this, DeliveryActivity.class))));
         if (c.verified && c.canBuy) {
             rows.add(Row.of("🌽", I18n.t("Produce requests")).sub(I18n.t("Post what you want to buy and get quotations from farmers"))
                     .click(() -> startActivity(new Intent(this, CompanyRequestsActivity.class))));
@@ -157,6 +163,104 @@ public class CompanyHomeActivity extends BaseListActivity {
         rows.add(Row.of("🔑", I18n.t("Change password")).click(() -> SecurityActivity.changePasswordDialog(this, vm)));
         rows.add(Row.of("🌐", I18n.t("Language")).click(() -> I18n.chooseLanguage(this)));
         show(rows, "");
+    }
+
+    /** Fetches the lists the numbers and charts are built from. Each arrival redraws the section. */
+    private void loadInsights(CompanyView c) {
+        if (c.canSell) {
+            new ViewModelProvider(this).get(SupplyViewModel.class).summary().observe(this, r -> {
+                if (r.status == Resource.Status.SUCCESS) { summary = r.data; renderInsights(); }
+            });
+            new ViewModelProvider(this).get(SupplyViewModel.class).companyOrders("").observe(this, r -> {
+                if (r.status == Resource.Status.SUCCESS && r.data != null) { orderList = r.data; renderInsights(); }
+            });
+            new ViewModelProvider(this).get(MarketViewModel.class).serviceRequests("").observe(this, r -> {
+                if (r.status == Resource.Status.SUCCESS && r.data != null) { serviceList = r.data; renderInsights(); }
+            });
+        }
+        if (c.canBuy) {
+            BulkViewModel bvm = new ViewModelProvider(this).get(BulkViewModel.class);
+            bvm.companyRequests().observe(this, r -> {
+                if (r.status == Resource.Status.SUCCESS && r.data != null) { requestList = r.data; renderInsights(); }
+            });
+            bvm.companyOrders().observe(this, r -> {
+                if (r.status == Resource.Status.SUCCESS && r.data != null) { poList = r.data; renderInsights(); }
+            });
+        }
+    }
+
+    private void open(Class<?> c) { startActivity(new Intent(this, c)); }
+
+    /** Selling and Buying blocks like the web overview: numbers first, then charts. */
+    private void renderInsights() {
+        CompanyView c = company;
+        if (insights == null || c == null || !c.verified) return;
+        insights.removeAllViews();
+
+        if (c.canSell && summary != null) {
+            SupplySummary s = summary;
+            UiKit.section(this, insights, I18n.t("Selling"));
+            List<View> t = new ArrayList<>();
+            t.add(UiKit.statCard(this, "📥", I18n.t("New orders"), String.valueOf(s.newOrders), I18n.t("waiting for you"), s.newOrders > 0 ? 0xFFF9A825 : 0xFF2E7D32, v -> open(CompanyOrdersActivity.class)));
+            t.add(UiKit.statCard(this, "🚚", I18n.t("In progress"), String.valueOf(s.inProgress), I18n.t("confirmed or dispatched"), 0xFF1E88E5, v -> open(CompanyOrdersActivity.class)));
+            t.add(UiKit.statCard(this, "✅", I18n.t("Delivered"), String.valueOf(s.delivered), I18n.t("orders"), 0xFF2E7D32, v -> open(CompanyOrdersActivity.class)));
+            t.add(UiKit.statCard(this, "📦", I18n.t("Active products"), String.valueOf(s.activeProducts), s.lowStock + I18n.t(" low on stock"), s.lowStock > 0 ? 0xFFE53935 : 0xFF2E7D32, v -> open(CompanyProductsActivity.class)));
+            t.add(UiKit.statCard(this, "📈", I18n.t("Sales delivered"), Ui.kes(s.grossDelivered), I18n.t("before fees"), 0xFF2E7D32, null));
+            t.add(UiKit.statCard(this, "🏷", I18n.t("FarmConnect fees"), Ui.kes(s.feesDelivered), I18n.t("on delivered orders"), 0xFF8E24AA, null));
+            t.add(UiKit.statCard(this, "💰", I18n.t("You earn"), Ui.kes(s.netDelivered), I18n.t("after fees"), 0xFF2E7D32, v -> open(CompanyPayoutsActivity.class)));
+            t.add(UiKit.statCard(this, "⏳", I18n.t("Still to collect"), Ui.kes(s.netUnpaid), I18n.t("delivered, not paid"), s.netUnpaid > 0 ? 0xFFF9A825 : 0xFF2E7D32, null));
+            UiKit.grid(this, insights, t);
+
+            LinkedHashMap<String, Double> sales = Insights.months(6), cnt = Insights.months(6);
+            Map<String, Long> units = new LinkedHashMap<>();
+            for (SupplyOrder o : orderList) {
+                boolean live = !"CANCELLED".equals(o.status) && !"REJECTED".equals(o.status);
+                if ("DELIVERED".equals(o.status)) Insights.add(sales, o.deliveredAt != null ? o.deliveredAt : o.createdAt, o.total);
+                if (live) {
+                    Insights.add(cnt, o.createdAt, 1);
+                    if (o.items != null) for (SupplyItem i : o.items) units.put(i.name, (units.containsKey(i.name) ? units.get(i.name) : 0L) + i.quantity);
+                }
+            }
+            LinearLayout a = UiKit.chartCard(this, insights, I18n.t("Sales per month (KSh)"));
+            a.addView(Charts.columns(this, sales, 0xFF2E7D32));
+            LinearLayout b2 = UiKit.chartCard(this, insights, I18n.t("Orders per month"));
+            b2.addView(Charts.columns(this, cnt, 0xFF1E88E5));
+            Charts.donut(this, UiKit.chartCard(this, insights, I18n.t("Orders by status")),
+                    Insights.countBy(orderList, o -> o.status, CompanyLabels.ORDER_STATUSES, CompanyLabels.ORDER_STATUS_NAMES), I18n.t("orders"));
+            Cards.bars(this, UiKit.chartCard(this, insights, I18n.t("Top products (units sold)")), top(units, 5), 0xFF2E7D32, null);
+            Charts.donut(this, UiKit.chartCard(this, insights, I18n.t("Service requests")),
+                    Insights.countBy(serviceList, r -> r.status, CompanyLabels.HIRE_STATUS_KEYS, CompanyLabels.HIRE_STATUS_NAMES), I18n.t("requests"));
+        }
+
+        if (c.canBuy) {
+            UiKit.section(this, insights, I18n.t("Buying"));
+            int open = 0, waiting = 0, toConfirm = 0, toReceive = 0;
+            for (BulkRequest r : requestList) { if ("OPEN".equals(r.status)) open++; waiting += (int) r.openQuotations; }
+            for (BulkOrder o : poList) { if ("ISSUED".equals(o.status)) toConfirm++; if ("CONFIRMED".equals(o.status)) toReceive++; }
+            List<View> t = new ArrayList<>();
+            t.add(UiKit.statCard(this, "🌽", I18n.t("Open requests"), String.valueOf(open), I18n.t("taking quotations"), 0xFF2E7D32, v -> open(CompanyRequestsActivity.class)));
+            t.add(UiKit.statCard(this, "📨", I18n.t("Quotations waiting"), String.valueOf(waiting), I18n.t("for your decision"), waiting > 0 ? 0xFFF9A825 : 0xFF2E7D32, v -> open(CompanyRequestsActivity.class)));
+            t.add(UiKit.statCard(this, "📑", I18n.t("Orders to confirm"), String.valueOf(toConfirm), I18n.t("waiting for the farmer"), 0xFF1E88E5, v -> open(CompanyBulkOrdersActivity.class)));
+            t.add(UiKit.statCard(this, "🚛", I18n.t("Produce to receive"), String.valueOf(toReceive), I18n.t("confirmed, not delivered"), 0xFF2E7D32, v -> open(CompanyBulkOrdersActivity.class)));
+            UiKit.grid(this, insights, t);
+
+            LinkedHashMap<String, Double> spend = Insights.months(6);
+            for (BulkOrder o : poList) if (!"DECLINED".equals(o.status) && !"CANCELLED".equals(o.status)) Insights.add(spend, o.createdAt, o.total);
+            LinearLayout a = UiKit.chartCard(this, insights, I18n.t("Purchases per month (KSh)"));
+            a.addView(Charts.columns(this, spend, 0xFF2E7D32));
+            Charts.donut(this, UiKit.chartCard(this, insights, I18n.t("Produce requests")),
+                    Insights.countBy(requestList, r -> r.status, CompanyLabels.REQ_STATUS_KEYS, CompanyLabels.REQ_STATUS_NAMES), I18n.t("requests"));
+            Charts.donut(this, UiKit.chartCard(this, insights, I18n.t("Purchase orders")),
+                    Insights.countBy(poList, o -> o.status, CompanyLabels.PO_STATUS_KEYS, CompanyLabels.PO_STATUS_NAMES), I18n.t("orders"));
+        }
+    }
+
+    private static Map<String, Long> top(Map<String, Long> m, int n) {
+        List<Map.Entry<String, Long>> es = new ArrayList<>(m.entrySet());
+        java.util.Collections.sort(es, (x, y) -> Long.compare(y.getValue(), x.getValue()));
+        LinkedHashMap<String, Long> out = new LinkedHashMap<>();
+        for (int i = 0; i < Math.min(n, es.size()); i++) out.put(es.get(i).getKey(), es.get(i).getValue());
+        return out;
     }
 
     /** Where FarmConnect sends this company's money. The super admin must approve it (again after every change). */

@@ -22,7 +22,7 @@ public class CustomerOrder {
     private String deliveryPhone;
     @Column(length = 500)
     private String deliveryNote;
-    /** CASH_ON_DELIVERY or MPESA_ON_DELIVERY. Recorded only - no online payment is processed yet. */
+    /** MPESA_ONLINE or CASH_RECORDED (older orders may hold CASH_ON_DELIVERY / MPESA_ON_DELIVERY). */
     private String paymentMethod;
     /** UNPAID, PENDING, PAID or FAILED. Old orders have null (treated as UNPAID). */
     private String paymentStatus;

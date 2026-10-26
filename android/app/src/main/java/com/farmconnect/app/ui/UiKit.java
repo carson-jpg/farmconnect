@@ -86,4 +86,82 @@ final class UiKit {
         parent.addView(t);
         return t;
     }
+
+    /** A numbers tile like the web dashboard: a coloured emoji disc, a label, the figure and a small note. */
+    static MaterialCardView statCard(Context c, String emoji, String label, String value, String sub, int tint, View.OnClickListener click) {
+        MaterialCardView card = new MaterialCardView(c);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+        lp.setMargins(Cards.dp(c, 5), Cards.dp(c, 5), Cards.dp(c, 5), Cards.dp(c, 5));
+        card.setLayoutParams(lp);
+        card.setRadius(Cards.dp(c, 16));
+        card.setCardElevation(Cards.dp(c, 2));
+        card.setCardBackgroundColor(0xFFFFFFFF);
+        if (click != null) { card.setClickable(true); card.setFocusable(true); card.setOnClickListener(click); }
+        LinearLayout row = new LinearLayout(c);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.setPadding(Cards.dp(c, 12), Cards.dp(c, 14), Cards.dp(c, 12), Cards.dp(c, 14));
+        TextView ico = new TextView(c);
+        ico.setText(emoji);
+        ico.setTextSize(19);
+        ico.setGravity(Gravity.CENTER);
+        GradientDrawable bg = new GradientDrawable();
+        bg.setShape(GradientDrawable.OVAL);
+        bg.setColor((tint & 0x00FFFFFF) | 0x26000000);
+        ico.setBackground(bg);
+        LinearLayout.LayoutParams ilp = new LinearLayout.LayoutParams(Cards.dp(c, 42), Cards.dp(c, 42));
+        ilp.setMarginEnd(Cards.dp(c, 10));
+        row.addView(ico, ilp);
+        LinearLayout col = new LinearLayout(c);
+        col.setOrientation(LinearLayout.VERTICAL);
+        TextView l = Cards.text(c, label, 12, 0xFF5E7061, false);
+        l.setMaxLines(2);
+        col.addView(l);
+        TextView v = Cards.text(c, value, 20, 0xFF1C2B1E, true);
+        v.setTypeface(Typeface.SERIF, Typeface.BOLD);
+        v.setMaxLines(1);
+        androidx.core.widget.TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(v, 12, 20, 1, android.util.TypedValue.COMPLEX_UNIT_SP);
+        col.addView(v, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        if (sub != null && !sub.isEmpty()) {
+            TextView sb = Cards.text(c, sub, 11, 0xFF5E7061, false);
+            sb.setMaxLines(2);
+            col.addView(sb);
+        }
+        row.addView(col, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        card.addView(row);
+        return card;
+    }
+
+    /** Lays tiles out in equal columns: 2 on a phone, 3 or 4 on a tablet. A short last row keeps the same tile width. */
+    static void grid(Context c, LinearLayout parent, java.util.List<View> tiles) {
+        int w = c.getResources().getConfiguration().screenWidthDp;
+        int cols = w >= 900 ? 4 : w >= 600 ? 3 : 2;
+        for (int i = 0; i < tiles.size(); i += cols) {
+            LinearLayout row = new LinearLayout(c);
+            row.setOrientation(LinearLayout.HORIZONTAL);
+            row.setBaselineAligned(false);
+            for (int k = 0; k < cols; k++) {
+                if (i + k < tiles.size()) row.addView(tiles.get(i + k));
+                else {
+                    View pad = new View(c);
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, 1, 1f);
+                    lp.setMargins(Cards.dp(c, 5), 0, Cards.dp(c, 5), 0);
+                    row.addView(pad, lp);
+                }
+            }
+            LinearLayout.LayoutParams rlp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            rlp.setMargins(-Cards.dp(c, 5), 0, -Cards.dp(c, 5), 0);
+            parent.addView(row, rlp);
+        }
+    }
+
+    /** A white card with a title; returns the layout to put the chart in. */
+    static LinearLayout chartCard(Context c, LinearLayout parent, String title) {
+        MaterialCardView card = Cards.card(c, parent, 10);
+        LinearLayout in = Cards.inner(card);
+        in.addView(Cards.title(c, title));
+        View gap = Cards.spacer(c, 6);
+        in.addView(gap);
+        return in;
+    }
 }

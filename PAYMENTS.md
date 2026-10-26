@@ -16,7 +16,7 @@ Every successful produce sale is split **5% FarmConnect / 5% County Government o
 * Commission base = produce price of the order (no delivery fee exists yet). M-Pesa fees are carried by FarmConnect, not deducted from farmer or county.
 * FarmConnect's 5% is already in your till, so it is "paid" by a ledger entry (`RETAINED`), not a transfer.
 * Underpayment, overpayment, duplicate payment: excess is recorded as owed to the buyer and refunded by an admin. Underpaid orders are not allocated.
-* Cash-on-delivery orders do not touch this system (no collected money to split).
+* Cash sales do not go through this collection flow. They have their own approval and commission-bill flow (see "Cash payments" at the end).
 
 ## Safety against double payment
 Payout is claimed with one atomic UPDATE and committed **before** anything is sent; each attempt has its own `OriginatorConversationID`.
@@ -33,7 +33,7 @@ Your existing order statuses are unchanged (PENDING..DELIVERED); `orders.payment
 Farmer API: `GET /api/payments/farmer/earnings`, `GET|PUT /api/payments/farmer/account`.
 
 ## Screens
-* **Buyer (Android):** checkout now has **"Pay now with M-Pesa (in the app)"**. After the order is placed, `PayNowActivity` sends the M-Pesa prompt, shows "Check your phone", checks the server every 4 s for up to 2 min, then shows the receipt (or lets the buyer retry with another number). Unpaid in-app orders show a **Pay now** button on the order page. The old Cash and "M-Pesa on delivery" options are unchanged and are NOT split (no money passes through FarmConnect).
+* **Buyer (Android):** checkout now has **"Pay now with M-Pesa (in the app)"**. After the order is placed, `PayNowActivity` sends the M-Pesa prompt, shows "Check your phone", checks the server every 4 s for up to 2 min, then shows the receipt (or lets the buyer retry with another number). Unpaid in-app orders show a **Pay now** button on the order page. The only other option is **Cash (recorded in the app)**, described under "Cash payments". The old Cash on delivery and M-Pesa on delivery options were removed.
 * **Farmer (Android):** "My earnings and payouts" link on the farmer dashboard opens `EarningsActivity`: paid vs on-the-way totals, each sale's state, and the payout phone number (a new number needs admin approval).
 * **Admin (web, `/officer/#payments`, ADMIN role only):** totals per beneficiary, a "Needs attention" list (payments to review, refunds owed, unknown/failed payouts, payout numbers to approve), all payments and payouts with filters, a payment detail view (split, transfers, full ledger) with hold / release / refund, payout-account approval, and reconciliation including a paste-in M-Pesa statement comparison.
 * Order responses now include `paymentStatus` and `mpesaReceipt`.
@@ -66,3 +66,22 @@ payments above are never touched. It is OFF until you set `supply.payments.enabl
   `POST .../payouts/{id}/requeue`, `POST .../payouts/{id}/mark-paid`, `GET .../ledger-check` (must say `balanced: true`).
 - **Callbacks:** farm-input payments reuse your existing STK and B2C result/timeout URLs. Supply payouts use an
   originator id starting `SUP-`, so results are routed to the right place automatically.
+
+
+## Cash payments (recorded in the app, approved by the super admin)
+
+Every sale must be in the app. When the buyer pays the farmer in cash:
+
+1. **Farmer records it** (order page -> Cash payment). The amount is the farmer's produce on that order, fixed by the server.
+2. **Buyer confirms or disputes it** in the app.
+3. **Super admin approves or rejects it** (web console -> Cash approvals). The admin can approve even if the buyer has not answered, and sees any dispute.
+4. **On approval** the order becomes PAID (once every farmer on the order is approved) and a **commission bill** is created:
+   platform share + county share (5% + 5% by default, the `payments.platform-bps` / `payments.county-bps` values, worked out in whole shillings).
+   The farmer keeps the rest, which was already received in cash.
+5. **The farmer pays the bill by M-Pesa in the app** (STK push; the shared callback URL routes it to the bill). The admin can also mark a bill paid by hand (for example if the money came straight to the till).
+6. A farmer whose bill is unpaid for more than `app.cash.max-overdue-days` (7) cannot record new cash sales.
+
+An order cannot be marked DELIVERED until it is PAID (M-Pesa received, or every cash sale approved).
+
+Commission bills are tracked in `commission_bills` and shown in the Cash approvals page (owed / received). They are not part of the M-Pesa ledger tables
+or the reconciliation report; the platform share reaches your M-Pesa account when the farmer pays the bill, and the county share is settled by you from that total, as for the other county shares.

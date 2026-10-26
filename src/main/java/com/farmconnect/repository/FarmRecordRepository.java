@@ -10,4 +10,5 @@ import java.util.Optional;
 
 public interface FarmRecordRepository extends JpaRepository<FarmRecord, Long> {
     List<FarmRecord> findByOwnerIdOrderByRecordDateDescIdDesc(Long ownerId);
+    List<FarmRecord> findByTypeAndRecordDateGreaterThanEqual(com.farmconnect.model.RecordType type, java.time.LocalDate from);
 }

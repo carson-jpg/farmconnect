@@ -50,7 +50,9 @@ public class PricesActivity extends BaseListActivity {
                 Row r = Row.of(Labels.cropIcon(p.crop), p.crop + " · " + p.market)
                         .sub(Ui.kes(p.price) + I18n.t(" per ") + p.unit)
                         .meta(meta.toString())
-                        .click(() -> details(p));
+                        .click(() -> details(p))
+                        .action(I18n.t("📈 Trend"), () -> startActivity(new android.content.Intent(this, PriceTrendActivity.class)
+                                .putExtra("crop", p.crop).putExtra("market", p.market)));
                 if (p.changePct != null && p.changePct != 0) {
                     boolean up = p.changePct > 0;
                     r.badge((up ? "▲ " : "▼ ") + String.format(Locale.US, "%.1f%%", Math.abs(p.changePct)), up ? 0xFF2E7D32 : 0xFFC62828);

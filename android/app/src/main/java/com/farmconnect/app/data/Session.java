@@ -15,5 +15,5 @@ public class Session {
     public static String role() { return p.getString("role", null); }
     public static String name() { return p.getString("name", null); }
     public static boolean isLoggedIn() { return token() != null; }
-    public static void clear() { p.edit().clear().apply(); }
+    public static void clear() { p.edit().clear().apply(); Offline.clearCache(); }
 }

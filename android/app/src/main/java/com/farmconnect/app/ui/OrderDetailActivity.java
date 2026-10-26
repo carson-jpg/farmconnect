@@ -124,9 +124,18 @@ public class OrderDetailActivity extends AppCompatActivity {
         boolean canRate = mode == OrderAdapter.Mode.BUYER && "DELIVERED".equals(o.status) && !o.items.isEmpty();
         b.btnRate.setVisibility(canRate ? View.VISIBLE : View.GONE);
         b.btnRate.setOnClickListener(v -> rateSellers(o));
+        boolean canDeliver = mode == OrderAdapter.Mode.BUYER && !o.items.isEmpty()
+                && ("PENDING".equals(o.status) || "CONFIRMED".equals(o.status) || "SHIPPED".equals(o.status));
+        b.btnDelivery.setVisibility(canDeliver ? View.VISIBLE : View.GONE);
+        b.btnDelivery.setText(I18n.t("🚚 Arrange delivery"));
+        b.btnDelivery.setOnClickListener(v -> startActivity(new android.content.Intent(this, ArrangeDeliveryActivity.class).putExtra("orderId", o.id)));
         boolean online = "MPESA_ONLINE".equals(o.paymentMethod);
         b.tvPayment.setText("💳 " + Ui.paymentLabel(o.paymentMethod)
-                + (online ? " · " + Ui.payStatusLabel(o.paymentStatus) + ("PAID".equals(o.paymentStatus) && o.mpesaReceipt != null ? " (" + o.mpesaReceipt + ")" : "") : ""));
+                + " · " + Ui.payStatusLabel(o.paymentStatus) + (online && "PAID".equals(o.paymentStatus) && o.mpesaReceipt != null ? " (" + o.mpesaReceipt + ")" : ""));
+        boolean cashFlow = !online && !"CANCELLED".equals(o.status) && mode != OrderAdapter.Mode.ADMIN;
+        b.btnCash.setVisibility(cashFlow ? View.VISIBLE : View.GONE);
+        b.btnCash.setText(I18n.t(mode == OrderAdapter.Mode.BUYER ? "💵 Cash payment: confirm" : "💵 Cash payment: record"));
+        b.btnCash.setOnClickListener(v -> startActivity(new android.content.Intent(this, CashActivity.class).putExtra("orderId", o.id)));
         // a buyer who has not paid yet can pay now (or retry after a failed attempt)
         final boolean payNow = mode == OrderAdapter.Mode.BUYER && online && !"PAID".equals(o.paymentStatus) && "PENDING".equals(o.status);
 
