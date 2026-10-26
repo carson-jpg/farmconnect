@@ -27,7 +27,7 @@ public class AdminProductsActivity extends AppCompatActivity implements ProductA
         b.tvTitle.setText(I18n.t("Product moderation"));
         b.btnBack.setOnClickListener(v -> finish());
         adapter = new ProductAdapter(ProductAdapter.Mode.ADMIN, this);
-        b.rv.setLayoutManager(new LinearLayoutManager(this));
+        b.rv.setLayoutManager(new androidx.recyclerview.widget.GridLayoutManager(this, 2));
         b.rv.setAdapter(adapter);
         b.etSearch.setOnEditorActionListener((v, a, e) -> { load(); return true; });
         load();

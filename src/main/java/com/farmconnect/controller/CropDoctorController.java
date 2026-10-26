@@ -4,6 +4,7 @@ import com.farmconnect.dto.CropDoctor.*;
 import com.farmconnect.model.*;
 import com.farmconnect.repository.CropCaseRepository;
 import com.farmconnect.repository.FarmRepository;
+import com.farmconnect.repository.FarmerVerificationRepository;
 import com.farmconnect.repository.UserRepository;
 import com.farmconnect.security.Staff;
 import com.farmconnect.service.AreaScope;
@@ -41,6 +42,7 @@ public class CropDoctorController {
     private final CropCaseRepository cases;
     private final FarmRepository farms;
     private final UserRepository users;
+    private final FarmerVerificationRepository verifications;
     private final FileStorageService files;
     private final CropPhotoSigner signer;
     private final NotificationService notifier;
@@ -160,9 +162,20 @@ public class CropDoctorController {
         return cases.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Case not found"));
     }
 
-    private static boolean inArea(AreaScope scope, CropCase c) {
+    /** The case's sub-county, or (for cases sent before this was fixed) the farmer's verified sub-county. */
+    private String subCountyOf(CropCase c) {
+        if (c.getSubCounty() != null && !c.getSubCounty().isBlank()) return c.getSubCounty();
+        return verifiedSubCounty(c.getFarmer());
+    }
+
+    private String verifiedSubCounty(User farmer) {
+        return verifications.findByFarmerId(farmer.getId())
+                .map(v -> v.getSubCounty()).filter(x -> x != null && !x.isBlank()).orElse(null);
+    }
+
+    private boolean inArea(AreaScope scope, CropCase c) {
         if (scope.all()) return true;
-        return scope.allows(c.getSubCounty());
+        return scope.allows(subCountyOf(c));
     }
 
     /** The owner, or staff whose area covers the farmer's sub-county. */
@@ -194,6 +207,7 @@ public class CropDoctorController {
             for (Farm f : mine) if (f.getId().equals(farmId)) sub = f.getSubCounty();
         }
         if (sub == null) for (Farm f : mine) if (f.getSubCounty() != null && !f.getSubCounty().isBlank()) { sub = f.getSubCounty(); break; }
+        if (sub == null) sub = verifiedSubCounty(me);          // farms often have no sub-county; the verified profile does
         c.setSubCounty(sub);
         c.setCounty(sub == null ? null : Locations.countyOf(sub));
     }
@@ -205,9 +219,13 @@ public class CropDoctorController {
             if (!u.isEnabled()) continue;
             if (inArea(AreaScope.of(u), c)) ids.add(u.getId());
         }
+        // Area unknown (no farm sub-county and no verified profile): scoped staff cannot be matched, so tell the super admins
+        // instead of letting the case disappear.
+        if (subCountyOf(c) == null)
+            for (User u : users.findByRoleIn(List.of(Role.ADMIN))) if (u.isEnabled()) ids.add(u.getId());
         boolean urgent = top != null && "HIGH".equals(top.urgency());
         String title = (urgent ? "URGENT crop case: " : "New crop case: ") + c.getCrop();
-        String body = c.getFarmer().getName() + (c.getSubCounty() == null ? "" : ", " + c.getSubCounty())
+        String body = c.getFarmer().getName() + (subCountyOf(c) == null ? ", area unknown" : ", " + subCountyOf(c))
                 + (top == null ? "" : ". Guide thinks: " + top.name());
         notifier.broadcastToUsers(ids, "CROP_CASE", title, body, c.getId(), false);
     }
@@ -219,7 +237,7 @@ public class CropDoctorController {
         boolean staff = Staff.is(viewer);
         CropDoctorGuide.Problem confirmed = c.getConfirmedProblem() == null ? null : CropDoctorGuide.problem(c.getConfirmedProblem());
         return new CaseResponse(c.getId(), c.getFarmer().getId(), c.getFarmer().getName(),
-                staff ? c.getFarmer().getPhone() : null, c.getCrop(), keys, labels, c.getDescription(), c.getSubCounty(), c.getCounty(),
+                staff ? c.getFarmer().getPhone() : null, c.getCrop(), keys, labels, c.getDescription(), subCountyOf(c), c.getCounty() != null ? c.getCounty() : (subCountyOf(c) == null ? null : Locations.countyOf(subCountyOf(c))),
                 c.getStatus(), m, c.getPhotos().stream().map(signer::url).toList(),
                 c.getReviewer() == null ? null : c.getReviewer().getName(), c.getReviewerNote(),
                 c.getConfirmedProblem(), confirmed == null ? null : confirmed.name(), c.getReviewedAt(), c.getCreatedAt());

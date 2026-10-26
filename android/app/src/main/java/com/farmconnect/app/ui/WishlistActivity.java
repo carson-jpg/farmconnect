@@ -24,7 +24,7 @@ public class WishlistActivity extends AppCompatActivity implements ProductAdapte
         setContentView(b.getRoot());
         vm = new ViewModelProvider(this).get(BuyerViewModel.class);
         adapter = new ProductAdapter(ProductAdapter.Mode.WISHLIST, this);
-        b.rv.setLayoutManager(new LinearLayoutManager(this));
+        b.rv.setLayoutManager(new androidx.recyclerview.widget.GridLayoutManager(this, 2));
         b.rv.setAdapter(adapter);
         load();
     }

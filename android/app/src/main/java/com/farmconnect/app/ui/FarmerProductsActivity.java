@@ -28,7 +28,7 @@ public class FarmerProductsActivity extends AppCompatActivity implements Product
         setContentView(b.getRoot());
         vm = new ViewModelProvider(this).get(FarmerViewModel.class);
         adapter = new ProductAdapter(ProductAdapter.Mode.FARMER, this);
-        b.rv.setLayoutManager(new LinearLayoutManager(this));
+        b.rv.setLayoutManager(new androidx.recyclerview.widget.GridLayoutManager(this, 2));
         b.rv.setAdapter(adapter);
         b.tvEmpty.setText(I18n.t("No products yet. Tap + to add your first one, with photos and a full description."));
         b.fab.setVisibility(View.VISIBLE);

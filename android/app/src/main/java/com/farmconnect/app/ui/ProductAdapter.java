@@ -45,6 +45,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
     @Override public void onBindViewHolder(VH h, int pos) {
         Product p = items.get(pos);
         Context ctx = h.itemView.getContext();
+        compact(h, ctx);
 
         // cover photo
         String cover = p.imageUrls != null && !p.imageUrls.isEmpty() ? p.imageUrls.get(0) : p.imageUrl;
@@ -109,6 +110,47 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
         // tapping the card opens the full product page (gallery + full description)
         h.itemView.setOnClickListener(v ->
                 ctx.startActivity(new Intent(ctx, ProductDetailActivity.class).putExtra("id", p.id)));
+    }
+
+    private static int dp(Context c, int v) { return Math.round(v * c.getResources().getDisplayMetrics().density); }
+
+    /** Two products per row: a shorter photo, smaller text and stacked buttons so each card fits half the screen. */
+    private void compact(VH h, Context c) {
+        ItemProductBinding b = h.b;
+        b.coverBox.getLayoutParams().height = dp(c, 120);
+        b.body.setPadding(dp(c, 10), dp(c, 10), dp(c, 10), dp(c, 10));
+        b.tvName.setTextSize(15);
+        b.tvName.setMaxLines(1);
+        b.tvName.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        b.tvSummary.setTextSize(12);
+        b.tvSummary.setMaxLines(1);
+        b.tvInfo.setTextSize(11);
+        b.tvInfo.setMaxLines(2);
+        b.tvInfo.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        b.tvPrice.setTextSize(14);
+        b.priceRow.setOrientation(android.widget.LinearLayout.VERTICAL);
+        b.priceRow.setGravity(android.view.Gravity.START);
+        b.tvPrice.setLayoutParams(new android.widget.LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        android.widget.LinearLayout.LayoutParams stock = new android.widget.LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        stock.topMargin = dp(c, 4);
+        b.tvStock.setLayoutParams(stock);
+        b.tvStock.setTextSize(11);
+        b.tvStock.setPadding(dp(c, 8), dp(c, 3), dp(c, 8), dp(c, 3));
+        b.btnRow.setOrientation(android.widget.LinearLayout.VERTICAL);
+        b.btnRow.setPadding(0, 0, 0, 0);
+        for (android.widget.Button btn : new android.widget.Button[]{b.btnPrimary, b.btnSecondary}) {
+            android.widget.LinearLayout.LayoutParams lp = new android.widget.LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            lp.topMargin = dp(c, 6);
+            btn.setLayoutParams(lp);
+            btn.setTextSize(12);
+            btn.setMinHeight(0);
+            btn.setMinimumHeight(dp(c, 38));
+        }
+        ViewGroup.LayoutParams root = h.itemView.getLayoutParams();
+        if (root instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams m = (ViewGroup.MarginLayoutParams) root;
+            m.setMargins(dp(c, 5), dp(c, 5), dp(c, 5), dp(c, 5));
+        }
     }
 
     @Override public int getItemCount() { return items.size(); }

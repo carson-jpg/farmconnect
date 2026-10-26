@@ -40,7 +40,7 @@ public class BuyerHomeActivity extends AppCompatActivity implements ProductAdapt
         b.tvGreeting.setText(name == null || name.trim().isEmpty() ? I18n.t("Friend") : name.trim().split(" ")[0]);
 
         adapter = new ProductAdapter(ProductAdapter.Mode.BUYER, this);
-        b.rv.setLayoutManager(new LinearLayoutManager(this));
+        b.rv.setLayoutManager(new androidx.recyclerview.widget.GridLayoutManager(this, 2));
         b.rv.setAdapter(adapter);
 
         b.btnCart.setOnClickListener(v -> startActivity(new Intent(this, CartActivity.class)));
